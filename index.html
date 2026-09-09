@@ -1,26 +1,342 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale1.0">
-    <title>Electricity</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            color: #333;
-            font-size: 2.5rem;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تعرّف على تليفونك</title>
+<style>
+  :root{
+    --ink:#101014;
+    --paper:#eeece6;
+    --lens:#c9502e;
+    --lens-dim:#8a3a22;
+    --line:#2a2a30;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family: -apple-system, 'Segoe UI', Tahoma, 'Cairo', sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 64px;
+  }
+  .aperture{
+    width:56px;height:56px;border-radius:50%;
+    border:2px solid var(--lens);
+    position:relative;
+    margin-bottom:18px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .aperture::before{
+    content:"";
+    width:14px;height:14px;
+    background:var(--lens);
+    border-radius:50%;
+  }
+  h1{
+    font-size:1.6rem;
+    margin:0 0 6px;
+    text-align:center;
+    letter-spacing:0.2px;
+  }
+  p.sub{
+    color:#a9a6a0;
+    margin:0 0 32px;
+    text-align:center;
+    max-width:420px;
+    line-height:1.7;
+    font-size:0.95rem;
+  }
+  .stage{
+    width:100%;
+    max-width:420px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:20px;
+    background:#17171b;
+  }
+  #dropzone{
+    border:1.5px dashed var(--line);
+    border-radius:4px;
+    padding:28px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  #dropzone.drag{
+    border-color:var(--lens);
+    background:#1d1a17;
+  }
+  #dropzone svg{ width:34px; height:34px; opacity:.75; margin-bottom:10px; }
+  #dropzone .hint{ font-size:0.85rem; color:#8f8c86; margin-top:6px; }
+  #fileInput{ display:none; }
+
+  #preview{
+    display:none;
+    width:100%;
+    border-radius:4px;
+    margin-top:16px;
+    max-height:280px;
+    object-fit:contain;
+    border:1px solid var(--line);
+  }
+
+  button#analyze{
+    width:100%;
+    margin-top:16px;
+    padding:13px;
+    background:var(--lens);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  button#analyze:hover{ background:#d65f39; }
+  button#analyze:disabled{
+    background:var(--lens-dim);
+    cursor:not-allowed;
+    opacity:.6;
+  }
+
+  #status{
+    margin-top:14px;
+    font-family:var(--mono);
+    font-size:0.8rem;
+    color:#8f8c86;
+    text-align:center;
+    min-height:18px;
+  }
+
+  #result{
+    display:none;
+    margin-top:20px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+  }
+  #result .field{
+    display:flex;
+    justify-content:space-between;
+    padding:9px 0;
+    border-bottom:1px solid #232327;
+    font-size:0.92rem;
+  }
+  #result .field:last-child{ border-bottom:none; }
+  #result .label{ color:#8f8c86; }
+  #result .value{ font-weight:600; text-align:left; }
+  #result .confidence-note{
+    margin-top:14px;
+    font-size:0.8rem;
+    color:#8f8c86;
+    line-height:1.7;
+  }
+
+  .keybox{
+    width:100%;
+    max-width:420px;
+    margin-top:18px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:#17171b;
+  }
+  .keybox label{
+    display:block;
+    font-size:0.8rem;
+    color:#8f8c86;
+    margin-bottom:8px;
+  }
+  .keybox input{
+    width:100%;
+    background:#101014;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:9px 10px;
+    color:var(--paper);
+    font-family:var(--mono);
+    font-size:0.82rem;
+  }
+  .keybox .note{
+    font-size:0.72rem;
+    color:#6f6c66;
+    margin-top:8px;
+    line-height:1.6;
+  }
+</style>
 </head>
 <body>
-    <h1>أهلاً بكم في Electricity</h1>
+
+  <div class="aperture"></div>
+  <h1>تعرّف على تليفونك</h1>
+  <p class="sub">ارفع صورة تليفون، وهيتحلل بالذكاء الاصطناعي عشان يقولك الماركة والموديل المتوقع.</p>
+
+  <div class="stage">
+    <div id="dropzone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c9502e" stroke-width="1.5">
+        <path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>اضغط هنا أو اسحب الصورة</div>
+      <div class="hint">JPG أو PNG — صورة واضحة للتليفون من الخلف أو الأمام</div>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+    <img id="preview" alt="معاينة الصورة">
+    <button id="analyze" disabled>حلل الصورة</button>
+    <div id="status"></div>
+
+    <div id="result">
+      <div class="field"><span class="label">الماركة</span><span class="value" id="rBrand">—</span></div>
+      <div class="field"><span class="label">الموديل المتوقع</span><span class="value" id="rModel">—</span></div>
+      <div class="field"><span class="label">نسبة الثقة</span><span class="value" id="rConfidence">—</span></div>
+      <div class="confidence-note" id="rNotes"></div>
+    </div>
+  </div>
+
+  <div class="keybox">
+    <label>Gemini API Key</label>
+    <input type="password" id="apiKey" placeholder="الصق مفتاحك هنا (AQ.… أو AIzaSy…)">
+    <div class="note">
+      المفتاح بيتحفظ في متصفحك بس (localStorage) وبيتبعت مباشرة لجوجل — الصفحة مالهاش سيرفر بينها وبين حد.
+      بما إن الصفحة استاتيك على GitHub Pages، أي حد يفتح كود الصفحة هيقدر يشوف طريقة إرسال المفتاح، فماتحطش مفتاح حساس أو مربوط بفوترة عالية — اعمل مفتاح مخصص لده وحط عليه Restriction على Generative Language API بس.
+    </div>
+  </div>
+
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+  const analyzeBtn = document.getElementById('analyze');
+  const statusEl = document.getElementById('status');
+  const resultEl = document.getElementById('result');
+  const apiKeyInput = document.getElementById('apiKey');
+
+  let base64Image = null;
+  let mimeType = null;
+
+  // Persist key locally only
+  apiKeyInput.value = localStorage.getItem('gemini_key') || '';
+  apiKeyInput.addEventListener('change', () => {
+    localStorage.setItem('gemini_key', apiKeyInput.value.trim());
+  });
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e => {
+    if (e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.type.startsWith('image/')) {
+      setStatus('الملف ده مش صورة، اختار صورة تانية.');
+      return;
+    }
+    mimeType = file.type;
+    const reader = new FileReader();
+    reader.onload = () => {
+      base64Image = reader.result.split(',')[1];
+      preview.src = reader.result;
+      preview.style.display = 'block';
+      analyzeBtn.disabled = false;
+      resultEl.style.display = 'none';
+      setStatus('');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
+  analyzeBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyInput.value.trim();
+    if (!apiKey) {
+      setStatus('لازم تحط الـ API key الأول.');
+      return;
+    }
+    if (!base64Image) {
+      setStatus('ارفع صورة الأول.');
+      return;
+    }
+
+    analyzeBtn.disabled = true;
+    resultEl.style.display = 'none';
+    setStatus('بيحلل الصورة…');
+
+    const prompt = `You are a phone identification expert. Look at this image and identify the mobile phone shown.
+Respond ONLY with a raw JSON object (no markdown fences, no extra text) with exactly these keys:
+{"brand": "...", "model": "...", "confidence": "High/Medium/Low", "notes": "short note in Arabic about distinguishing features you used or why you're uncertain"}
+If the image doesn't clearly show a phone, set brand and model to "غير واضح" and explain in notes.`;
+
+    try {
+      const response = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey
+          },
+          body: JSON.stringify({
+            contents: [{
+              role: 'user',
+              parts: [
+                { text: prompt },
+                { inline_data: { mime_type: mimeType, data: base64Image } }
+              ]
+            }]
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const msg = data?.error?.message || `HTTP ${response.status}`;
+        setStatus('حصل خطأ: ' + msg);
+        analyzeBtn.disabled = false;
+        return;
+      }
+
+      const rawText = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+      const cleaned = rawText.replace(/```json|```/g, '').trim();
+
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        setStatus('الرد رجع بصيغة غير متوقعة، جرب تاني.');
+        console.error('Raw model output:', rawText);
+        analyzeBtn.disabled = false;
+        return;
+      }
+
+      document.getElementById('rBrand').textContent = parsed.brand || '—';
+      document.getElementById('rModel').textContent = parsed.model || '—';
+      document.getElementById('rConfidence').textContent = parsed.confidence || '—';
+      document.getElementById('rNotes').textContent = parsed.notes || '';
+      resultEl.style.display = 'block';
+      setStatus('تم التحليل.');
+    } catch (err) {
+      console.error(err);
+      setStatus('فشل الاتصال بجوجل — تأكد من الإنترنت والمفتاح.');
+    } finally {
+      analyzeBtn.disabled = false;
+    }
+  });
+</script>
+
 </body>
 </html>
