@@ -126,6 +126,22 @@
         });
     }
 
+    // دالة المحاولة للتعامل مع ضغط السيرفر (503)
+    async function generateWithRetry(ai, params, retries = 3, delay = 2000) {
+        for (let i = 0; i < retries; i++) {
+            try {
+                return await ai.models.generateContent(params);
+            } catch (err) {
+                if ((err.status === 503 || err.message?.includes('503')) && i < retries - 1) {
+                    document.getElementById('result').innerText = `السيرفر مشغول حالياً، جاري إعادة المحاولة... (${i + 1}/${retries})`;
+                    await new Promise(res => setTimeout(res, delay));
+                } else {
+                    throw err;
+                }
+            }
+        }
+    }
+
     window.analyzePhone = async function() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const fileInput = document.getElementById('imageInput');
@@ -148,7 +164,7 @@
             const ai = new GoogleGenAI({ apiKey: apiKey });
             const imagePart = await fileToGenerativePart(fileInput.files[0]);
 
-            const response = await ai.models.generateContent({
+            const response = await generateWithRetry(ai, {
                 model: 'gemini-3.6-flash',
                 contents: [
                     'تعرف على الهاتف الموجود في هذه الصورة. حدد الماركة (Brand) والموديل (Model) بدقة، واذكر أبرز مواصفاته إن أمكن باختصار باللغة العربية.',
