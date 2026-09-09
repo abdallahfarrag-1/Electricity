@@ -149,7 +149,7 @@
             const imagePart = await fileToGenerativePart(fileInput.files[0]);
 
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-3.6-flash',
                 contents: [
                     'تعرف على الهاتف الموجود في هذه الصورة. حدد الماركة (Brand) والموديل (Model) بدقة، واذكر أبرز مواصفاته إن أمكن باختصار باللغة العربية.',
                     imagePart
