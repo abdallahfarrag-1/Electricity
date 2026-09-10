@@ -147,8 +147,9 @@
             background-color: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            height: 120px;
+            height: 140px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 18px;
@@ -156,6 +157,7 @@
             color: #555;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            padding: 10px;
         }
 
         .grid-box:hover {
@@ -163,13 +165,29 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
+        /* تنسيق العنوان والصورة داخل المربع */
+        .box-title {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #1a252f;
+        }
+
+        .box-img {
+            max-height: 80px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
         @media (max-width: 500px) {
             .grid-container {
                 gap: 12px;
             }
             .grid-box {
-                height: 90px;
+                height: 120px;
                 font-size: 15px;
+            }
+            .box-img {
+                max-height: 60px;
             }
         }
     </style>
@@ -239,7 +257,17 @@
             for (let i = 1; i <= 30; i++) {
                 const box = document.createElement('div');
                 box.className = 'grid-box';
-                box.innerText = `مربع ${i}`;
+                
+                if (i === 1) {
+                    // المربع الأول بكلمة "شاشة" والصورة
+                    box.innerHTML = `
+                        <span class="box-title">شاشة</span>
+                        <img src="./1000516328.jpg" alt="شاشة" class="box-img">
+                    `;
+                } else {
+                    box.innerText = `مربع ${i}`;
+                }
+                
                 grid.appendChild(box);
             }
         }
