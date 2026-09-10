@@ -374,7 +374,7 @@
 
         <!-- شريط البحث المضاف تحت شريط التاجر -->
         <div class="search-bar-container">
-            <input type="text" class="search-input" placeholder="بحث...">
+            <input type="text" id="searchInput" class="search-input" placeholder="بحث..." oninput="handleSearch()">
         </div>
 
         <div class="container">
@@ -478,6 +478,7 @@
             brandsContainer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'brands';
+            resetSearchInput();
 
             brandsContainer.innerHTML = '';
             brandsData.forEach(brand => {
@@ -498,6 +499,7 @@
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.style.display = 'flex';
             currentState = 'items';
+            resetSearchInput();
 
             if (itemsContainer.innerHTML === '') {
                 generate100Items();
@@ -541,8 +543,45 @@
             itemsContainer.innerHTML = html;
         }
 
+        // إعادة تصفير مدخل البحث
+        function resetSearchInput() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = '';
+                handleSearch();
+            }
+        }
+
+        // دالة التصفية والبحث الفوري
+        function handleSearch() {
+            const filter = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            if (currentState === 'main') {
+                const boxes = document.querySelectorAll('#grid .grid-box');
+                boxes.forEach(box => {
+                    const text = box.innerText.toLowerCase();
+                    if (text.includes(filter)) {
+                        box.style.display = "flex";
+                    } else {
+                        box.style.display = "none";
+                    }
+                });
+            } else if (currentState === 'brands') {
+                const brands = document.querySelectorAll('#brandsContainer .brand-box');
+                brands.forEach(brand => {
+                    const text = brand.innerText.toLowerCase();
+                    if (text.includes(filter)) {
+                        brand.style.display = "flex";
+                    } else {
+                        brand.style.display = "none";
+                    }
+                });
+            }
+        }
+
         // التحكم بزر العودة
         function goBack() {
+            resetSearchInput();
             if (currentState === 'items') {
                 document.getElementById('itemsContainer').style.display = 'none';
                 document.getElementById('brandsContainer').style.display = 'flex';
