@@ -2,25 +2,242 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            background-color: #f4f4f9;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
-        h1 {
+
+        body {
+            background-color: #f4f6f8;
             color: #333;
-            font-size: 2.5rem;
+            min-height: 100vh;
+        }
+
+        /* صفحة الدخول */
+        #login-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header-title {
+            position: absolute;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            letter-spacing: 1px;
+        }
+
+        .login-box {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: #d9534f;
+            font-size: 14px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* صفحة العرض */
+        #main-page {
+            display: none;
+            padding-bottom: 40px;
+        }
+
+        .nav-bar {
+            background-color: #1a252f;
+            color: #ffffff;
+            text-align: center;
+            padding: 18px;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .merchant-bar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .merchant-bar span {
+            color: #007bff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-box {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .grid-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 500px) {
+            .grid-container {
+                gap: 12px;
+            }
+            .grid-box {
+                height: 90px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>أهلاً بكم في Electricity</h1>
+
+    <!-- صفحة البداية -->
+    <div id="login-page">
+        <div class="header-title">Electricity</div>
+        <div class="login-box">
+            <div class="input-group">
+                <label for="merchant-id">الخانة الأولى</label>
+                <input type="text" id="merchant-id" placeholder="أدخل الرقم الأول">
+            </div>
+            <div class="input-group">
+                <label for="code-id">الخانة الثانية</label>
+                <input type="text" id="code-id" placeholder="أدخل الرقم الثاني">
+            </div>
+            <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
+            <div id="error" class="error-message">الأرقام المدخلة غير صحيحة، يرجى المحاولة مرة أخرى.</div>
+        </div>
+    </div>
+
+    <!-- صفحة العرض -->
+    <div id="main-page">
+        <!-- الشريط الأول -->
+        <div class="nav-bar">
+            Electricity
+        </div>
+
+        <!-- الشريط الثاني -->
+        <div class="merchant-bar">
+            التاجر: <span id="display-merchant"></span>
+        </div>
+
+        <!-- شبكة المربعات الثلاثين -->
+        <div class="container">
+            <div class="grid-container" id="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        function validateAndNavigate() {
+            const val1 = document.getElementById('merchant-id').value.trim();
+            const val2 = document.getElementById('code-id').value.trim();
+            const errorMsg = document.getElementById('error');
+
+            if (val1 === "01155445544" && val2 === "0022") {
+                errorMsg.style.display = "none";
+                document.getElementById('login-page').style.display = "none";
+                document.getElementById('main-page').style.display = "block";
+                document.getElementById('display-merchant').innerText = val1;
+                generateBoxes();
+            } else {
+                errorMsg.style.display = "block";
+            }
+        }
+
+        function generateBoxes() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            for (let i = 1; i <= 30; i++) {
+                const box = document.createElement('div');
+                box.className = 'grid-box';
+                box.innerText = `مربع ${i}`;
+                grid.appendChild(box);
+            }
+        }
+    </script>
 </body>
 </html>
