@@ -98,7 +98,7 @@
             display: none;
         }
 
-        /* صفحة العرض */
+        /* صفحة العرض الرئيسية */
         #main-page {
             display: none;
             padding-bottom: 40px;
@@ -131,12 +131,50 @@
             color: #007bff;
         }
 
+        /* شريط البحث المضاف تحت شريط التاجر */
+        .search-bar-container {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 900px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+        }
+
         .container {
             max-width: 900px;
-            margin: 30px auto;
+            margin: 20px auto;
             padding: 0 15px;
         }
 
+        /* زر العودة للخلف */
+        .back-btn {
+            display: none;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            background-color: #1a252f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* شبكة المربعات الثمانية */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -158,6 +196,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             padding: 10px;
+            cursor: pointer;
         }
 
         .grid-box:hover {
@@ -165,7 +204,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* تنسيق العنوان والصورة داخل المربع */
         .box-title {
             margin-bottom: 8px;
             font-size: 16px;
@@ -176,6 +214,107 @@
             max-height: 80px;
             max-width: 100%;
             object-fit: contain;
+        }
+
+        /* صفحة الخانات الثنائية (الماركات) */
+        .brands-container {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .brand-box {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .brand-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a252f;
+            margin-bottom: 10px;
+        }
+
+        .brand-img {
+            max-height: 100px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* صفحة الـ 100 خانة */
+        .items-container {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: #ffffff;
+            border: 2px solid #1a252f;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* 5 خانات أفقية */
+        .horizontal-row {
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            min-height: 55px;
+            display: flex;
+            background-color: #fafafa;
+        }
+
+        /* 4 خانات رأسية */
+        .vertical-col {
+            flex: 1;
+            border-left: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            padding: 2px;
+        }
+
+        .vertical-col:last-child {
+            border-left: none;
+        }
+
+        /* الخانة الرأسية الثانية من جهة اليمين مقسمة 4 خانات أفقية */
+        .vertical-col.split-col {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .sub-horizontal-row {
+            flex: 1;
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .sub-horizontal-row:last-child {
+            border-bottom: none;
         }
 
         @media (max-width: 500px) {
@@ -218,18 +357,45 @@
             Electricity
         </div>
 
-        <!-- الشريط الثاني -->
+        <!-- الشريط الثاني (التاجر) -->
         <div class="merchant-bar">
             التاجر: <span id="display-merchant"></span>
         </div>
 
-        <!-- شبكة المربعات الثلاثين -->
+        <!-- شريط البحث المضاف تحت شريط التاجر -->
+        <div class="search-bar-container">
+            <input type="text" class="search-input" placeholder="بحث...">
+        </div>
+
         <div class="container">
+            <!-- زر العودة -->
+            <button id="backBtn" class="back-btn" onclick="goBack()">← عودة</button>
+
+            <!-- شبكة المربعات الثمانية -->
             <div class="grid-container" id="grid"></div>
+
+            <!-- صفحة الماركات (الخانات الثنائية) -->
+            <div class="brands-container" id="brandsContainer"></div>
+
+            <!-- صفحة الـ 100 خانة -->
+            <div class="items-container" id="itemsContainer"></div>
         </div>
     </div>
 
     <script>
+        let currentState = 'main'; // 'main', 'brands', 'items'
+
+        // الماركات المطلوبة وصورها المحددة
+        const brandsData = [
+            { name: 'Apple', img: '1.jpg' },
+            { name: 'Samsung', img: '3.jpg' },
+            { name: 'Xiaomi', img: '4.jpg' },
+            { name: 'Infinix', img: '5.jpg' },
+            { name: 'Oppo', img: '6.jpg' },
+            { name: 'Vivo', img: '7.jpg' },
+            { name: 'Honor', img: '8.jpg' }
+        ];
+
         function validateAndNavigate() {
             const val1 = document.getElementById('merchant-id').value.trim();
             const val2 = document.getElementById('code-id').value.trim();
@@ -252,6 +418,7 @@
             }
         }
 
+        // توليد المربعات الثمانية
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
@@ -259,6 +426,7 @@
             for (let i = 1; i <= 8; i++) {
                 const box = document.createElement('div');
                 box.className = 'grid-box';
+                box.onclick = function() { openBrandsPage(i); };
                 
                 if (i === 1) {
                     box.innerHTML = `
@@ -290,6 +458,90 @@
                 }
                 
                 grid.appendChild(box);
+            }
+        }
+
+        // فتح صفحة الماركات (الخانات الثنائية)
+        function openBrandsPage(boxIndex) {
+            document.getElementById('grid').style.display = 'none';
+            const brandsContainer = document.getElementById('brandsContainer');
+            brandsContainer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+            currentState = 'brands';
+
+            brandsContainer.innerHTML = '';
+            brandsData.forEach(brand => {
+                const brandDiv = document.createElement('div');
+                brandDiv.className = 'brand-box';
+                brandDiv.onclick = function() { open100ItemsPage(brand.name); };
+                brandDiv.innerHTML = `
+                    <div class="brand-title">${brand.name}</div>
+                    <img src="${brand.img}" alt="${brand.name}" class="brand-img">
+                `;
+                brandsContainer.appendChild(brandDiv);
+            });
+        }
+
+        // فتح صفحة الـ 100 خانة
+        function open100ItemsPage(brandName) {
+            document.getElementById('brandsContainer').style.display = 'none';
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.style.display = 'flex';
+            currentState = 'items';
+
+            if (itemsContainer.innerHTML === '') {
+                generate100Items();
+            }
+        }
+
+        // إنشاء الـ 100 خانة بالتقسيم الهندسي المطلوب
+        function generate100Items() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            let html = '';
+
+            for (let i = 1; i <= 100; i++) {
+                html += `<div class="item-card">`;
+                
+                // 5 خانات أفقية
+                for (let h = 1; h <= 5; h++) {
+                    html += `<div class="horizontal-row">`;
+                    
+                    // 4 خانات رأسية (الترتيب RTL: v=1 اليمين, v=2 الثاني من اليمين)
+                    for (let v = 1; v <= 4; v++) {
+                        if (v === 2) {
+                            // الخانة الرأسية الثانية من جهة اليمين مقسمة 4 خانات أفقية
+                            html += `
+                                <div class="vertical-col split-col">
+                                    <div class="sub-horizontal-row"></div>
+                                    <div class="sub-horizontal-row"></div>
+                                    <div class="sub-horizontal-row"></div>
+                                    <div class="sub-horizontal-row"></div>
+                                </div>`;
+                        } else {
+                            html += `<div class="vertical-col"></div>`;
+                        }
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
+            }
+
+            itemsContainer.innerHTML = html;
+        }
+
+        // التحكم بزر العودة
+        function goBack() {
+            if (currentState === 'items') {
+                document.getElementById('itemsContainer').style.display = 'none';
+                document.getElementById('brandsContainer').style.display = 'flex';
+                currentState = 'brands';
+            } else if (currentState === 'brands') {
+                document.getElementById('brandsContainer').style.display = 'none';
+                document.getElementById('grid').style.display = 'grid';
+                document.getElementById('backBtn').style.display = 'none';
+                currentState = 'main';
             }
         }
     </script>
