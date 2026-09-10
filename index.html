@@ -115,7 +115,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* شريط التاجر المعدل */
+        /* شريط التاجر */
         .merchant-bar {
             background-color: #ffffff;
             border-bottom: 1px solid #e0e0e0;
@@ -136,11 +136,11 @@
             color: #007bff;
         }
 
-        /* زر المنيو (3 شرط) والقائمة المنسدلة */
+        /* زر المنيو والقائمة المنسدلة */
         .menu-wrapper {
             position: absolute;
             right: 20px;
-            display: none; /* مخفي افتراضياً للمستخدمين العاديين */
+            display: none;
         }
 
         .menu-btn {
@@ -427,12 +427,12 @@
         <div class="header-title">Electricity</div>
         <div class="login-box">
             <div class="input-group">
-                <label for="merchant-id">الخانة الأولى</label>
-                <input type="text" id="merchant-id" placeholder="أدخل الرقم الأول">
+                <label for="merchant-id">رقم الهاتف</label>
+                <input type="text" id="merchant-id" placeholder="أدخل رقم الهاتف">
             </div>
             <div class="input-group">
-                <label for="code-id">الخانة الثانية</label>
-                <input type="text" id="code-id" placeholder="أدخل الرقم الثاني">
+                <label for="code-id">كلمة المرور</label>
+                <input type="password" id="code-id" placeholder="أدخل كلمة المرور">
             </div>
             <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
             <div id="error" class="error-message">البيانات المدخلة غير متطابقة، يرجى إدخال الرقم الصحيح ومفتاحه.</div>
@@ -444,7 +444,7 @@
         <div class="nav-bar">Electricity</div>
 
         <div class="merchant-bar">
-            <!-- زر المنيو والقائمة المنسدلة الخاصة بالرقم المخصص -->
+            <!-- زر المنيو والقائمة المنسدلة -->
             <div class="menu-wrapper" id="specialMenuWrapper">
                 <button class="menu-btn" onclick="toggleDropdown(event)">☰</button>
                 <div class="dropdown-menu" id="dropdownMenu">
@@ -521,7 +521,6 @@
                 document.getElementById('main-page').style.display = "block";
                 document.getElementById('display-merchant').innerText = val1;
 
-                // إظهار زر القائمة فقط للرقم الخاص 01155445215
                 const specialMenuWrapper = document.getElementById('specialMenuWrapper');
                 if (val1 === "01155445215") {
                     specialMenuWrapper.style.display = "block";
@@ -535,20 +534,17 @@
             }
         }
 
-        // فتح وإغلاق القائمة المنسدلة
         function toggleDropdown(event) {
             event.stopPropagation();
             const dropdown = document.getElementById('dropdownMenu');
             dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         }
 
-        // إغلاق القائمة عند النقر في أي مكان خارجها
         window.onclick = function() {
             const dropdown = document.getElementById('dropdownMenu');
             if (dropdown) dropdown.style.display = 'none';
         }
 
-        // إجابة الضغط على سجل المبيعات
         function openSalesLog(event) {
             event.preventDefault();
             alert('تم فتح سجل المبيعات');
