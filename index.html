@@ -255,6 +255,7 @@
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
+            
             for (let i = 1; i <= 30; i++) {
                 const box = document.createElement('div');
                 box.className = 'grid-box';
@@ -263,11 +264,11 @@
                     box.innerHTML = `
                         <span class="box-title">شاشة</span>
                         <img src="./screen.jpg" alt="شاشة" class="box-img">
-                        
-                if (i === 2) {
+                    `;
+                } else if (i === 2) {
                     box.innerHTML = `
                         <span class="box-title">بطارية</span>
-                        <img src="./battery.jpg" alt="بطارية" class="box-img">        
+                        <img src="./battery.jpg" alt="بطارية" class="box-img">
                     `;
                 } else {
                     box.innerText = `مربع ${i}`;
