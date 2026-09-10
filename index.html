@@ -131,7 +131,7 @@
             color: #007bff;
         }
 
-        /* شريط البحث المضاف تحت شريط التاجر */
+        /* شريط البحث */
         .search-bar-container {
             background-color: #ffffff;
             padding: 10px 20px;
@@ -160,7 +160,7 @@
             padding: 0 15px;
         }
 
-        /* زر العودة للخلف */
+        /* زر العودة */
         .back-btn {
             display: none;
             margin-bottom: 15px;
@@ -210,7 +210,6 @@
             color: #1a252f;
         }
 
-        /* تعديل مقاس صورة المربعات الرئيسية لتوحيد الحجم */
         .box-img {
             width: 80px;
             height: 80px;
@@ -249,7 +248,6 @@
             margin-bottom: 10px;
         }
 
-        /* تعديل مقاس صورة الماركات لتوحيد مساحتها وحجمها */
         .brand-img {
             width: 110px;
             height: 110px;
@@ -276,7 +274,6 @@
             gap: 6px;
         }
 
-        /* 5 خانات أفقية */
         .horizontal-row {
             border: 1px solid #aaa;
             border-radius: 4px;
@@ -285,7 +282,6 @@
             background-color: #fafafa;
         }
 
-        /* 4 خانات رأسية */
         .vertical-col {
             flex: 1;
             border-left: 1px solid #ccc;
@@ -300,7 +296,6 @@
             border-left: none;
         }
 
-        /* الخانة الرأسية الثانية من جهة اليمين مقسمة 4 خانات أفقية */
         .vertical-col.split-col {
             display: flex;
             flex-direction: column;
@@ -320,6 +315,46 @@
 
         .sub-horizontal-row:last-child {
             border-bottom: none;
+        }
+
+        /* نتائج البحث الشامل */
+        .search-results-container {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-result-item {
+            background-color: #ffffff;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .search-result-item:hover {
+            background-color: #f0f7ff;
+        }
+
+        .search-result-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .search-result-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a252f;
+        }
+
+        .search-result-path {
+            font-size: 13px;
+            color: #666;
         }
 
         @media (max-width: 500px) {
@@ -343,7 +378,7 @@
 </head>
 <body>
 
-    <!-- صفحة البداية -->
+    <!-- صفحة الدخول -->
     <div id="login-page">
         <div class="header-title">Electricity</div>
         <div class="login-box">
@@ -360,42 +395,52 @@
         </div>
     </div>
 
-    <!-- صفحة العرض -->
+    <!-- صفحة العرض الرئيسية -->
     <div id="main-page">
-        <!-- الشريط الأول -->
-        <div class="nav-bar">
-            Electricity
-        </div>
+        <div class="nav-bar">Electricity</div>
 
-        <!-- الشريط الثاني (التاجر) -->
         <div class="merchant-bar">
             التاجر: <span id="display-merchant"></span>
         </div>
 
-        <!-- شريط البحث المضاف تحت شريط التاجر -->
+        <!-- شريط البحث الشامل -->
         <div class="search-bar-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="بحث..." oninput="handleSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث في كافة الأقسام والماركات..." oninput="globalSearch()">
         </div>
 
         <div class="container">
-            <!-- زر العودة -->
             <button id="backBtn" class="back-btn" onclick="goBack()">← عودة</button>
 
-            <!-- شبكة المربعات الثمانية -->
+            <!-- المربعات الرئيسية -->
             <div class="grid-container" id="grid"></div>
 
-            <!-- صفحة الماركات (الخانات الثنائية) -->
+            <!-- الماركات -->
             <div class="brands-container" id="brandsContainer"></div>
 
-            <!-- صفحة الـ 100 خانة -->
+            <!-- الـ 100 خانة -->
             <div class="items-container" id="itemsContainer"></div>
+
+            <!-- حاوية نتائج البحث الشامل -->
+            <div class="search-results-container" id="searchResultsContainer"></div>
         </div>
     </div>
 
     <script>
-        let currentState = 'main'; // 'main', 'brands', 'items'
+        let currentState = 'main'; 
 
-        // الماركات المطلوبة وصورها المحددة
+        // بيانات الأقسام الرئيسية
+        const categoriesData = [
+            { id: 1, name: 'شاشة', img: './screen.jpg' },
+            { id: 2, name: 'بطارية', img: './battery.jpg' },
+            { id: 3, name: 'فلاتة ربط', img: './flex.jpg' },
+            { id: 4, name: 'فلاتة باور', img: './power flex.jpg' },
+            { id: 5, name: 'فلاتة شحن', img: './charging flex.jpg' },
+            { id: 6, name: 'مربع 6', img: '' },
+            { id: 7, name: 'مربع 7', img: '' },
+            { id: 8, name: 'مربع 8', img: '' }
+        ];
+
+        // بيانات الماركات
         const brandsData = [
             { name: 'Apple', img: 'apple.png' },
             { name: 'Samsung', img: 'samsung.png' },
@@ -411,7 +456,6 @@
             const val2 = document.getElementById('code-id').value.trim();
             const errorMsg = document.getElementById('error');
 
-            // تحقق من المطابقة بين الرقم وأخيه المخصص
             const isPair1 = (val1 === "01155445544" && val2 === "0022");
             const isPair2 = (val1 === "01155445215" && val2 === "0000");
             const isPair3 = (val1 === "01119129158" && val2 === "1100");
@@ -428,57 +472,33 @@
             }
         }
 
-        // توليد المربعات الثمانية
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
             
-            for (let i = 1; i <= 8; i++) {
+            categoriesData.forEach(cat => {
                 const box = document.createElement('div');
                 box.className = 'grid-box';
-                box.onclick = function() { openBrandsPage(i); };
+                box.onclick = function() { openBrandsPage(cat.id); };
                 
-                if (i === 1) {
+                if (cat.img) {
                     box.innerHTML = `
-                        <span class="box-title">شاشة</span>
-                        <img src="./screen.jpg" alt="شاشة" class="box-img">
-                    `;
-                } else if (i === 2) {
-                    box.innerHTML = `
-                        <span class="box-title">بطارية</span>
-                        <img src="./battery.jpg" alt="بطارية" class="box-img">
-                    `;
-                } else if (i === 3) {
-                    box.innerHTML = `
-                        <span class="box-title">فلاتة ربط</span>
-                        <img src="./flex.jpg" alt="فلاتة ربط" class="box-img">
-                    `;
-                } else if (i === 4) {
-                    box.innerHTML = `
-                        <span class="box-title">فلاتة باور</span>
-                        <img src="./power flex.jpg" alt="فلاتة باور" class="box-img">
-                    `;
-                } else if (i === 5) {
-                    box.innerHTML = `
-                        <span class="box-title">فلاتة شحن</span>
-                        <img src="./charging flex.jpg" alt="فلاتة شحن" class="box-img">
+                        <span class="box-title">${cat.name}</span>
+                        <img src="${cat.img}" alt="${cat.name}" class="box-img">
                     `;
                 } else {
-                    box.innerText = `مربع ${i}`;
+                    box.innerText = cat.name;
                 }
-                
                 grid.appendChild(box);
-            }
+            });
         }
 
-        // فتح صفحة الماركات (الخانات الثنائية)
-        function openBrandsPage(boxIndex) {
-            document.getElementById('grid').style.display = 'none';
+        function openBrandsPage(catId) {
+            hideAllContainers();
             const brandsContainer = document.getElementById('brandsContainer');
             brandsContainer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'brands';
-            resetSearchInput();
 
             brandsContainer.innerHTML = '';
             brandsData.forEach(brand => {
@@ -493,35 +513,28 @@
             });
         }
 
-        // فتح صفحة الـ 100 خانة
         function open100ItemsPage(brandName) {
-            document.getElementById('brandsContainer').style.display = 'none';
+            hideAllContainers();
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
             currentState = 'items';
-            resetSearchInput();
 
             if (itemsContainer.innerHTML === '') {
                 generate100Items();
             }
         }
 
-        // إنشاء الـ 100 خانة بالتقسيم الهندسي المطلوب
         function generate100Items() {
             const itemsContainer = document.getElementById('itemsContainer');
             let html = '';
 
             for (let i = 1; i <= 100; i++) {
                 html += `<div class="item-card">`;
-                
-                // 5 خانات أفقية
                 for (let h = 1; h <= 5; h++) {
                     html += `<div class="horizontal-row">`;
-                    
-                    // 4 خانات رأسية (الترتيب RTL: v=1 اليمين, v=2 الثاني من اليمين)
                     for (let v = 1; v <= 4; v++) {
                         if (v === 2) {
-                            // الخانة الرأسية الثانية من جهة اليمين مقسمة 4 خانات أفقية
                             html += `
                                 <div class="vertical-col split-col">
                                     <div class="sub-horizontal-row"></div>
@@ -533,55 +546,107 @@
                             html += `<div class="vertical-col"></div>`;
                         }
                     }
-                    
                     html += `</div>`;
                 }
-                
                 html += `</div>`;
             }
-
             itemsContainer.innerHTML = html;
         }
 
-        // إعادة تصفير مدخل البحث
-        function resetSearchInput() {
-            const input = document.getElementById('searchInput');
-            if (input) {
-                input.value = '';
-                handleSearch();
+        function hideAllContainers() {
+            document.getElementById('grid').style.display = 'none';
+            document.getElementById('brandsContainer').style.display = 'none';
+            document.getElementById('itemsContainer').style.display = 'none';
+            document.getElementById('searchResultsContainer').style.display = 'none';
+        }
+
+        // البحث الشامل في كافة بيانات الموقع
+        function globalSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('searchResultsContainer');
+
+            if (query === '') {
+                // إلغاء البحث والعودة للحالة السابقة
+                resultsContainer.style.display = 'none';
+                restoreStateView();
+                return;
+            }
+
+            hideAllContainers();
+            resultsContainer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+            resultsContainer.innerHTML = '';
+
+            let resultsFound = 0;
+
+            // 1. البحث في الأقسام الرئيسية
+            categoriesData.forEach(cat => {
+                if (cat.name.toLowerCase().includes(query)) {
+                    resultsFound++;
+                    resultsContainer.appendChild(createResultCard(
+                        cat.name,
+                        'قسم رئيسي',
+                        () => {
+                            document.getElementById('searchInput').value = '';
+                            openBrandsPage(cat.id);
+                        }
+                    ));
+                }
+            });
+
+            // 2. البحث في الماركات (ربط الماركات بكافة الأقسام)
+            brandsData.forEach(brand => {
+                if (brand.name.toLowerCase().includes(query)) {
+                    categoriesData.forEach(cat => {
+                        resultsFound++;
+                        resultsContainer.appendChild(createResultCard(
+                            `${brand.name} - ${cat.name}`,
+                            `ماركة ضمن قسم: ${cat.name}`,
+                            () => {
+                                document.getElementById('searchInput').value = '';
+                                open100ItemsPage(brand.name);
+                            }
+                        ));
+                    });
+                }
+            });
+
+            if (resultsFound === 0) {
+                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
             }
         }
 
-        // دالة التصفية والبحث الفوري
-        function handleSearch() {
-            const filter = document.getElementById('searchInput').value.trim().toLowerCase();
+        function createResultCard(title, path, onClickAction) {
+            const div = document.createElement('div');
+            div.className = 'search-result-item';
+            div.onclick = onClickAction;
+            div.innerHTML = `
+                <div class="search-result-info">
+                    <div class="search-result-title">${title}</div>
+                    <div class="search-result-path">${path}</div>
+                </div>
+                <div style="color: #007bff; font-weight: bold;">انتقال ←</div>
+            `;
+            return div;
+        }
 
+        function restoreStateView() {
             if (currentState === 'main') {
-                const boxes = document.querySelectorAll('#grid .grid-box');
-                boxes.forEach(box => {
-                    const text = box.innerText.toLowerCase();
-                    if (text.includes(filter)) {
-                        box.style.display = "flex";
-                    } else {
-                        box.style.display = "none";
-                    }
-                });
+                document.getElementById('grid').style.display = 'grid';
+                document.getElementById('backBtn').style.display = 'none';
             } else if (currentState === 'brands') {
-                const brands = document.querySelectorAll('#brandsContainer .brand-box');
-                brands.forEach(brand => {
-                    const text = brand.innerText.toLowerCase();
-                    if (text.includes(filter)) {
-                        brand.style.display = "flex";
-                    } else {
-                        brand.style.display = "none";
-                    }
-                });
+                document.getElementById('brandsContainer').style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
+            } else if (currentState === 'items') {
+                document.getElementById('itemsContainer').style.display = 'flex';
+                document.getElementById('backBtn').style.display = 'block';
             }
         }
 
-        // التحكم بزر العودة
         function goBack() {
-            resetSearchInput();
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResultsContainer').style.display = 'none';
+
             if (currentState === 'items') {
                 document.getElementById('itemsContainer').style.display = 'none';
                 document.getElementById('brandsContainer').style.display = 'flex';
