@@ -317,48 +317,36 @@
             border-bottom: none;
         }
 
-        /* نتائج البحث الشامل */
+        /* حاوية نتائج البحث المباشرة (عرض الخانات) */
         .search-results-container {
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 20px;
         }
 
-        .search-result-item {
-            background-color: #ffffff;
-            border: 1px solid #007bff;
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .search-result-item:hover {
-            background-color: #f0f7ff;
-        }
-
-        .search-result-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .search-result-title {
+        .search-section-title {
             font-size: 16px;
             font-weight: bold;
-            color: #1a252f;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
 
-        .search-result-path {
-            font-size: 13px;
-            color: #666;
+        .search-grid-wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .search-brands-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         @media (max-width: 500px) {
-            .grid-container {
+            .grid-container, .search-grid-wrapper {
                 gap: 12px;
             }
             .grid-box {
@@ -420,7 +408,7 @@
             <!-- الـ 100 خانة -->
             <div class="items-container" id="itemsContainer"></div>
 
-            <!-- حاوية نتائج البحث الشامل -->
+            <!-- حاوية نتائج البحث الشامل التي تعرض الخانات الفعلية -->
             <div class="search-results-container" id="searchResultsContainer"></div>
         </div>
     </div>
@@ -472,24 +460,44 @@
             }
         }
 
+        function createCategoryBoxElement(cat) {
+            const box = document.createElement('div');
+            box.className = 'grid-box';
+            box.onclick = function() { 
+                document.getElementById('searchInput').value = '';
+                openBrandsPage(cat.id); 
+            };
+            
+            if (cat.img) {
+                box.innerHTML = `
+                    <span class="box-title">${cat.name}</span>
+                    <img src="${cat.img}" alt="${cat.name}" class="box-img">
+                `;
+            } else {
+                box.innerText = cat.name;
+            }
+            return box;
+        }
+
+        function createBrandBoxElement(brand) {
+            const brandDiv = document.createElement('div');
+            brandDiv.className = 'brand-box';
+            brandDiv.onclick = function() { 
+                document.getElementById('searchInput').value = '';
+                open100ItemsPage(brand.name); 
+            };
+            brandDiv.innerHTML = `
+                <div class="brand-title">${brand.name}</div>
+                <img src="${brand.img}" alt="${brand.name}" class="brand-img">
+            `;
+            return brandDiv;
+        }
+
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
-            
             categoriesData.forEach(cat => {
-                const box = document.createElement('div');
-                box.className = 'grid-box';
-                box.onclick = function() { openBrandsPage(cat.id); };
-                
-                if (cat.img) {
-                    box.innerHTML = `
-                        <span class="box-title">${cat.name}</span>
-                        <img src="${cat.img}" alt="${cat.name}" class="box-img">
-                    `;
-                } else {
-                    box.innerText = cat.name;
-                }
-                grid.appendChild(box);
+                grid.appendChild(createCategoryBoxElement(cat));
             });
         }
 
@@ -502,14 +510,7 @@
 
             brandsContainer.innerHTML = '';
             brandsData.forEach(brand => {
-                const brandDiv = document.createElement('div');
-                brandDiv.className = 'brand-box';
-                brandDiv.onclick = function() { open100ItemsPage(brand.name); };
-                brandDiv.innerHTML = `
-                    <div class="brand-title">${brand.name}</div>
-                    <img src="${brand.img}" alt="${brand.name}" class="brand-img">
-                `;
-                brandsContainer.appendChild(brandDiv);
+                brandsContainer.appendChild(createBrandBoxElement(brand));
             });
         }
 
@@ -560,7 +561,6 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        // دالة تنظيف وتوحيد النصوص للبحث (إزالة المسافات الزائدة وتحويل الأحرف لـ Small)
         function normalizeText(text) {
             return text
                 .toLowerCase()
@@ -568,21 +568,19 @@
                 .trim();
         }
 
-        // دالة التأكد من تطابق النص حتى لو كانت الكلمات تفصل بينها مسافات متغيرة
         function isMatch(sourceText, queryText) {
             const cleanSource = normalizeText(sourceText);
             const cleanQuery = normalizeText(queryText);
 
             if (!cleanQuery) return false;
 
-            // إزالة كافة المسافات تماماً للمقارنة والمرونة
             const compactSource = cleanSource.replace(/\s+/g, '');
             const compactQuery = cleanQuery.replace(/\s+/g, '');
 
             return cleanSource.includes(cleanQuery) || compactSource.includes(compactQuery);
         }
 
-        // البحث الشامل
+        // دالة البحث الشامل المسؤولة عن عرض الخانات نفسها
         function globalSearch() {
             const query = document.getElementById('searchInput').value;
             const resultsContainer = document.getElementById('searchResultsContainer');
@@ -598,57 +596,49 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            let resultsFound = 0;
+            // 1. تجميع الأقسام المتطابقة
+            const matchedCategories = categoriesData.filter(cat => isMatch(cat.name, query));
 
-            // 1. البحث في الأقسام الرئيسية
-            categoriesData.forEach(cat => {
-                if (isMatch(cat.name, query)) {
-                    resultsFound++;
-                    resultsContainer.appendChild(createResultCard(
-                        cat.name,
-                        'قسم رئيسي',
-                        () => {
-                            document.getElementById('searchInput').value = '';
-                            openBrandsPage(cat.id);
-                        }
-                    ));
-                }
-            });
+            // 2. تجميع الماركات المتطابقة
+            const matchedBrands = brandsData.filter(brand => isMatch(brand.name, query));
 
-            // 2. البحث في الماركات
-            brandsData.forEach(brand => {
-                if (isMatch(brand.name, query)) {
-                    categoriesData.forEach(cat => {
-                        resultsFound++;
-                        resultsContainer.appendChild(createResultCard(
-                            `${brand.name} - ${cat.name}`,
-                            `ماركة ضمن قسم: ${cat.name}`,
-                            () => {
-                                document.getElementById('searchInput').value = '';
-                                open100ItemsPage(brand.name);
-                            }
-                        ));
-                    });
-                }
-            });
-
-            if (resultsFound === 0) {
+            if (matchedCategories.length === 0 && matchedBrands.length === 0) {
                 resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
+                return;
             }
-        }
 
-        function createResultCard(title, path, onClickAction) {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.onclick = onClickAction;
-            div.innerHTML = `
-                <div class="search-result-info">
-                    <div class="search-result-title">${title}</div>
-                    <div class="search-result-path">${path}</div>
-                </div>
-                <div style="color: #007bff; font-weight: bold;">انتقال ←</div>
-            `;
-            return div;
+            // عرض الأقسام المباشرة إن وجدت
+            if (matchedCategories.length > 0) {
+                const catTitle = document.createElement('div');
+                catTitle.className = 'search-section-title';
+                catTitle.innerText = 'الأقسام الرئيسية المتطابقة:';
+                resultsContainer.appendChild(catTitle);
+
+                const gridWrapper = document.createElement('div');
+                gridWrapper.className = 'search-grid-wrapper';
+
+                matchedCategories.forEach(cat => {
+                    gridWrapper.appendChild(createCategoryBoxElement(cat));
+                });
+                resultsContainer.appendChild(gridWrapper);
+            }
+
+            // عرض الماركات المباشرة إن وجدت
+            if (matchedBrands.length > 0) {
+                const brandTitle = document.createElement('div');
+                brandTitle.className = 'search-section-title';
+                brandTitle.style.marginTop = '15px';
+                brandTitle.innerText = 'الماركات المتطابقة:';
+                resultsContainer.appendChild(brandTitle);
+
+                const brandsWrapper = document.createElement('div');
+                brandsWrapper.className = 'search-brands-wrapper';
+
+                matchedBrands.forEach(brand => {
+                    brandsWrapper.appendChild(createBrandBoxElement(brand));
+                });
+                resultsContainer.appendChild(brandsWrapper);
+            }
         }
 
         function restoreStateView() {
