@@ -560,13 +560,34 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        // البحث الشامل في كافة بيانات الموقع
+        // دالة تنظيف وتوحيد النصوص للبحث (إزالة المسافات الزائدة وتحويل الأحرف لـ Small)
+        function normalizeText(text) {
+            return text
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // دالة التأكد من تطابق النص حتى لو كانت الكلمات تفصل بينها مسافات متغيرة
+        function isMatch(sourceText, queryText) {
+            const cleanSource = normalizeText(sourceText);
+            const cleanQuery = normalizeText(queryText);
+
+            if (!cleanQuery) return false;
+
+            // إزالة كافة المسافات تماماً للمقارنة والمرونة
+            const compactSource = cleanSource.replace(/\s+/g, '');
+            const compactQuery = cleanQuery.replace(/\s+/g, '');
+
+            return cleanSource.includes(cleanQuery) || compactSource.includes(compactQuery);
+        }
+
+        // البحث الشامل
         function globalSearch() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const query = document.getElementById('searchInput').value;
             const resultsContainer = document.getElementById('searchResultsContainer');
 
-            if (query === '') {
-                // إلغاء البحث والعودة للحالة السابقة
+            if (normalizeText(query) === '') {
                 resultsContainer.style.display = 'none';
                 restoreStateView();
                 return;
@@ -581,7 +602,7 @@
 
             // 1. البحث في الأقسام الرئيسية
             categoriesData.forEach(cat => {
-                if (cat.name.toLowerCase().includes(query)) {
+                if (isMatch(cat.name, query)) {
                     resultsFound++;
                     resultsContainer.appendChild(createResultCard(
                         cat.name,
@@ -594,9 +615,9 @@
                 }
             });
 
-            // 2. البحث في الماركات (ربط الماركات بكافة الأقسام)
+            // 2. البحث في الماركات
             brandsData.forEach(brand => {
-                if (brand.name.toLowerCase().includes(query)) {
+                if (isMatch(brand.name, query)) {
                     categoriesData.forEach(cat => {
                         resultsFound++;
                         resultsContainer.appendChild(createResultCard(
