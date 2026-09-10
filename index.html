@@ -189,7 +189,7 @@
                 <input type="text" id="code-id" placeholder="أدخل الرقم الثاني">
             </div>
             <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
-            <div id="error" class="error-message">الأرقام المدخلة غير صحيحة، يرجى المحاولة مرة أخرى.</div>
+            <div id="error" class="error-message">البيانات المدخلة غير متطابقة، يرجى إدخال الرقم الصحيح ومفتاحه.</div>
         </div>
     </div>
 
@@ -217,7 +217,11 @@
             const val2 = document.getElementById('code-id').value.trim();
             const errorMsg = document.getElementById('error');
 
-            if (val1 === "01155445544" && val2 === "0022") {
+            // تحقق من المطابقة بين الرقم وأخيه المخصص
+            const isPair1 = (val1 === "01155445544" && val2 === "0022");
+            const isPair2 = (val1 === "01155445543" && val2 === "0023");
+
+            if (isPair1 || isPair2) {
                 errorMsg.style.display = "none";
                 document.getElementById('login-page').style.display = "none";
                 document.getElementById('main-page').style.display = "block";
