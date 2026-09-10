@@ -230,7 +230,7 @@
             font-size: 14px;
         }
 
-        /* شبكة المربعات الثمانية */
+        /* شبكة المربعات الموحدة لكل الأقسام (الصفحة الأولى، الماركات، والـ 100 عنصر) */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -272,107 +272,6 @@
             object-fit: contain;
         }
 
-        /* صفحة الخانات الثنائية (الماركات) */
-        .brands-container {
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .brand-box {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-
-        .brand-box:hover {
-            transform: translateY(-2px);
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a252f;
-            margin-bottom: 10px;
-        }
-
-        .brand-img {
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            background-color: #fafafa;
-            border-radius: 6px;
-            padding: 5px;
-        }
-
-        /* صفحة الـ 100 خانة */
-        .items-container {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .item-card {
-            background-color: #ffffff;
-            border: 2px solid #1a252f;
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .horizontal-row {
-            border: 1px solid #aaa;
-            border-radius: 4px;
-            min-height: 55px;
-            display: flex;
-            background-color: #fafafa;
-        }
-
-        .vertical-col {
-            flex: 1;
-            border-left: 1px solid #ccc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            padding: 2px;
-        }
-
-        .vertical-col:last-child {
-            border-left: none;
-        }
-
-        .vertical-col.split-col {
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-        }
-
-        .sub-horizontal-row {
-            flex: 1;
-            width: 100%;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #666;
-        }
-
-        .sub-horizontal-row:last-child {
-            border-bottom: none;
-        }
-
         /* حاوية نتائج البحث */
         .search-results-container {
             display: none;
@@ -389,20 +288,8 @@
             margin-bottom: 10px;
         }
 
-        .search-grid-wrapper {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .search-brands-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
         @media (max-width: 500px) {
-            .grid-container, .search-grid-wrapper {
+            .grid-container {
                 gap: 12px;
             }
             .grid-box {
@@ -412,10 +299,6 @@
             .box-img {
                 width: 60px;
                 height: 60px;
-            }
-            .brand-img {
-                width: 90px;
-                height: 90px;
             }
         }
     </style>
@@ -468,11 +351,11 @@
             <!-- المربعات الرئيسية -->
             <div class="grid-container" id="grid"></div>
 
-            <!-- الماركات -->
-            <div class="brands-container" id="brandsContainer"></div>
+            <!-- الماركات (بنظام مربعات الشبكة) -->
+            <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- الـ 100 خانة -->
-            <div class="items-container" id="itemsContainer"></div>
+            <!-- الـ 100 خانة (بنظام مربعات الشبكة) -->
+            <div class="grid-container" id="itemsContainer" style="display: none;"></div>
 
             <!-- حاوية نتائج البحث الشامل -->
             <div class="search-results-container" id="searchResultsContainer"></div>
@@ -571,17 +454,22 @@
         }
 
         function createBrandBoxElement(brand) {
-            const brandDiv = document.createElement('div');
-            brandDiv.className = 'brand-box';
-            brandDiv.onclick = function() { 
+            const box = document.createElement('div');
+            box.className = 'grid-box';
+            box.onclick = function() { 
                 document.getElementById('searchInput').value = '';
                 open100ItemsPage(brand.name); 
             };
-            brandDiv.innerHTML = `
-                <div class="brand-title">${brand.name}</div>
-                <img src="${brand.img}" alt="${brand.name}" class="brand-img">
-            `;
-            return brandDiv;
+
+            if (brand.img) {
+                box.innerHTML = `
+                    <span class="box-title">${brand.name}</span>
+                    <img src="${brand.img}" alt="${brand.name}" class="box-img">
+                `;
+            } else {
+                box.innerText = brand.name;
+            }
+            return box;
         }
 
         function generateBoxes() {
@@ -595,7 +483,7 @@
         function openBrandsPage(catId) {
             hideAllContainers();
             const brandsContainer = document.getElementById('brandsContainer');
-            brandsContainer.style.display = 'flex';
+            brandsContainer.style.display = 'grid';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'brands';
 
@@ -608,7 +496,7 @@
         function open100ItemsPage(brandName) {
             hideAllContainers();
             const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.style.display = 'flex';
+            itemsContainer.style.display = 'grid';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'items';
 
@@ -619,30 +507,14 @@
 
         function generate100Items() {
             const itemsContainer = document.getElementById('itemsContainer');
-            let html = '';
+            itemsContainer.innerHTML = '';
 
             for (let i = 1; i <= 100; i++) {
-                html += `<div class="item-card">`;
-                for (let h = 1; h <= 5; h++) {
-                    html += `<div class="horizontal-row">`;
-                    for (let v = 1; v <= 4; v++) {
-                        if (v === 2) {
-                            html += `
-                                <div class="vertical-col split-col">
-                                    <div class="sub-horizontal-row"></div>
-                                    <div class="sub-horizontal-row"></div>
-                                    <div class="sub-horizontal-row"></div>
-                                    <div class="sub-horizontal-row"></div>
-                                </div>`;
-                        } else {
-                            html += `<div class="vertical-col"></div>`;
-                        }
-                    }
-                    html += `</div>`;
-                }
-                html += `</div>`;
+                const box = document.createElement('div');
+                box.className = 'grid-box';
+                box.innerText = `عنصر ${i}`;
+                itemsContainer.appendChild(box);
             }
-            itemsContainer.innerHTML = html;
         }
 
         function hideAllContainers() {
@@ -701,7 +573,7 @@
                 resultsContainer.appendChild(catTitle);
 
                 const gridWrapper = document.createElement('div');
-                gridWrapper.className = 'search-grid-wrapper';
+                gridWrapper.className = 'grid-container';
 
                 matchedCategories.forEach(cat => {
                     gridWrapper.appendChild(createCategoryBoxElement(cat));
@@ -717,7 +589,7 @@
                 resultsContainer.appendChild(brandTitle);
 
                 const brandsWrapper = document.createElement('div');
-                brandsWrapper.className = 'search-brands-wrapper';
+                brandsWrapper.className = 'grid-container';
 
                 matchedBrands.forEach(brand => {
                     brandsWrapper.appendChild(createBrandBoxElement(brand));
@@ -731,10 +603,10 @@
                 document.getElementById('grid').style.display = 'grid';
                 document.getElementById('backBtn').style.display = 'none';
             } else if (currentState === 'brands') {
-                document.getElementById('brandsContainer').style.display = 'flex';
+                document.getElementById('brandsContainer').style.display = 'grid';
                 document.getElementById('backBtn').style.display = 'block';
             } else if (currentState === 'items') {
-                document.getElementById('itemsContainer').style.display = 'flex';
+                document.getElementById('itemsContainer').style.display = 'grid';
                 document.getElementById('backBtn').style.display = 'block';
             }
         }
@@ -745,7 +617,7 @@
 
             if (currentState === 'items') {
                 document.getElementById('itemsContainer').style.display = 'none';
-                document.getElementById('brandsContainer').style.display = 'flex';
+                document.getElementById('brandsContainer').style.display = 'grid';
                 currentState = 'brands';
             } else if (currentState === 'brands') {
                 document.getElementById('brandsContainer').style.display = 'none';
