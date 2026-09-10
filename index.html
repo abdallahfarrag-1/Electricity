@@ -115,19 +115,75 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        /* شريط التاجر المعدل */
         .merchant-bar {
             background-color: #ffffff;
             border-bottom: 1px solid #e0e0e0;
-            padding: 15px 20px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
             font-size: 18px;
             font-weight: bold;
+            position: relative;
+        }
+
+        .merchant-info {
+            margin: 0 auto;
         }
 
         .merchant-bar span {
+            color: #007bff;
+        }
+
+        /* زر المنيو (3 شرط) والقائمة المنسدلة */
+        .menu-wrapper {
+            position: absolute;
+            right: 20px;
+            display: none; /* مخفي افتراضياً للمستخدمين العاديين */
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #1a252f;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .menu-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 110%;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            font-weight: normal;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f6f8;
             color: #007bff;
         }
 
@@ -317,7 +373,7 @@
             border-bottom: none;
         }
 
-        /* حاوية نتائج البحث المباشرة (عرض الخانات) */
+        /* حاوية نتائج البحث */
         .search-results-container {
             display: none;
             flex-direction: column;
@@ -388,7 +444,17 @@
         <div class="nav-bar">Electricity</div>
 
         <div class="merchant-bar">
-            التاجر: <span id="display-merchant"></span>
+            <!-- زر المنيو والقائمة المنسدلة الخاصة بالرقم المخصص -->
+            <div class="menu-wrapper" id="specialMenuWrapper">
+                <button class="menu-btn" onclick="toggleDropdown(event)">☰</button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" onclick="openSalesLog(event)">سجل المبيعات</a>
+                </div>
+            </div>
+
+            <div class="merchant-info">
+                التاجر: <span id="display-merchant"></span>
+            </div>
         </div>
 
         <!-- شريط البحث الشامل -->
@@ -408,7 +474,7 @@
             <!-- الـ 100 خانة -->
             <div class="items-container" id="itemsContainer"></div>
 
-            <!-- حاوية نتائج البحث الشامل التي تعرض الخانات الفعلية -->
+            <!-- حاوية نتائج البحث الشامل -->
             <div class="search-results-container" id="searchResultsContainer"></div>
         </div>
     </div>
@@ -454,10 +520,39 @@
                 document.getElementById('login-page').style.display = "none";
                 document.getElementById('main-page').style.display = "block";
                 document.getElementById('display-merchant').innerText = val1;
+
+                // إظهار زر القائمة فقط للرقم الخاص 01155445215
+                const specialMenuWrapper = document.getElementById('specialMenuWrapper');
+                if (val1 === "01155445215") {
+                    specialMenuWrapper.style.display = "block";
+                } else {
+                    specialMenuWrapper.style.display = "none";
+                }
+
                 generateBoxes();
             } else {
                 errorMsg.style.display = "block";
             }
+        }
+
+        // فتح وإغلاق القائمة المنسدلة
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // إغلاق القائمة عند النقر في أي مكان خارجها
+        window.onclick = function() {
+            const dropdown = document.getElementById('dropdownMenu');
+            if (dropdown) dropdown.style.display = 'none';
+        }
+
+        // إجابة الضغط على سجل المبيعات
+        function openSalesLog(event) {
+            event.preventDefault();
+            alert('تم فتح سجل المبيعات');
+            document.getElementById('dropdownMenu').style.display = 'none';
         }
 
         function createCategoryBoxElement(cat) {
@@ -580,7 +675,6 @@
             return cleanSource.includes(cleanQuery) || compactSource.includes(compactQuery);
         }
 
-        // دالة البحث الشامل المسؤولة عن عرض الخانات نفسها
         function globalSearch() {
             const query = document.getElementById('searchInput').value;
             const resultsContainer = document.getElementById('searchResultsContainer');
@@ -596,10 +690,7 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            // 1. تجميع الأقسام المتطابقة
             const matchedCategories = categoriesData.filter(cat => isMatch(cat.name, query));
-
-            // 2. تجميع الماركات المتطابقة
             const matchedBrands = brandsData.filter(brand => isMatch(brand.name, query));
 
             if (matchedCategories.length === 0 && matchedBrands.length === 0) {
@@ -607,7 +698,6 @@
                 return;
             }
 
-            // عرض الأقسام المباشرة إن وجدت
             if (matchedCategories.length > 0) {
                 const catTitle = document.createElement('div');
                 catTitle.className = 'search-section-title';
@@ -623,7 +713,6 @@
                 resultsContainer.appendChild(gridWrapper);
             }
 
-            // عرض الماركات المباشرة إن وجدت
             if (matchedBrands.length > 0) {
                 const brandTitle = document.createElement('div');
                 brandTitle.className = 'search-section-title';
