@@ -161,7 +161,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* شريط التاجر */
         .merchant-bar {
             background-color: #ffffff;
             border-bottom: 1px solid #e0e0e0;
@@ -182,7 +181,6 @@
             color: #007bff;
         }
 
-        /* زر المنيو والقائمة المنسدلة */
         .menu-wrapper {
             position: absolute;
             right: 20px;
@@ -233,7 +231,6 @@
             color: #007bff;
         }
 
-        /* شريط البحث */
         .search-section {
             background-color: #ffffff;
             padding: 15px 20px;
@@ -244,12 +241,10 @@
             gap: 10px;
         }
 
-        .camera-search-btn {
+        .action-btn {
             width: 100%;
             max-width: 900px;
-            padding: 10px;
-            background-color: #17a2b8;
-            color: white;
+            padding: 11px;
             border: none;
             border-radius: 6px;
             font-size: 15px;
@@ -259,7 +254,36 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.99);
+        }
+
+        .voice-search-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .voice-search-btn:hover {
+            background-color: #218838;
+        }
+
+        .voice-search-btn.listening {
+            background-color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .camera-search-btn {
+            background-color: #17a2b8;
+            color: white;
         }
 
         .camera-search-btn:hover {
@@ -286,7 +310,6 @@
             padding: 0 15px;
         }
 
-        /* زر العودة */
         .back-btn {
             display: none;
             margin-bottom: 15px;
@@ -300,7 +323,6 @@
             font-size: 14px;
         }
 
-        /* شبكة المربعات الموحدة */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -343,7 +365,6 @@
             object-fit: contain;
         }
 
-        /* حاوية نتائج البحث */
         .search-results-container {
             display: none;
             flex-direction: column;
@@ -398,7 +419,6 @@
                 <span>📝 تسجيل بصمة جديدة</span>
             </button>
 
-            <!-- قائمة البصمات المسجلة -->
             <div class="fingerprint-list" id="fingerprintListContainer">
                 <strong>البصمات المسجلة:</strong>
                 <div id="fingerprintsList">لا توجد بصمات مسجلة حالياً</div>
@@ -413,7 +433,6 @@
         <div class="nav-bar">Electricity</div>
 
         <div class="merchant-bar">
-            <!-- زر المنيو والقائمة المنسدلة -->
             <div class="menu-wrapper" id="specialMenuWrapper">
                 <button class="menu-btn" onclick="toggleDropdown(event)">☰</button>
                 <div class="dropdown-menu" id="dropdownMenu">
@@ -426,93 +445,129 @@
             </div>
         </div>
 
-        <!-- شريط البحث الشامل والبصري -->
         <div class="search-section">
-            <button class="camera-search-btn" onclick="triggerCameraSearch()">
+            <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
                 📷 البحث بالكاميرا
             </button>
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث بكل ذكاء (مثال: بطارية سامسونج A15 أو بطاريه شاومى)..." oninput="globalSearch()">
+            
+            <!-- زر البحث بالصوت فوق خانة الكتابة -->
+            <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
+                🎤 البحث بالصوت (تكلم بالميكروفون)
+            </button>
+
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, 10S, Note 10S Pro)..." oninput="globalSearch()">
         </div>
 
         <div class="container">
             <button id="backBtn" class="back-btn" onclick="goBack()">← عودة</button>
 
-            <!-- المربعات الرئيسية -->
             <div class="grid-container" id="grid"></div>
 
-            <!-- الماركات -->
             <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- الـ 100 خانة -->
             <div class="grid-container" id="itemsContainer" style="display: none;"></div>
 
-            <!-- حاوية نتائج البحث الشامل -->
             <div class="search-results-container" id="searchResultsContainer"></div>
         </div>
     </div>
 
     <script>
         let currentState = 'main'; 
+        let selectedCategory = null;
+        let selectedBrand = null;
 
-        // بيانات الأقسام الرئيسية
         const categoriesData = [
             { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
-            { id: 2, name: 'بطارية', alt: 'battery بطاريه بطاريه', img: './battery.jpg' },
+            { id: 2, name: 'بطارية', alt: 'battery بطاريه', img: './battery.jpg' },
             { id: 3, name: 'فلاتة ربط', alt: 'flex cable فلاته ربط', img: './flex.jpg' },
             { id: 4, name: 'فلاتة باور', alt: 'power flex فلاته باور تشغيل', img: './power flex.jpg' },
-            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحنسوكت', img: './charging flex.jpg' },
-            { id: 6, name: 'مربع 6', alt: '', img: '' },
-            { id: 7, name: 'مربع 7', alt: '', img: '' },
-            { id: 8, name: 'مربع 8', alt: '', img: '' }
+            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحن سوكت', img: './charging flex.jpg' }
         ];
 
-        // بيانات الماركات
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
-            { name: 'Samsung', alt: 'سامسونج سامسونج جالكسي galaxy', img: 'samsung.png' },
-            { name: 'Xiaomi', alt: 'شاومي شاومى ريدمي redmi mi', img: 'xiaomi.jpg' },
-            { name: 'Huawei', alt: 'هواوي هواوى huawei honor', img: 'huawei.png' },
-            { name: 'HTC', alt: 'اتش تي سي اتش تى سى htc', img: 'htc.png' },
-            { name: 'Infinix', alt: 'انفينكس إنفينكس infinix', img: 'infinix.jpg' },
-            { name: 'Oppo', alt: 'أوبو اوبو oppo', img: 'oppo.jpg' },
-            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
-            { name: 'Honor', alt: 'هونر هونور honor', img: 'honor.jpg' }
+            { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
+            { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
+            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.png' }
         ];
 
-        // إنشاء قائمة الـ 100 عنصر
+        const sampleModels = [
+            { model: 'A10', alt: 'ايه 10 ايه10 a10' },
+            { model: 'A12', alt: 'ايه 12 ايه12 a12' },
+            { model: 'A15', alt: 'ايه 15 ايه15 a15' },
+            { model: '10S', alt: '10 اس 10اس 10s' },
+            { model: 'Note 10S', alt: 'نوت 10 اس نوت 10اس نوت10اس note 10s note10s' },
+            { model: 'Note 10S Pro', alt: 'نوت 10 اس برو نوت 10اس برو note 10s pro' },
+            { model: 'S23', alt: 'اس 23 اس23 s23' }
+        ];
+
         const itemsData = [];
-        const sampleModels = ['A15', 'A54', 'S23', 'Redmi Note 13', 'iPhone 13', 'Y9', 'Desire 20'];
         let itemId = 1;
-        
-        categoriesData.slice(0, 5).forEach(cat => {
+
+        categoriesData.forEach(cat => {
             brandsData.forEach(brand => {
-                sampleModels.forEach(model => {
-                    if (itemId <= 100) {
-                        itemsData.push({
-                            id: itemId,
-                            name: `${cat.name} ${brand.name} ${model}`,
-                            category: cat.name,
-                            brand: brand.name,
-                            model: model,
-                            altKeywords: `${cat.alt} ${brand.alt} ${model}`
-                        });
-                        itemId++;
-                    }
+                sampleModels.forEach(mObj => {
+                    itemsData.push({
+                        id: itemId++,
+                        name: `${cat.name} ${brand.name} ${mObj.model}`,
+                        category: cat.name,
+                        brand: brand.name,
+                        model: mObj.model,
+                        altKeywords: `${cat.alt} ${brand.alt} ${mObj.model} ${mObj.alt}`
+                    });
                 });
             });
         });
 
-        while (itemsData.length < 100) {
-            itemsData.push({
-                id: itemsData.length + 1,
-                name: `عنصر ${itemsData.length + 1}`,
-                category: 'عام',
-                brand: 'عام',
-                altKeywords: ''
-            });
+        // ================= محرك البحث بالصوت (Web Speech API) =================
+
+        function startVoiceSearch() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("المتصفح الخاص بك لا يدعم ميزة البحث بالصوت. يرجى تجربة متصفح Google Chrome.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-EG'; // تعيين اللغة العربية المصرية للتعرف على اللهجة والموديلات
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.classList.add('listening');
+            voiceBtn.innerHTML = '🎙️ جاري الاستماع، اتكلم الآن...';
+
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                const spokenText = event.results[0][0].transcript;
+                console.log('Voice Input:', spokenText);
+
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = spokenText;
+                
+                // تشغيل البحث تلقائياً بعد لقط الصوت
+                globalSearch();
+
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech Recognition Error:', event.error);
+                alert("تعذر التقاط الصوت، يرجى المحاولة مرة أخرى والـتأكد من السماح للميكروفون.");
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
+            };
         }
 
-        // ================= نظام البصمة البيومترية الحقيقي (WebAuthn) =================
+        // ================= WebAuthn Biometrics =================
 
         function bufferDecode(value) {
             return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
@@ -546,7 +601,7 @@
                 return;
             }
 
-            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة (مثال: بصمة السبابة):", "بصمة 1");
+            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة:", "بصمة 1");
             if (!fpName) return;
 
             try {
@@ -560,51 +615,32 @@
                     publicKey: {
                         challenge: challenge,
                         rp: { name: "Electricity App" },
-                        user: {
-                            id: userId,
-                            name: "merchant_user",
-                            displayName: "التاجر"
-                        },
+                        user: { id: userId, name: "merchant_user", displayName: "التاجر" },
                         pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        authenticatorSelection: {
-                            authenticatorAttachment: "platform",
-                            userVerification: "required"
-                        },
+                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
                         timeout: 60000
                     }
                 };
 
-                // استدعاء شاشة مستشعر البصمة الرسمية من النظام
                 const credential = await navigator.credentials.create(createCredentialOptions);
 
                 if (credential) {
                     const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-                    const newFp = {
-                        id: bufferEncode(credential.rawId),
-                        name: fpName,
-                        merchantId: "01155445215"
-                    };
-                    savedFps.push(newFp);
+                    savedFps.push({ id: bufferEncode(credential.rawId), name: fpName, merchantId: "01155445215" });
                     localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-
-                    alert(`تم التحقق من بصمتك وتسجيل "${fpName}" بنجاح!`);
+                    alert(`تم تسجيل "${fpName}" بنجاح!`);
                     renderFingerprintsList();
                 }
             } catch (err) {
                 console.error(err);
-                alert("فشلت عملية التسجيل أو تم إلغاء مسح البصمة.");
+                alert("فشلت عملية التسجيل أو تم إلغاء المحاولة.");
             }
         }
 
         async function loginWithFingerprint() {
             const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
             if (savedFps.length === 0) {
-                alert("لم يتم تسجيل أي بصمة بعد. اضغط على 'تسجيل بصمة جديدة' أولاً.");
-                return;
-            }
-
-            if (!window.PublicKeyCredential) {
-                alert("جهازك لا يدعم الدخول بالبصمة.");
+                alert("لم يتم تسجيل أي بصمة بعد.");
                 return;
             }
 
@@ -612,35 +648,23 @@
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
 
-                const allowCredentials = savedFps.map(fp => ({
-                    id: bufferDecode(fp.id),
-                    type: 'public-key'
-                }));
+                const allowCredentials = savedFps.map(fp => ({ id: bufferDecode(fp.id), type: 'public-key' }));
 
-                const getCredentialOptions = {
-                    publicKey: {
-                        challenge: challenge,
-                        allowCredentials: allowCredentials,
-                        userVerification: "required",
-                        timeout: 60000
-                    }
-                };
-
-                // إظهار نافذة مسح البصمة التابعة للهاتف
-                const assertion = await navigator.credentials.get(getCredentialOptions);
+                const assertion = await navigator.credentials.get({
+                    publicKey: { challenge, allowCredentials, userVerification: "required", timeout: 60000 }
+                });
 
                 if (assertion) {
-                    const matchedFp = savedFps[0];
                     document.getElementById('error').style.display = "none";
                     document.getElementById('login-page').style.display = "none";
                     document.getElementById('main-page').style.display = "block";
-                    document.getElementById('display-merchant').innerText = matchedFp.merchantId;
+                    document.getElementById('display-merchant').innerText = savedFps[0].merchantId;
                     document.getElementById('specialMenuWrapper').style.display = "block";
                     generateBoxes();
                 }
             } catch (err) {
                 console.error(err);
-                alert("لم يتم التعرف على البصمة أو تم إلغاء المحاولة.");
+                alert("لم يتم التعرف على البصمة.");
             }
         }
 
@@ -669,13 +693,7 @@
                 document.getElementById('main-page').style.display = "block";
                 document.getElementById('display-merchant').innerText = val1;
 
-                const specialMenuWrapper = document.getElementById('specialMenuWrapper');
-                if (val1 === "01155445215") {
-                    specialMenuWrapper.style.display = "block";
-                } else {
-                    specialMenuWrapper.style.display = "none";
-                }
-
+                document.getElementById('specialMenuWrapper').style.display = (val1 === "01155445215") ? "block" : "none";
                 generateBoxes();
             } else {
                 errorMsg.style.display = "block";
@@ -699,24 +717,20 @@
             document.getElementById('dropdownMenu').style.display = 'none';
         }
 
-        // ================= عناصر الشبكة والصفحات =================
+        // ================= عرض الصفحة والشبكات =================
 
         function createCategoryBoxElement(cat) {
             const box = document.createElement('div');
             box.className = 'grid-box';
             box.onclick = function() { 
                 document.getElementById('searchInput').value = '';
-                openBrandsPage(cat.id); 
+                selectedCategory = cat;
+                openBrandsPage(); 
             };
             
-            if (cat.img) {
-                box.innerHTML = `
-                    <span class="box-title">${cat.name}</span>
-                    <img src="${cat.img}" alt="${cat.name}" class="box-img" onerror="this.style.display='none'">
-                `;
-            } else {
-                box.innerText = cat.name;
-            }
+            box.innerHTML = cat.img ? 
+                `<span class="box-title">${cat.name}</span><img src="${cat.img}" alt="${cat.name}" class="box-img" onerror="this.style.display='none'">` : 
+                cat.name;
             return box;
         }
 
@@ -725,17 +739,13 @@
             box.className = 'grid-box';
             box.onclick = function() { 
                 document.getElementById('searchInput').value = '';
-                open100ItemsPage(brand.name); 
+                selectedBrand = brand;
+                openItemsPage(); 
             };
 
-            if (brand.img) {
-                box.innerHTML = `
-                    <span class="box-title">${brand.name}</span>
-                    <img src="${brand.img}" alt="${brand.name}" class="box-img" onerror="this.style.display='none'">
-                `;
-            } else {
-                box.innerText = brand.name;
-            }
+            box.innerHTML = brand.img ? 
+                `<span class="box-title">${brand.name}</span><img src="${brand.img}" alt="${brand.name}" class="box-img" onerror="this.style.display='none'">` : 
+                brand.name;
             return box;
         }
 
@@ -749,12 +759,10 @@
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
-            categoriesData.forEach(cat => {
-                grid.appendChild(createCategoryBoxElement(cat));
-            });
+            categoriesData.forEach(cat => grid.appendChild(createCategoryBoxElement(cat)));
         }
 
-        function openBrandsPage(catId) {
+        function openBrandsPage() {
             hideAllContainers();
             const brandsContainer = document.getElementById('brandsContainer');
             brandsContainer.style.display = 'grid';
@@ -762,28 +770,26 @@
             currentState = 'brands';
 
             brandsContainer.innerHTML = '';
-            brandsData.forEach(brand => {
-                brandsContainer.appendChild(createBrandBoxElement(brand));
-            });
+            brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxElement(brand)));
         }
 
-        function open100ItemsPage(brandName) {
+        function openItemsPage() {
             hideAllContainers();
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.style.display = 'grid';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'items';
 
-            generate100Items();
-        }
-
-        function generate100Items() {
-            const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.innerHTML = '';
+            const filteredItems = itemsData.filter(item => 
+                item.category === selectedCategory.name && item.brand === selectedBrand.name
+            );
 
-            itemsData.forEach(item => {
-                itemsContainer.appendChild(createItemBoxElement(item));
-            });
+            if (filteredItems.length > 0) {
+                filteredItems.forEach(item => itemsContainer.appendChild(createItemBoxElement(item)));
+            } else {
+                itemsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#777;">لا توجد عناصر مضافة</div>`;
+            }
         }
 
         function hideAllContainers() {
@@ -793,7 +799,7 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        // ================= محرك البحث الذكي للغاية =================
+        // ================= محرك البحث الذكي والدقيق للموديلات =================
 
         function cleanText(text) {
             if (!text) return '';
@@ -807,51 +813,44 @@
                 .trim();
         }
 
-        function levenshteinDistance(a, b) {
-            if (a.length === 0) return b.length;
-            if (b.length === 0) return a.length;
+        // ترجمة صوتية ولفظية شاملة لمختلف الموديلات النطقية باللغة العربية
+        function translateArabicModelQuery(query) {
+            let q = cleanText(query);
+            
+            q = q.replace(/نوت\s*(\d+)\s*اس\s*برو/g, 'note $1s pro');
+            q = q.replace(/نوت\s*(\d+)\s*اس/g, 'note $1s');
+            q = q.replace(/نوت\s*(\d+)/g, 'note $1');
+            q = q.replace(/ايه\s*(\d+)/g, 'a$1');
+            q = q.replace(/اي\s*(\d+)/g, 'a$1');
+            q = q.replace(/اس\s*(\d+)/g, 's$1');
+            q = q.replace(/(\d+)\s*اس/g, '$1s');
 
-            const matrix = [];
-            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            return q;
+        }
 
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1,
-                            matrix[i][j - 1] + 1,
-                            matrix[i - 1][j] + 1
-                        );
-                    }
-                }
+        function isStrictModelMatch(queryToken, targetFullText) {
+            const token = cleanText(queryToken);
+            const target = cleanText(targetFullText);
+
+            if (!token) return false;
+
+            const isModelToken = /^([a-z]*\d+[a-z]*|\d+[a-z]+)$/i.test(token);
+
+            if (isModelToken) {
+                const regex = new RegExp(`(?:^|\\s)${token}(?:$|\\s)`, 'i');
+                return regex.test(target);
             }
-            return matrix[b.length][a.length];
+
+            return target.includes(token);
         }
 
-        function isFuzzyMatch(word, targetStr) {
-            const cleanW = cleanText(word);
-            const cleanTarget = cleanText(targetStr);
-
-            if (!cleanW) return false;
-            if (cleanTarget.includes(cleanW)) return true;
-
-            const targetWords = cleanTarget.split(' ');
-            return targetWords.some(tWord => {
-                if (Math.abs(tWord.length - cleanW.length) > 2) return false;
-                const dist = levenshteinDistance(cleanW, tWord);
-                return dist <= 2;
-            });
-        }
-
-        function isSmartMatch(sourceObject, query) {
-            const cleanQuery = cleanText(query);
-            const queryTokens = cleanQuery.split(' ').filter(t => t.length > 0);
+        function isSmartMatch(sourceObject, rawQuery) {
+            const translatedQuery = translateArabicModelQuery(rawQuery);
+            const queryTokens = translatedQuery.split(' ').filter(t => t.length > 0);
 
             const sourceFullText = cleanText(`${sourceObject.name} ${sourceObject.alt || ''} ${sourceObject.altKeywords || ''}`);
-            return queryTokens.every(token => isFuzzyMatch(token, sourceFullText));
+
+            return queryTokens.every(token => isStrictModelMatch(token, sourceFullText));
         }
 
         function globalSearch() {
@@ -886,10 +885,7 @@
 
                 const gridWrapper = document.createElement('div');
                 gridWrapper.className = 'grid-container';
-
-                matchedCategories.forEach(cat => {
-                    gridWrapper.appendChild(createCategoryBoxElement(cat));
-                });
+                matchedCategories.forEach(cat => gridWrapper.appendChild(createCategoryBoxElement(cat)));
                 resultsContainer.appendChild(gridWrapper);
             }
 
@@ -902,10 +898,7 @@
 
                 const brandsWrapper = document.createElement('div');
                 brandsWrapper.className = 'grid-container';
-
-                matchedBrands.forEach(brand => {
-                    brandsWrapper.appendChild(createBrandBoxElement(brand));
-                });
+                matchedBrands.forEach(brand => brandsWrapper.appendChild(createBrandBoxElement(brand)));
                 resultsContainer.appendChild(brandsWrapper);
             }
 
@@ -918,10 +911,7 @@
 
                 const itemsWrapper = document.createElement('div');
                 itemsWrapper.className = 'grid-container';
-
-                matchedItems.forEach(item => {
-                    itemsWrapper.appendChild(createItemBoxElement(item));
-                });
+                matchedItems.forEach(item => itemsWrapper.appendChild(createItemBoxElement(item)));
                 resultsContainer.appendChild(itemsWrapper);
             }
         }
