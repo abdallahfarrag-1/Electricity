@@ -353,6 +353,17 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
+        .grid-box.empty-box {
+            border: 2px dashed #ccc;
+            background-color: #fcfcfc;
+            cursor: default;
+        }
+
+        .grid-box.empty-box:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
         .box-title {
             margin-bottom: 8px;
             font-size: 16px;
@@ -476,35 +487,61 @@
         let selectedCategory = null;
         let selectedBrand = null;
 
+        // الأقسام متضمنة الخانات الفاضية
         const categoriesData = [
             { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
             { id: 2, name: 'بطارية', alt: 'battery بطاريه', img: './battery.jpg' },
             { id: 3, name: 'فلاتة ربط', alt: 'flex cable فلاته ربط', img: './flex.jpg' },
             { id: 4, name: 'فلاتة باور', alt: 'power flex فلاته باور تشغيل', img: './power flex.jpg' },
-            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحن سوكت', img: './charging flex.jpg' }
+            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحن سوكت', img: './charging flex.jpg' },
+            { id: 6, name: '', alt: '', img: '', isEmpty: true },
+            { id: 7, name: '', alt: '', img: '', isEmpty: true },
+            { id: 8, name: '', alt: '', img: '', isEmpty: true }
         ];
 
+        // قائمة الماركات الكاملة
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
             { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
-            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.png' }
+            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.png' },
+            { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.png' },
+            { name: 'Realme', alt: 'ريلمي realme', img: 'realme.png' },
+            { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.png' },
+            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.png' },
+            { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.png' },
+            { name: 'Honor', alt: 'هونر honor', img: 'honor.png' }
         ];
 
+        // قائمة موسعة للموديلات لتوليد عدد ضخم من العناصر (أكثر من 100 عنصر)
         const sampleModels = [
             { model: 'A10', alt: 'ايه 10 ايه10 a10' },
+            { model: 'A10s', alt: 'ايه 10 اس ايه10اس a10s' },
             { model: 'A12', alt: 'ايه 12 ايه12 a12' },
             { model: 'A15', alt: 'ايه 15 ايه15 a15' },
+            { model: 'A20', alt: 'ايه 20 ايه20 a20' },
+            { model: 'A30', alt: 'ايه 30 ايه30 a30' },
+            { model: 'A50', alt: 'ايه 50 ايه50 a50' },
             { model: '10S', alt: '10 اس 10اس 10s' },
             { model: 'Note 10S', alt: 'نوت 10 اس نوت 10اس نوت10اس note 10s note10s' },
             { model: 'Note 10S Pro', alt: 'نوت 10 اس برو نوت 10اس برو note 10s pro' },
-            { model: 'S23', alt: 'اس 23 اس23 s23' }
+            { model: 'Note 11', alt: 'نوت 11 نوت11 note 11' },
+            { model: 'Note 12', alt: 'نوت 12 نوت12 note 12' },
+            { model: 'S23', alt: 'اس 23 اس23 s23' },
+            { model: 'S24 Ultra', alt: 'اس 24 اولترا s24 ultra' },
+            { model: '11 Pro', alt: '11 برو 11pro' },
+            { model: '12 Pro Max', alt: '12 برو ماكس 12pro max' },
+            { model: '13 Pro Max', alt: '13 برو ماكس 13pro max' },
+            { model: 'Y33s', alt: 'واي 33 اس y33s' },
+            { model: 'C11', alt: 'سي 11 c11' },
+            { model: 'C25', alt: 'سي 25 c25' }
         ];
 
         const itemsData = [];
         let itemId = 1;
 
-        categoriesData.forEach(cat => {
+        // توليد تلقائي لعدد كبير جداً من العناصر
+        categoriesData.filter(c => !c.isEmpty).forEach(cat => {
             brandsData.forEach(brand => {
                 sampleModels.forEach(mObj => {
                     itemsData.push({
@@ -530,7 +567,7 @@
             }
 
             const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-EG'; // تعيين اللغة العربية المصرية للتعرف على اللهجة والموديلات
+            recognition.lang = 'ar-EG'; 
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
@@ -547,7 +584,6 @@
                 const searchInput = document.getElementById('searchInput');
                 searchInput.value = spokenText;
                 
-                // تشغيل البحث تلقائياً بعد لقط الصوت
                 globalSearch();
 
                 voiceBtn.classList.remove('listening');
@@ -721,6 +757,12 @@
 
         function createCategoryBoxElement(cat) {
             const box = document.createElement('div');
+            
+            if (cat.isEmpty) {
+                box.className = 'grid-box empty-box';
+                return box;
+            }
+
             box.className = 'grid-box';
             box.onclick = function() { 
                 document.getElementById('searchInput').value = '';
@@ -813,7 +855,6 @@
                 .trim();
         }
 
-        // ترجمة صوتية ولفظية شاملة لمختلف الموديلات النطقية باللغة العربية
         function translateArabicModelQuery(query) {
             let q = cleanText(query);
             
@@ -868,7 +909,7 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            const matchedCategories = categoriesData.filter(cat => isSmartMatch(cat, query));
+            const matchedCategories = categoriesData.filter(cat => !cat.isEmpty && isSmartMatch(cat, query));
             const matchedBrands = brandsData.filter(brand => isSmartMatch(brand, query));
             const matchedItems = itemsData.filter(item => isSmartMatch(item, query));
 
