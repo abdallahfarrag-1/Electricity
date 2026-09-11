@@ -466,7 +466,7 @@
             { id: 8, name: 'مربع 8', alt: '', img: '' }
         ];
 
-        // بيانات الماركات (مضاف إليها Huawei و HTC)
+        // بيانات الماركات
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج سامسونج جالكسي galaxy', img: 'samsung.png' },
@@ -479,7 +479,7 @@
             { name: 'Honor', alt: 'هونر هونور honor', img: 'honor.jpg' }
         ];
 
-        // إنشاء قائمة الـ 100 عنصر مع نماذج متنوعة للبحث المركب
+        // إنشاء قائمة الـ 100 عنصر
         const itemsData = [];
         const sampleModels = ['A15', 'A54', 'S23', 'Redmi Note 13', 'iPhone 13', 'Y9', 'Desire 20'];
         let itemId = 1;
@@ -502,7 +502,6 @@
             });
         });
 
-        // استكمال باقي الـ 100 عنصر إذا كان هناك نقص
         while (itemsData.length < 100) {
             itemsData.push({
                 id: itemsData.length + 1,
@@ -513,7 +512,16 @@
             });
         }
 
-        // ================= نظام البصمة البيومترية =================
+        // ================= نظام البصمة البيومترية الحقيقي (WebAuthn) =================
+
+        function bufferDecode(value) {
+            return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+        }
+
+        function bufferEncode(value) {
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+                .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+        }
 
         function renderFingerprintsList() {
             const listEl = document.getElementById('fingerprintsList');
@@ -532,43 +540,108 @@
             `).join('');
         }
 
-        function registerFingerprint() {
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة (مثال: بصمة رقم 1):", `بصمة رقم ${savedFps.length + 1}`);
-            
+        async function registerFingerprint() {
+            if (!window.PublicKeyCredential) {
+                alert("متصفحك أو جهازك لا يدعم خاصية البصمة (WebAuthn).");
+                return;
+            }
+
+            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة (مثال: بصمة السبابة):", "بصمة 1");
             if (!fpName) return;
 
-            // استخدام واجهة Biometric WebAuthn أو المحاكاة الآمنة للمتصفح
-            if (window.PublicKeyCredential) {
-                const newFp = {
-                    id: 'fp_' + Date.now(),
-                    name: fpName,
-                    merchantId: '01155445215' // ربط بالمستورد التلقائي
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+
+                const createCredentialOptions = {
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Electricity App" },
+                        user: {
+                            id: userId,
+                            name: "merchant_user",
+                            displayName: "التاجر"
+                        },
+                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform",
+                            userVerification: "required"
+                        },
+                        timeout: 60000
+                    }
                 };
-                savedFps.push(newFp);
-                localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                alert(`تم تسجيل "${fpName}" بنجاح! يمكنك الآن الدخول باستخدام البصمة مباشرة.`);
-                renderFingerprintsList();
-            } else {
-                alert("جهازك لا يدعم مستشعر البصمة البيومترية مباشرة.");
+
+                // استدعاء شاشة مستشعر البصمة الرسمية من النظام
+                const credential = await navigator.credentials.create(createCredentialOptions);
+
+                if (credential) {
+                    const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+                    const newFp = {
+                        id: bufferEncode(credential.rawId),
+                        name: fpName,
+                        merchantId: "01155445215"
+                    };
+                    savedFps.push(newFp);
+                    localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
+
+                    alert(`تم التحقق من بصمتك وتسجيل "${fpName}" بنجاح!`);
+                    renderFingerprintsList();
+                }
+            } catch (err) {
+                console.error(err);
+                alert("فشلت عملية التسجيل أو تم إلغاء مسح البصمة.");
             }
         }
 
-        function loginWithFingerprint() {
+        async function loginWithFingerprint() {
             const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
             if (savedFps.length === 0) {
                 alert("لم يتم تسجيل أي بصمة بعد. اضغط على 'تسجيل بصمة جديدة' أولاً.");
                 return;
             }
 
-            // تنفيذ الدخول المباشر بالبصمة
-            const currentFp = savedFps[0];
-            document.getElementById('error').style.display = "none";
-            document.getElementById('login-page').style.display = "none";
-            document.getElementById('main-page').style.display = "block";
-            document.getElementById('display-merchant').innerText = currentFp.merchantId;
-            document.getElementById('specialMenuWrapper').style.display = "block";
-            generateBoxes();
+            if (!window.PublicKeyCredential) {
+                alert("جهازك لا يدعم الدخول بالبصمة.");
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const allowCredentials = savedFps.map(fp => ({
+                    id: bufferDecode(fp.id),
+                    type: 'public-key'
+                }));
+
+                const getCredentialOptions = {
+                    publicKey: {
+                        challenge: challenge,
+                        allowCredentials: allowCredentials,
+                        userVerification: "required",
+                        timeout: 60000
+                    }
+                };
+
+                // إظهار نافذة مسح البصمة التابعة للهاتف
+                const assertion = await navigator.credentials.get(getCredentialOptions);
+
+                if (assertion) {
+                    const matchedFp = savedFps[0];
+                    document.getElementById('error').style.display = "none";
+                    document.getElementById('login-page').style.display = "none";
+                    document.getElementById('main-page').style.display = "block";
+                    document.getElementById('display-merchant').innerText = matchedFp.merchantId;
+                    document.getElementById('specialMenuWrapper').style.display = "block";
+                    generateBoxes();
+                }
+            } catch (err) {
+                console.error(err);
+                alert("لم يتم التعرف على البصمة أو تم إلغاء المحاولة.");
+            }
         }
 
         function deleteFingerprint(index) {
@@ -720,9 +793,8 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        // ================= محرك البحث الذكي للغاية (Smart Fuzzy & Transliteration) =================
+        // ================= محرك البحث الذكي للغاية =================
 
-        // تنظيف وتنسيق النصوص البرمجية العربية والإنجليزية
         function cleanText(text) {
             if (!text) return '';
             return text
@@ -735,7 +807,6 @@
                 .trim();
         }
 
-        // خوارزمية قياس تقارب الكلمات للأخطاء الإملائية (Levenshtein Distance)
         function levenshteinDistance(a, b) {
             if (a.length === 0) return b.length;
             if (b.length === 0) return a.length;
@@ -760,33 +831,26 @@
             return matrix[b.length][a.length];
         }
 
-        // التحقق الذكي من التوافق الفردي لكل كلمة مع مراعاة الأخطاء والترجمة
         function isFuzzyMatch(word, targetStr) {
             const cleanW = cleanText(word);
             const cleanTarget = cleanText(targetStr);
 
             if (!cleanW) return false;
-
-            // تطابق مباشر أو جزئي
             if (cleanTarget.includes(cleanW)) return true;
 
-            // فحص التقارب الإملائي للكلمات المتقاربة والطويلة
             const targetWords = cleanTarget.split(' ');
             return targetWords.some(tWord => {
                 if (Math.abs(tWord.length - cleanW.length) > 2) return false;
                 const dist = levenshteinDistance(cleanW, tWord);
-                return dist <= 2; // يسمح بخطأ حُرفين أو زوائد
+                return dist <= 2;
             });
         }
 
-        // مطابقة ذكية للبحث التجمعي المركب (مثل "بطارية سامسونج A15")
         function isSmartMatch(sourceObject, query) {
             const cleanQuery = cleanText(query);
             const queryTokens = cleanQuery.split(' ').filter(t => t.length > 0);
 
             const sourceFullText = cleanText(`${sourceObject.name} ${sourceObject.alt || ''} ${sourceObject.altKeywords || ''}`);
-
-            // يجب أن تجد كل كلمة من كلمات البحث مكاناً مطابقاً في الكيان المطلوب
             return queryTokens.every(token => isFuzzyMatch(token, sourceFullText));
         }
 
@@ -895,7 +959,6 @@
             }
         }
 
-        // إعداد البصمات عند التحميل
         window.onload = function() {
             renderFingerprintsList();
         }
