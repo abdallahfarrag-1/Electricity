@@ -113,6 +113,15 @@
             background-color: #6c757d;
         }
 
+        /* تنسيق نص التنبيه الجديد */
+        .biometric-warning {
+            font-size: 12px;
+            color: #d9534f;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
         .fingerprint-list {
             margin-top: 15px;
             text-align: right;
@@ -429,6 +438,9 @@
             <button class="biometric-btn secondary" onclick="registerFingerprint()">
                 <span>📝 تسجيل بصمة جديدة</span>
             </button>
+
+            <!-- التنبيه المطلوب -->
+            <div class="biometric-warning">(تنبيه، في حالة حذف سجل التصفح، فيجب إعادة تسجيل البصمة)</div>
 
             <div class="fingerprint-list" id="fingerprintListContainer">
                 <strong>البصمات المسجلة:</strong>
