@@ -342,7 +342,7 @@
 
         <!-- شريط البحث الشامل -->
         <div class="search-bar-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث في كافة الأقسام والماركات..." oninput="globalSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث في كافة الأقسام والماركات والعناصر..." oninput="globalSearch()">
         </div>
 
         <div class="container">
@@ -351,10 +351,10 @@
             <!-- المربعات الرئيسية -->
             <div class="grid-container" id="grid"></div>
 
-            <!-- الماركات (بنظام مربعات الشبكة) -->
+            <!-- الماركات -->
             <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- الـ 100 خانة (بنظام مربعات الشبكة) -->
+            <!-- الـ 100 خانة -->
             <div class="grid-container" id="itemsContainer" style="display: none;"></div>
 
             <!-- حاوية نتائج البحث الشامل -->
@@ -387,6 +387,12 @@
             { name: 'Vivo', img: 'vivo.jpg' },
             { name: 'Honor', img: 'honor.jpg' }
         ];
+
+        // إنشاء مصفوفة العناصر (100 عنصر)
+        const itemsData = Array.from({ length: 100 }, (_, index) => ({
+            id: index + 1,
+            name: `عنصر ${index + 1}`
+        }));
 
         function validateAndNavigate() {
             const val1 = document.getElementById('merchant-id').value.trim();
@@ -472,6 +478,13 @@
             return box;
         }
 
+        function createItemBoxElement(item) {
+            const box = document.createElement('div');
+            box.className = 'grid-box';
+            box.innerText = item.name;
+            return box;
+        }
+
         function generateBoxes() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "";
@@ -509,12 +522,9 @@
             const itemsContainer = document.getElementById('itemsContainer');
             itemsContainer.innerHTML = '';
 
-            for (let i = 1; i <= 100; i++) {
-                const box = document.createElement('div');
-                box.className = 'grid-box';
-                box.innerText = `عنصر ${i}`;
-                itemsContainer.appendChild(box);
-            }
+            itemsData.forEach(item => {
+                itemsContainer.appendChild(createItemBoxElement(item));
+            });
         }
 
         function hideAllContainers() {
@@ -560,8 +570,9 @@
 
             const matchedCategories = categoriesData.filter(cat => isMatch(cat.name, query));
             const matchedBrands = brandsData.filter(brand => isMatch(brand.name, query));
+            const matchedItems = itemsData.filter(item => isMatch(item.name, query));
 
-            if (matchedCategories.length === 0 && matchedBrands.length === 0) {
+            if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
                 resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
                 return;
             }
@@ -595,6 +606,22 @@
                     brandsWrapper.appendChild(createBrandBoxElement(brand));
                 });
                 resultsContainer.appendChild(brandsWrapper);
+            }
+
+            if (matchedItems.length > 0) {
+                const itemTitle = document.createElement('div');
+                itemTitle.className = 'search-section-title';
+                itemTitle.style.marginTop = '15px';
+                itemTitle.innerText = 'العناصر المتطابقة:';
+                resultsContainer.appendChild(itemTitle);
+
+                const itemsWrapper = document.createElement('div');
+                itemsWrapper.className = 'grid-container';
+
+                matchedItems.forEach(item => {
+                    itemsWrapper.appendChild(createItemBoxElement(item));
+                });
+                resultsContainer.appendChild(itemsWrapper);
             }
         }
 
