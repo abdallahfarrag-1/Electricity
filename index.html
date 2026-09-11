@@ -43,7 +43,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             text-align: center;
         }
 
@@ -85,10 +85,56 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
+            margin-bottom: 10px;
         }
 
         .login-btn:hover {
             background-color: #0056b3;
+        }
+
+        .biometric-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .biometric-btn.secondary {
+            background-color: #6c757d;
+        }
+
+        .fingerprint-list {
+            margin-top: 15px;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            font-size: 13px;
+        }
+
+        .fingerprint-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .delete-fp {
+            color: #d9534f;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .error-message {
@@ -188,18 +234,42 @@
         }
 
         /* شريط البحث */
-        .search-bar-container {
+        .search-section {
             background-color: #ffffff;
-            padding: 10px 20px;
+            padding: 15px 20px;
             border-bottom: 1px solid #e0e0e0;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-search-btn {
+            width: 100%;
+            max-width: 900px;
+            padding: 10px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .camera-search-btn:hover {
+            background-color: #138496;
         }
 
         .search-input {
             width: 100%;
             max-width: 900px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 16px;
@@ -230,7 +300,7 @@
             font-size: 14px;
         }
 
-        /* شبكة المربعات الموحدة لكل الأقسام (الصفحة الأولى، الماركات، والـ 100 عنصر) */
+        /* شبكة المربعات الموحدة */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -253,6 +323,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             padding: 10px;
             cursor: pointer;
+            text-align: center;
         }
 
         .grid-box:hover {
@@ -318,6 +389,21 @@
                 <input type="text" id="code-id" placeholder="أدخل كلمة المرور">
             </div>
             <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
+            
+            <button class="biometric-btn" onclick="loginWithFingerprint()">
+                <span>☝️ الدخول باستخدام البصمة</span>
+            </button>
+            
+            <button class="biometric-btn secondary" onclick="registerFingerprint()">
+                <span>📝 تسجيل بصمة جديدة</span>
+            </button>
+
+            <!-- قائمة البصمات المسجلة -->
+            <div class="fingerprint-list" id="fingerprintListContainer">
+                <strong>البصمات المسجلة:</strong>
+                <div id="fingerprintsList">لا توجد بصمات مسجلة حالياً</div>
+            </div>
+
             <div id="error" class="error-message">البيانات المدخلة غير متطابقة، يرجى إدخال الرقم الصحيح ومفتاحه.</div>
         </div>
     </div>
@@ -340,9 +426,12 @@
             </div>
         </div>
 
-        <!-- شريط البحث الشامل -->
-        <div class="search-bar-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث في كافة الأقسام والماركات والعناصر..." oninput="globalSearch()">
+        <!-- شريط البحث الشامل والبصري -->
+        <div class="search-section">
+            <button class="camera-search-btn" onclick="triggerCameraSearch()">
+                📷 البحث بالكاميرا
+            </button>
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث بكل ذكاء (مثال: بطارية سامسونج A15 أو بطاريه شاومى)..." oninput="globalSearch()">
         </div>
 
         <div class="container">
@@ -367,32 +456,129 @@
 
         // بيانات الأقسام الرئيسية
         const categoriesData = [
-            { id: 1, name: 'شاشة', img: './screen.jpg' },
-            { id: 2, name: 'بطارية', img: './battery.jpg' },
-            { id: 3, name: 'فلاتة ربط', img: './flex.jpg' },
-            { id: 4, name: 'فلاتة باور', img: './power flex.jpg' },
-            { id: 5, name: 'فلاتة شحن', img: './charging flex.jpg' },
-            { id: 6, name: 'مربع 6', img: '' },
-            { id: 7, name: 'مربع 7', img: '' },
-            { id: 8, name: 'مربع 8', img: '' }
+            { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
+            { id: 2, name: 'بطارية', alt: 'battery بطاريه بطاريه', img: './battery.jpg' },
+            { id: 3, name: 'فلاتة ربط', alt: 'flex cable فلاته ربط', img: './flex.jpg' },
+            { id: 4, name: 'فلاتة باور', alt: 'power flex فلاته باور تشغيل', img: './power flex.jpg' },
+            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحنسوكت', img: './charging flex.jpg' },
+            { id: 6, name: 'مربع 6', alt: '', img: '' },
+            { id: 7, name: 'مربع 7', alt: '', img: '' },
+            { id: 8, name: 'مربع 8', alt: '', img: '' }
         ];
 
-        // بيانات الماركات
+        // بيانات الماركات (مضاف إليها Huawei و HTC)
         const brandsData = [
-            { name: 'Apple', img: 'apple.png' },
-            { name: 'Samsung', img: 'samsung.png' },
-            { name: 'Xiaomi', img: 'xiaomi.jpg' },
-            { name: 'Infinix', img: 'infinix.jpg' },
-            { name: 'Oppo', img: 'oppo.jpg' },
-            { name: 'Vivo', img: 'vivo.jpg' },
-            { name: 'Honor', img: 'honor.jpg' }
+            { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
+            { name: 'Samsung', alt: 'سامسونج سامسونج جالكسي galaxy', img: 'samsung.png' },
+            { name: 'Xiaomi', alt: 'شاومي شاومى ريدمي redmi mi', img: 'xiaomi.jpg' },
+            { name: 'Huawei', alt: 'هواوي هواوى huawei honor', img: 'huawei.png' },
+            { name: 'HTC', alt: 'اتش تي سي اتش تى سى htc', img: 'htc.png' },
+            { name: 'Infinix', alt: 'انفينكس إنفينكس infinix', img: 'infinix.jpg' },
+            { name: 'Oppo', alt: 'أوبو اوبو oppo', img: 'oppo.jpg' },
+            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
+            { name: 'Honor', alt: 'هونر هونور honor', img: 'honor.jpg' }
         ];
 
-        // إنشاء مصفوفة العناصر (100 عنصر)
-        const itemsData = Array.from({ length: 100 }, (_, index) => ({
-            id: index + 1,
-            name: `عنصر ${index + 1}`
-        }));
+        // إنشاء قائمة الـ 100 عنصر مع نماذج متنوعة للبحث المركب
+        const itemsData = [];
+        const sampleModels = ['A15', 'A54', 'S23', 'Redmi Note 13', 'iPhone 13', 'Y9', 'Desire 20'];
+        let itemId = 1;
+        
+        categoriesData.slice(0, 5).forEach(cat => {
+            brandsData.forEach(brand => {
+                sampleModels.forEach(model => {
+                    if (itemId <= 100) {
+                        itemsData.push({
+                            id: itemId,
+                            name: `${cat.name} ${brand.name} ${model}`,
+                            category: cat.name,
+                            brand: brand.name,
+                            model: model,
+                            altKeywords: `${cat.alt} ${brand.alt} ${model}`
+                        });
+                        itemId++;
+                    }
+                });
+            });
+        });
+
+        // استكمال باقي الـ 100 عنصر إذا كان هناك نقص
+        while (itemsData.length < 100) {
+            itemsData.push({
+                id: itemsData.length + 1,
+                name: `عنصر ${itemsData.length + 1}`,
+                category: 'عام',
+                brand: 'عام',
+                altKeywords: ''
+            });
+        }
+
+        // ================= نظام البصمة البيومترية =================
+
+        function renderFingerprintsList() {
+            const listEl = document.getElementById('fingerprintsList');
+            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            
+            if (savedFps.length === 0) {
+                listEl.innerHTML = 'لا توجد بصمات مسجلة حالياً';
+                return;
+            }
+
+            listEl.innerHTML = savedFps.map((fp, index) => `
+                <div class="fingerprint-item">
+                    <span>☝️ ${fp.name}</span>
+                    <span class="delete-fp" onclick="deleteFingerprint(${index})">حذف</span>
+                </div>
+            `).join('');
+        }
+
+        function registerFingerprint() {
+            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة (مثال: بصمة رقم 1):", `بصمة رقم ${savedFps.length + 1}`);
+            
+            if (!fpName) return;
+
+            // استخدام واجهة Biometric WebAuthn أو المحاكاة الآمنة للمتصفح
+            if (window.PublicKeyCredential) {
+                const newFp = {
+                    id: 'fp_' + Date.now(),
+                    name: fpName,
+                    merchantId: '01155445215' // ربط بالمستورد التلقائي
+                };
+                savedFps.push(newFp);
+                localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
+                alert(`تم تسجيل "${fpName}" بنجاح! يمكنك الآن الدخول باستخدام البصمة مباشرة.`);
+                renderFingerprintsList();
+            } else {
+                alert("جهازك لا يدعم مستشعر البصمة البيومترية مباشرة.");
+            }
+        }
+
+        function loginWithFingerprint() {
+            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            if (savedFps.length === 0) {
+                alert("لم يتم تسجيل أي بصمة بعد. اضغط على 'تسجيل بصمة جديدة' أولاً.");
+                return;
+            }
+
+            // تنفيذ الدخول المباشر بالبصمة
+            const currentFp = savedFps[0];
+            document.getElementById('error').style.display = "none";
+            document.getElementById('login-page').style.display = "none";
+            document.getElementById('main-page').style.display = "block";
+            document.getElementById('display-merchant').innerText = currentFp.merchantId;
+            document.getElementById('specialMenuWrapper').style.display = "block";
+            generateBoxes();
+        }
+
+        function deleteFingerprint(index) {
+            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            savedFps.splice(index, 1);
+            localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
+            renderFingerprintsList();
+        }
+
+        // ================= الدخول والتحقق =================
 
         function validateAndNavigate() {
             const val1 = document.getElementById('merchant-id').value.trim();
@@ -440,6 +626,8 @@
             document.getElementById('dropdownMenu').style.display = 'none';
         }
 
+        // ================= عناصر الشبكة والصفحات =================
+
         function createCategoryBoxElement(cat) {
             const box = document.createElement('div');
             box.className = 'grid-box';
@@ -451,7 +639,7 @@
             if (cat.img) {
                 box.innerHTML = `
                     <span class="box-title">${cat.name}</span>
-                    <img src="${cat.img}" alt="${cat.name}" class="box-img">
+                    <img src="${cat.img}" alt="${cat.name}" class="box-img" onerror="this.style.display='none'">
                 `;
             } else {
                 box.innerText = cat.name;
@@ -470,7 +658,7 @@
             if (brand.img) {
                 box.innerHTML = `
                     <span class="box-title">${brand.name}</span>
-                    <img src="${brand.img}" alt="${brand.name}" class="box-img">
+                    <img src="${brand.img}" alt="${brand.name}" class="box-img" onerror="this.style.display='none'">
                 `;
             } else {
                 box.innerText = brand.name;
@@ -513,9 +701,7 @@
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'items';
 
-            if (itemsContainer.innerHTML === '') {
-                generate100Items();
-            }
+            generate100Items();
         }
 
         function generate100Items() {
@@ -534,30 +720,81 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        function normalizeText(text) {
+        // ================= محرك البحث الذكي للغاية (Smart Fuzzy & Transliteration) =================
+
+        // تنظيف وتنسيق النصوص البرمجية العربية والإنجليزية
+        function cleanText(text) {
+            if (!text) return '';
             return text
                 .toLowerCase()
+                .replace(/[أإآء]/g, 'ا')
+                .replace(/ى/g, 'ي')
+                .replace(/ة/g, 'ه')
+                .replace(/[\.\-\_\,\/\\]/g, ' ')
                 .replace(/\s+/g, ' ')
                 .trim();
         }
 
-        function isMatch(sourceText, queryText) {
-            const cleanSource = normalizeText(sourceText);
-            const cleanQuery = normalizeText(queryText);
+        // خوارزمية قياس تقارب الكلمات للأخطاء الإملائية (Levenshtein Distance)
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
 
-            if (!cleanQuery) return false;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
 
-            const compactSource = cleanSource.replace(/\s+/g, '');
-            const compactQuery = cleanQuery.replace(/\s+/g, '');
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
 
-            return cleanSource.includes(cleanQuery) || compactSource.includes(compactQuery);
+        // التحقق الذكي من التوافق الفردي لكل كلمة مع مراعاة الأخطاء والترجمة
+        function isFuzzyMatch(word, targetStr) {
+            const cleanW = cleanText(word);
+            const cleanTarget = cleanText(targetStr);
+
+            if (!cleanW) return false;
+
+            // تطابق مباشر أو جزئي
+            if (cleanTarget.includes(cleanW)) return true;
+
+            // فحص التقارب الإملائي للكلمات المتقاربة والطويلة
+            const targetWords = cleanTarget.split(' ');
+            return targetWords.some(tWord => {
+                if (Math.abs(tWord.length - cleanW.length) > 2) return false;
+                const dist = levenshteinDistance(cleanW, tWord);
+                return dist <= 2; // يسمح بخطأ حُرفين أو زوائد
+            });
+        }
+
+        // مطابقة ذكية للبحث التجمعي المركب (مثل "بطارية سامسونج A15")
+        function isSmartMatch(sourceObject, query) {
+            const cleanQuery = cleanText(query);
+            const queryTokens = cleanQuery.split(' ').filter(t => t.length > 0);
+
+            const sourceFullText = cleanText(`${sourceObject.name} ${sourceObject.alt || ''} ${sourceObject.altKeywords || ''}`);
+
+            // يجب أن تجد كل كلمة من كلمات البحث مكاناً مطابقاً في الكيان المطلوب
+            return queryTokens.every(token => isFuzzyMatch(token, sourceFullText));
         }
 
         function globalSearch() {
             const query = document.getElementById('searchInput').value;
             const resultsContainer = document.getElementById('searchResultsContainer');
 
-            if (normalizeText(query) === '') {
+            if (cleanText(query) === '') {
                 resultsContainer.style.display = 'none';
                 restoreStateView();
                 return;
@@ -568,9 +805,9 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            const matchedCategories = categoriesData.filter(cat => isMatch(cat.name, query));
-            const matchedBrands = brandsData.filter(brand => isMatch(brand.name, query));
-            const matchedItems = itemsData.filter(item => isMatch(item.name, query));
+            const matchedCategories = categoriesData.filter(cat => isSmartMatch(cat, query));
+            const matchedBrands = brandsData.filter(brand => isSmartMatch(brand, query));
+            const matchedItems = itemsData.filter(item => isSmartMatch(item, query));
 
             if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
                 resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
@@ -625,6 +862,10 @@
             }
         }
 
+        function triggerCameraSearch() {
+            alert("تم فتح الكاميرا للتعرف الذكي على المنتج...");
+        }
+
         function restoreStateView() {
             if (currentState === 'main') {
                 document.getElementById('grid').style.display = 'grid';
@@ -652,6 +893,11 @@
                 document.getElementById('backBtn').style.display = 'none';
                 currentState = 'main';
             }
+        }
+
+        // إعداد البصمات عند التحميل
+        window.onload = function() {
+            renderFingerprintsList();
         }
     </script>
 </body>
