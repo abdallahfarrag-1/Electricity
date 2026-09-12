@@ -597,25 +597,21 @@
         }
     </style>
 
-    <!-- استيراد مكتبات Firebase السحابية -->
+    <!-- استيراد مكتبة Gemini AI -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { GoogleGenAI } from "https://esm.run/@google/genai";
-
-        // إعدادات قاعدة بيانات Firebase المركزية السحابية
-        const firebaseConfig = {
-            databaseURL: "https://electricity-system-default-rtdb.firebaseio.com/"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
 
         let currentState = 'brands'; 
         let selectedBrand = null;
         let videoStream = null;
 
-        const allowedPhoneNumbers = ["01155445544", "01155445215", "01119129158", "01152791344"];
+        // الأرقام وكلمات المرور المعتمدة في النظام
+        const validCredentials = {
+            "01155445544": "0022",
+            "01155445215": "0000",
+            "01119129158": "1100",
+            "01152791344": "1101"
+        };
 
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone ايفون', img: 'apple.png' },
@@ -1025,44 +1021,52 @@
             listEl.innerHTML = savedFps.map((fp, index) => `
                 <div class="fingerprint-item">
                     <span>☝️ ${fp.name} (رقم الهاتف: ${fp.merchantId})</span>
-                    <span class="delete-fp" onclick="deleteFingerprint('${fp.merchantId}', ${index})">حذف</span>
+                    <span class="delete-fp" onclick="deleteFingerprint(${index})">حذف</span>
                 </div>
             `).join('');
         }
 
-        // تسجيل بصمة جديدة مع التحقق السحابي لمنع تكرار الرقم في أي جهاز آخر
+        // تسجيل بصمة جديدة مع التحقق الإجباري من رقم الهاتف وكلمة السر الخاصة به
         window.registerFingerprint = async function() {
             if (!window.PublicKeyCredential) {
                 alert("جهازك لا يدعم خاصية البصمة.");
                 return;
             }
 
-            const userPhone = prompt("أدخل رقم الهاتف المراد ربطه بالبصمة (يجب أن يكون من ضمن الأرقام المعتمدة):");
+            const userPhone = prompt("أدخل رقم الهاتف المراد ربطه بالبصمة:");
             if (!userPhone) return;
-
             const cleanPhone = userPhone.trim();
 
-            if (!allowedPhoneNumbers.includes(cleanPhone)) {
-                alert("عذراً، هذا الرقم غير مدرج في قائمة الأرقام المصرح بها في الكود البرمجي!");
+            // التحقق هل الرقم مدرج في السيستم وليه باسورد
+            if (!validCredentials.hasOwnProperty(cleanPhone)) {
+                alert("عذراً، رقم الهاتف المدخل غير مسجل في النظام!");
+                return;
+            }
+
+            const userPassword = prompt(`أدخل كلمة السر الخاصة برقم الهاتف (${cleanPhone}):`);
+            if (!userPassword) return;
+
+            // التحقق من صحة كلمة السر المرتبطة برقم الهاتف
+            if (validCredentials[cleanPhone] !== userPassword.trim()) {
+                alert("❌ كلمة السر غير صحيحة لهذا الرقم! لا يمكن تسجيل البصمة.");
+                return;
+            }
+
+            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            
+            // التحقق هل تم تسجيل بصمة لهذه الرقم مسبقاً محلياً
+            const existingForPhone = savedFps.find(fp => fp.merchantId === cleanPhone);
+            if (existingForPhone) {
+                alert(`⚠️ عذراً، رقم الهاتف (${cleanPhone}) مسجل له بصمة بالفعل على هذا الجهاز (${existingForPhone.name}).`);
                 return;
             }
 
             try {
-                // 1. فحص القاعدة السحابية (Firebase) هل الرقم ده متسجل له بصمة مسبقاً من أي هاتف تاني ولا لأ
-                const phoneRef = ref(db, 'system_fingerprints/' + cleanPhone);
-                const snapshot = await get(phoneRef);
-
-                if (snapshot.exists()) {
-                    alert(`⛔ تنبيه أمني خطير:\nرقم الهاتف (${cleanPhone}) تم تسجيل بصمة له مسبقاً من هاتف آخر على السيستم، ولا يمكن لأي جهاز آخر إعادة تسجيله!`);
-                    return;
-                }
-
-                const fpName = prompt("أدخل اسماً لهذه البصمة (يمكنك ربط بصمتك بأكثر من رقم على جهازك):", "بصمة التاجر " + cleanPhone);
+                const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة التاجر " + cleanPhone);
                 if (!fpName) return;
 
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
-                
                 const userId = Uint8Array.from(cleanPhone, c => c.charCodeAt(0));
 
                 const credential = await navigator.credentials.create({
@@ -1083,15 +1087,6 @@
                 if (credential) {
                     const credentialIdEncoded = bufferEncode(credential.rawId);
 
-                    // 2. حفظ الرقم والبصمة في قاعدة البيانات السحابية (Firebase) ليتم قفله على مستوى العالم
-                    await set(phoneRef, {
-                        credentialId: credentialIdEncoded,
-                        name: fpName,
-                        timestamp: Date.now()
-                    });
-
-                    // حفظه محلياً في قائمة الجهاز الحالي
-                    let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
                     savedFps.push({ 
                         id: credentialIdEncoded, 
                         name: fpName, 
@@ -1099,7 +1094,7 @@
                     });
                     localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
 
-                    alert(`✅ تم ربط بصمتك برقم الهاتف (${cleanPhone}) بنجاح وقفله على مستوى السيستم بالكامل!`);
+                    alert(`✅ تم التحقق من كلمة السر وربط بصمتك برقم الهاتف (${cleanPhone}) بنجاح!`);
                     renderFingerprintsList();
                 }
             } catch (err) {
@@ -1148,26 +1143,18 @@
             }
         }
 
-        // حذف البصمة من الجهاز والسحابية معاً لو حب التاجر يفك القفل عنها
-        window.deleteFingerprint = async function(merchantId, index) {
-            if (!confirm(`هل أنت متأكد من حذف البصمة الخاصة برقم الهاتف (${merchantId})؟ سيتم إلغاء القفل عنه والسماح بتسجيله مرة أخرى.`)) {
+        window.deleteFingerprint = function(index) {
+            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            const fp = savedFps[index];
+            
+            if (!confirm(`هل أنت متأكد من حذف البصمة الخاصة برقم الهاتف (${fp.merchantId})؟`)) {
                 return;
             }
 
-            try {
-                // حذف من قاعدة البيانات السحابية
-                await remove(ref(db, 'system_fingerprints/' + merchantId));
-
-                // حذف محلياً
-                let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-                savedFps.splice(index, 1);
-                localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                
-                renderFingerprintsList();
-                alert("تم حذف البصمة وإلغاء القفل بنجاح.");
-            } catch (err) {
-                alert("حدث خطأ أثناء الاتصال بالسيرفر.");
-            }
+            savedFps.splice(index, 1);
+            localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
+            renderFingerprintsList();
+            alert("تم حذف البصمة بنجاح.");
         }
 
         window.validateAndNavigate = function() {
@@ -1175,12 +1162,7 @@
             const val2 = document.getElementById('code-id').value.trim();
             const errorMsg = document.getElementById('error');
 
-            const isPair1 = (val1 === "01155445544" && val2 === "0022");
-            const isPair2 = (val1 === "01155445215" && val2 === "0000");
-            const isPair3 = (val1 === "01119129158" && val2 === "1100");
-            const isPair4 = (val1 === "01152791344" && val2 === "1101");
-
-            if (isPair1 || isPair2 || isPair3 || isPair4) {
+            if (validCredentials.hasOwnProperty(val1) && validCredentials[val1] === val2) {
                 errorMsg.style.display = "none";
                 document.getElementById('login-page').style.display = "none";
                 document.getElementById('main-page').style.display = "block";
@@ -1358,7 +1340,7 @@
                 <span>📝 تسجيل بصمة جديدة للرقم</span>
             </button>
 
-            <div class="biometric-warning">(تنبيه: الرقم المسجل يتم قفله سحابياً، ولا يمكن لأي هاتف آخر في العالم تسجيله مرة أخرى، بينما يمكنك أنت ربط بصمتك بأكثر من رقم على هاتفك).</div>
+            <div class="biometric-warning">(تنبيه: يلزم إدخال رقم الهاتف وكلمة السر الصحيحة لتسجيل بصمة جديدة).</div>
 
             <div class="fingerprint-list" id="fingerprintListContainer">
                 <strong>البصمات المسجلة على هاتفك:</strong>
