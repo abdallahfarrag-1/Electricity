@@ -1,74 +1,92 @@
 {
-    "Apple": [
-        "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16 Plus", "iPhone 16",
-        "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15 Plus", "iPhone 15",
-        "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14",
-        "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13", "iPhone 13 mini",
-        "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12", "iPhone 12 mini",
-        "iPhone SE (3rd gen)", "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11",
-        "iPhone SE (2nd gen)", "iPhone XS Max", "iPhone XS", "iPhone XR", "iPhone X",
-        "iPhone 8 Plus", "iPhone 8", "iPhone 7 Plus", "iPhone 7",
-        "iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6", "iPhone SE (1st gen)",
-        "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4S", "iPhone 4", "iPhone 3GS", "iPhone 3G", "iPhone (1st gen)"
-    ],
-    "Samsung": [
-        "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy Z Fold 6", "Galaxy Z Flip 6",
-        "Galaxy S23 Ultra", "Galaxy S23+", "Galaxy S23", "Galaxy S23 FE", "Galaxy Z Fold 5", "Galaxy Z Flip 5",
-        "Galaxy A55 5G", "Galaxy A35 5G", "Galaxy A25 5G", "Galaxy A15 5G", "Galaxy A05s", "Galaxy A05",
-        "Galaxy S22 Ultra", "Galaxy S22+", "Galaxy S22", "Galaxy Z Fold 4", "Galaxy Z Flip 4",
-        "Galaxy A54 5G", "Galaxy A34 5G", "Galaxy A24 4G", "Galaxy A14 5G", "Galaxy A14", "Galaxy A04s", "Galaxy A04",
-        "Galaxy S21 Ultra 5G", "Galaxy S21+ 5G", "Galaxy S21 5G", "Galaxy S21 FE 5G", "Galaxy Z Fold 3", "Galaxy Z Flip 3",
-        "Galaxy Note 20 Ultra 5G", "Galaxy Note 20", "Galaxy S20 Ultra", "Galaxy S20+", "Galaxy S20", "Galaxy S20 FE",
-        "Galaxy A73 5G", "Galaxy A53 5G", "Galaxy A33 5G", "Galaxy A23 5G", "Galaxy A23", "Galaxy A13", "Galaxy A03s", "Galaxy A03",
-        "Galaxy A72", "Galaxy A52s 5G", "Galaxy A52 5G", "Galaxy A52", "Galaxy A42 5G", "Galaxy A32 5G", "Galaxy A32", "Galaxy A22 5G", "Galaxy A22", "Galaxy A12", "Galaxy A02s", "Galaxy A02",
-        "Galaxy S10+", "Galaxy S10", "Galaxy S10e", "Galaxy S10 Lite", "Galaxy Note 10+", "Galaxy Note 10", "Galaxy Note 10 Lite",
-        "Galaxy A71 5G", "Galaxy A71", "Galaxy A51 5G", "Galaxy A51", "Galaxy A41", "Galaxy A31", "Galaxy A21s", "Galaxy A21", "Galaxy A11", "Galaxy A01",
-        "Galaxy S9+", "Galaxy S9", "Galaxy Note 9", "Galaxy A80", "Galaxy A70", "Galaxy A60", "Galaxy A50s", "Galaxy A50", "Galaxy A40", "Galaxy A30s", "Galaxy A30", "Galaxy A20s", "Galaxy A20", "Galaxy A10s", "Galaxy A10", "Galaxy A2 Core",
-        "Galaxy S8+", "Galaxy S8", "Galaxy Note 8", "Galaxy A9 (2018)", "Galaxy A8+ (2018)", "Galaxy A8 (2018)", "Galaxy A7 (2018)", "Galaxy A6+ (2018)", "Galaxy A6 (2018)", "Galaxy J8", "Galaxy J6+", "Galaxy J6", "Galaxy J4+", "Galaxy J4",
-        "Galaxy S7 Edge", "Galaxy S7", "Galaxy Note 7", "Galaxy A7 (2017)", "Galaxy A5 (2017)", "Galaxy A3 (2017)", "Galaxy J7 Pro", "Galaxy J7 Prime", "Galaxy J7 (2016)", "Galaxy J5 Pro", "Galaxy J5 Prime", "Galaxy J5 (2016)", "Galaxy J3 (2016)", "Galaxy J2 Prime", "Galaxy J1 Ace",
-        "Galaxy S6 Edge+", "Galaxy S6 Edge", "Galaxy S6", "Galaxy Note 5", "Galaxy Note 4", "Galaxy Note Edge", "Galaxy A7 (2015)", "Galaxy A5 (2015)", "Galaxy A3 (2015)", "Galaxy E7", "Galaxy E5", "Galaxy Grand Prime", "Galaxy Core Prime",
-        "Galaxy S5", "Galaxy S5 Mini", "Galaxy Note 3", "Galaxy Note 3 Neo", "Galaxy Grand 2", "Galaxy Core 2", "Galaxy Star 2", "Galaxy Ace 4", "Galaxy Pocket 2",
-        "Galaxy S4", "Galaxy S4 Mini", "Galaxy S4 Active", "Galaxy S4 Zoom", "Galaxy Note 2", "Galaxy Grand", "Galaxy Core", "Galaxy Fame", "Galaxy Young",
-        "Galaxy S3", "Galaxy S3 Mini", "Galaxy Note", "Galaxy Ace 2", "Galaxy S Advance", "Galaxy Y",
-        "Galaxy S2", "Galaxy Ace", "Galaxy Fit", "Galaxy Mini", "Galaxy Gio",
-        "Galaxy S", "Galaxy 3", "Galaxy 5", "Galaxy Spica", "Galaxy (Original)"
-    ],
-    "Xiaomi": [
-        "Xiaomi 14 Ultra", "Xiaomi 14 Pro", "Xiaomi 14", "Xiaomi 13T Pro", "Xiaomi 13T",
-        "Redmi Note 13 Pro+ 5G", "Redmi Note 13 Pro 5G", "Redmi Note 13 Pro", "Redmi Note 13 5G", "Redmi Note 13", "Redmi 13C 5G", "Redmi 13C", "Redmi 13", "Redmi A3",
-        "Xiaomi 13 Ultra", "Xiaomi 13 Pro", "Xiaomi 13", "Xiaomi 13 Lite", "Xiaomi 12T Pro", "Xiaomi 12T",
-        "Redmi Note 12 Pro+ 5G", "Redmi Note 12 Pro 5G", "Redmi Note 12 Pro 4G", "Redmi Note 12 5G", "Redmi Note 12 4G", "Redmi Note 12S", "Redmi 12 5G", "Redmi 12", "Redmi 12C", "Redmi A2+", "Redmi A2",
-        "Xiaomi 12 Pro", "Xiaomi 12", "Xiaomi 12X", "Xiaomi 12 Lite", "Xiaomi 11T Pro", "Xiaomi 11T", "Xiaomi 11 Lite 5G NE",
-        "Redmi Note 11 Pro+ 5G", "Redmi Note 11 Pro 5G", "Redmi Note 11 Pro", "Redmi Note 11S 5G", "Redmi Note 11S", "Redmi Note 11 5G", "Redmi Note 11", "Redmi Note 11E", "Redmi 10 5G", "Redmi 10 2022", "Redmi 10C", "Redmi 10A", "Redmi A1+", "Redmi A1",
-        "Mi 11 Ultra", "Mi 11 Pro", "Mi 11", "Mi 11 Lite 5G", "Mi 11 Lite", "Mi 10T Pro 5G", "Mi 10T 5G", "Mi 10T Lite 5G",
-        "Redmi Note 10 Pro Max", "Redmi Note 10 Pro", "Redmi Note 10S", "Redmi Note 10 5G", "Redmi Note 10", "Redmi Note 10T 5G", "Redmi 10", "Redmi 9T", "Redmi 9 Power",
-        "Mi 10 Pro 5G", "Mi 10 5G", "Mi 10 Lite 5G", "Mi Note 10 Lite", "Mi Note 10 Pro", "Mi Note 10", "Mi 9T Pro", "Mi 9T", "Mi 9 SE", "Mi 9", "Mi 9 Lite",
-        "Redmi Note 9 Pro Max", "Redmi Note 9 Pro", "Redmi Note 9S", "Redmi Note 9 5G", "Redmi Note 9", "Redmi 9C NFC", "Redmi 9C", "Redmi 9A", "Redmi 9 Prime", "Redmi 9",
-        "Redmi Note 8 Pro", "Redmi Note 8T", "Redmi Note 8 2021", "Redmi Note 8", "Redmi 8A Dual", "Redmi 8A", "Redmi 8", "Redmi 7A", "Redmi 7", "Redmi Y3",
-        "Mi 8 Pro", "Mi 8", "Mi 8 Lite", "Mi 8 SE", "Mi A3", "Mi A2", "Mi A2 Lite", "Mi Mix 3", "Mi Mix 2S", "Mi Max 3",
-        "Redmi Note 7 Pro", "Redmi Note 7S", "Redmi Note 7", "Redmi Go", "Redmi Note 6 Pro", "Redmi 6 Pro", "Redmi 6A", "Redmi 6", "Redmi S2",
-        "Redmi Note 5 Pro", "Redmi Note 5 AI", "Redmi Note 5", "Redmi 5 Plus", "Redmi 5A", "Redmi 5", "Mi A1", "Mi Max 2", "Mi Note 3", "Mi 6",
-        "Redmi Note 4X", "Redmi Note 4", "Redmi 4X", "Redmi 4A", "Redmi 4 Pro", "Redmi 4", "Mi 5s Plus", "Mi 5s", "Mi 5c", "Mi 5", "Mi Note 2", "Mi Mix",
-        "Redmi Note 3 Pro", "Redmi Note 3", "Redmi 3S Prime", "Redmi 3S", "Redmi 3X", "Redmi 3 Pro", "Redmi 3", "Mi Max", "Mi 4S", "Mi 4c", "Mi 4i",
-        "Redmi Note 2", "Redmi Note Prime", "Redmi Note 4G", "Redmi Note", "Redmi 2 Prime", "Redmi 2A", "Redmi 2", "Mi 4", "Mi Note Pro", "Mi Note",
-        "Redmi 1S", "Redmi 1", "Mi 3", "Mi 2S", "Mi 2A", "Mi 2", "Mi 1S", "Mi 1"
-    ],
-    "Huawei": [
-        "Pura 70 Ultra", "Pura 70 Pro+", "Pura 70 Pro", "Pura 70", "Mate 60 RS Ultimate", "Mate 60 Pro+", "Mate 60 Pro", "Mate 60", "Mate X5",
-        "P60 Pro", "P60 Art", "P60", "Mate 50 Pro", "Mate 50", "Mate X3", "Nova 12 Ultra", "Nova 12 Pro", "Nova 12 SE", "Nova 12i", "Nova 12s",
-        "Nova 11 Ultra", "Nova 11 Pro", "Nova 11", "Nova 11i", "Nova 11 SE", "Nova 10 Pro", "Nova 10", "Nova 10 SE", "Nova 10z",
-        "P50 Pro", "P50 Pocket", "P50", "Mate 40 Pro+", "Mate 40 Pro", "Mate 40E", "Mate 40", "Mate Xs 2", "Mate Xs",
-        "Nova 9 Pro", "Nova 9", "Nova 9 SE", "Nova 8 Pro 5G", "Nova 8 5G", "Nova 8i", "Nova 7 Pro 5G", "Nova 7 5G", "Nova 7 SE", "Nova 7i",
-        "P40 Pro+", "P40 Pro", "P40", "P40 Lite 5G", "P40 Lite", "P40 Lite E", "Mate 30 Pro 5G", "Mate 30 Pro", "Mate 30 5G", "Mate 30", "Mate X",
-        "Nova 5T", "Nova 5 Pro", "Nova 5i Pro", "Nova 5i", "Nova 5z", "Nova 5", "Y9a", "Y9s", "Y8p", "Y8s", "Y7a", "Y7p", "Y6p", "Y5p",
-        "P30 Pro", "P30", "P30 Lite New Edition", "P30 Lite", "Mate 20 Pro", "Mate 20 X 5G", "Mate 20 X", "Mate 20", "Mate 20 Lite",
-        "Nova 4", "Nova 4e", "Nova 3", "Nova 3i", "Y9 2019", "Y7 Pro 2019", "Y7 Prime 2019", "Y6 2019", "Y6 Prime 2019", "Y6 Pro 2019", "Y5 2019",
-        "P20 Pro", "P20", "P20 Lite", "Mate 10 Pro", "Mate 10", "Mate 10 Lite", "Nova 2 Plus", "Nova 2", "Nova 2i", "Nova 2s",
-        "Y9 2018", "Y7 Prime 2018", "Y7 2018", "Y6 2018", "Y6 Prime 2018", "Y5 2018", "Y5 Prime 2018", "Y3 2018",
-        "P10 Plus", "P10", "P10 Lite", "Mate 9 Pro", "Mate 9", "Mate 9 Lite", "Nova Plus", "Nova", "Nova Young",
-        "Y7 2017", "Y6 2017", "Y5 2017", "Y3 2017", "GR5 2017", "GR3 2017",
-        "P9 Plus", "P9", "P9 Lite", "Mate 8", "Mate S", "GR5", "GR3", "Y6II", "Y6 Compact", "Y5II", "Y3II",
-        "P8max", "P8", "P8 Lite", "Mate 7", "Ascend Mate 7", "G8", "G7", "Y6", "Y5", "Y3",
-        "Ascend P7", "Ascend P7 Mini", "Ascend P6", "Ascend Mate 2", "Ascend Mate", "Ascend G700", "Ascend G610", "Ascend G630", "Ascend G6", "Ascend Y530", "Ascend Y511", "Ascend Y330", "Ascend Y300"
-    ]
+  "Apple": [
+    "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16 Plus", "iPhone 16",
+    "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15 Plus", "iPhone 15",
+    "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14",
+    "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13", "iPhone 13 mini",
+    "iPhone SE (3rd gen)", "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12", "iPhone 12 mini",
+    "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11", "iPhone SE (2nd gen)",
+    "iPhone XS Max", "iPhone XS", "iPhone XR", "iPhone X",
+    "iPhone 8 Plus", "iPhone 8", "iPhone 7 Plus", "iPhone 7",
+    "iPhone SE (1st gen)", "iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6",
+    "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4S", "iPhone 4", "iPhone 3GS", "iPhone 3G", "iPhone Original"
+  ],
+  "Samsung": [
+    "Galaxy Z Fold 6", "Galaxy Z Flip 6", "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy S24 FE",
+    "Galaxy A55 5G", "Galaxy A35 5G", "Galaxy A25 5G", "Galaxy A15 5G", "Galaxy A15", "Galaxy A05s", "Galaxy A05",
+    "Galaxy Z Fold 5", "Galaxy Z Flip 5", "Galaxy S23 Ultra", "Galaxy S23+", "Galaxy S23", "Galaxy S23 FE",
+    "Galaxy A54 5G", "Galaxy A34 5G", "Galaxy A24 5G", "Galaxy A14 5G", "Galaxy A14", "Galaxy A04s", "Galaxy A04",
+    "Galaxy Z Fold 4", "Galaxy Z Flip 4", "Galaxy S22 Ultra", "Galaxy S22+", "Galaxy S22",
+    "Galaxy A53 5G", "Galaxy A33 5G", "Galaxy A23", "Galaxy A13", "Galaxy A03s", "Galaxy A03",
+    "Galaxy Z Fold 3", "Galaxy Z Flip 3", "Galaxy S21 Ultra", "Galaxy S21+", "Galaxy S21", "Galaxy S21 FE",
+    "Galaxy A52s 5G", "Galaxy A52 5G", "Galaxy A52", "Galaxy A72", "Galaxy A32 5G", "Galaxy A32", "Galaxy A22 5G", "Galaxy A22", "Galaxy A12", "Galaxy A02s", "Galaxy A02",
+    "Galaxy Note 20 Ultra", "Galaxy Note 20", "Galaxy S20 Ultra", "Galaxy S20+", "Galaxy S20", "Galaxy S20 FE",
+    "Galaxy A71", "Galaxy A51", "Galaxy A31", "Galaxy A21s", "Galaxy A21", "Galaxy A11", "Galaxy A01",
+    "Galaxy Note 10+", "Galaxy Note 10", "Galaxy Note 10 Lite", "Galaxy S10+", "Galaxy S10", "Galaxy S10e", "Galaxy S10 Lite",
+    "Galaxy A80", "Galaxy A70", "Galaxy A50", "Galaxy A30", "Galaxy A20", "Galaxy A10", "Galaxy A10s",
+    "Galaxy Note 9", "Galaxy S9+", "Galaxy S9", "Galaxy Note 8", "Galaxy S8+", "Galaxy S8",
+    "Galaxy S7 Edge", "Galaxy S7", "Galaxy Note 5", "Galaxy S6 Edge+", "Galaxy S6 Edge", "Galaxy S6",
+    "Galaxy Note 4", "Galaxy S5", "Galaxy Note 3", "Galaxy S4", "Galaxy Note 2", "Galaxy S3", "Galaxy S2", "Galaxy S"
+  ],
+  "Xiaomi": [
+    "Xiaomi 14 Ultra", "Xiaomi 14 Pro", "Xiaomi 14", "Xiaomi 14T Pro", "Xiaomi 14T",
+    "Redmi Note 13 Pro+ 5G", "Redmi Note 13 Pro 5G", "Redmi Note 13 Pro", "Redmi Note 13 5G", "Redmi Note 13", "Redmi 13", "Redmi 13C",
+    "Poco F6 Pro", "Poco F6", "Poco X6 Pro", "Poco X6", "Poco M6 Pro", "Poco C65",
+    "Xiaomi 13 Ultra", "Xiaomi 13 Pro", "Xiaomi 13", "Xiaomi 13 Lite", "Xiaomi 13T Pro", "Xiaomi 13T",
+    "Redmi Note 12 Pro+ 5G", "Redmi Note 12 Pro 5G", "Redmi Note 12 Pro", "Redmi Note 12 5G", "Redmi Note 12", "Redmi 12", "Redmi 12C",
+    "Poco F5 Pro", "Poco F5", "Poco X5 Pro", "Poco X5", "Poco M5s", "Poco M5",
+    "Xiaomi 12T Pro", "Xiaomi 12T", "Xiaomi 12 Pro", "Xiaomi 12", "Xiaomi 12X", "Xiaomi 12 Lite",
+    "Redmi Note 11 Pro+ 5G", "Redmi Note 11 Pro 5G", "Redmi Note 11 Pro", "Redmi Note 11S", "Redmi Note 11", "Redmi 10C", "Redmi 10A", "Redmi 10 2022",
+    "Poco F4 GT", "Poco F4", "Poco X4 Pro 5G", "Poco M4 Pro", "Poco M4 5G",
+    "Xiaomi Mi 11 Ultra", "Xiaomi Mi 11 Pro", "Xiaomi Mi 11", "Xiaomi 11T Pro", "Xiaomi 11T", "Xiaomi 11 Lite 5G NE",
+    "Redmi Note 10 Pro", "Redmi Note 10S", "Redmi Note 10 5G", "Redmi Note 10", "Redmi 9T", "Redmi 9C", "Redmi 9A", "Redmi 9",
+    "Poco F3", "Poco X3 Pro", "Poco X3 NFC", "Poco M3 Pro 5G", "Poco M3",
+    "Redmi Note 9 Pro", "Redmi Note 9S", "Redmi Note 9", "Redmi Note 8 Pro", "Redmi Note 8", "Redmi Note 8T", "Redmi Note 7 Pro", "Redmi Note 7"
+  ],
+  "Infinix": [
+    "Infinix Zero 40 5G", "Infinix Zero 40", "Infinix Zero 30 5G", "Infinix Zero 30", "Infinix Zero Ultra", "Infinix Zero 20", "Infinix Zero X Pro",
+    "Infinix Note 40 Pro+ 5G", "Infinix Note 40 Pro 5G", "Infinix Note 40 Pro", "Infinix Note 40", "Infinix Note 40X 5G",
+    "Infinix Note 30 VIP", "Infinix Note 30 Pro", "Infinix Note 30 5G", "Infinix Note 30", "Infinix Note 30i",
+    "Infinix Note 12 Pro 5G", "Infinix Note 12 Pro", "Infinix Note 12 G96", "Infinix Note 12 VIP", "Infinix Note 12", "Infinix Note 11 Pro", "Infinix Note 11", "Infinix Note 10 Pro", "Infinix Note 10",
+    "Infinix Hot 50 Pro+", "Infinix Hot 50 Pro", "Infinix Hot 50 5G", "Infinix Hot 50", "Infinix Hot 50i",
+    "Infinix Hot 40 Pro", "Infinix Hot 40", "Infinix Hot 40i", "Infinix Hot 30 Pro", "Infinix Hot 30", "Infinix Hot 30i", "Infinix Hot 20 5G", "Infinix Hot 20 Pro", "Infinix Hot 20i", "Infinix Hot 20",
+    "Infinix Hot 12 Play", "Infinix Hot 12 Pro", "Infinix Hot 12", "Infinix Hot 11S", "Infinix Hot 11 Play", "Infinix Hot 11", "Infinix Hot 10 Pro", "Infinix Hot 10S", "Infinix Hot 10 Play", "Infinix Hot 10",
+    "Infinix Smart 8 Pro", "Infinix Smart 8 Plus", "Infinix Smart 8", "Infinix Smart 7 HD", "Infinix Smart 7", "Infinix Smart 6 Plus", "Infinix Smart 6 HD", "Infinix Smart 6", "Infinix Smart 5 Pro", "Infinix Smart 5"
+  ],
+  "Oppo": [
+    "Oppo Find X7 Ultra", "Oppo Find X7", "Oppo Find N3 Flip", "Oppo Find N3", "Oppo Find X6 Pro", "Oppo Find X6", "Oppo Find X5 Pro", "Oppo Find X5", "Oppo Find X3 Pro",
+    "Oppo Reno 12 Pro", "Oppo Reno 12", "Oppo Reno 12 F 5G", "Oppo Reno 12 F", "Oppo Reno 11 Pro", "Oppo Reno 11", "Oppo Reno 11 F",
+    "Oppo Reno 10 Pro+ 5G", "Oppo Reno 10 Pro 5G", "Oppo Reno 10 5G", "Oppo Reno 8 Pro 5G", "Oppo Reno 8 5G", "Oppo Reno 8T 5G", "Oppo Reno 8T", "Oppo Reno 7 Pro 5G", "Oppo Reno 7 5G", "Oppo Reno 7", "Oppo Reno 6 Pro 5G", "Oppo Reno 6 5G", "Oppo Reno 5 5G", "Oppo Reno 5", "Oppo Reno 4 Pro", "Oppo Reno 4", "Oppo Reno 3 Pro", "Oppo Reno 3",
+    "Oppo A3 Pro", "Oppo A3", "Oppo A3x", "Oppo A60", "Oppo A59", "Oppo A79 5G", "Oppo A58 4G", "Oppo A38", "Oppo A18", "Oppo A78 5G", "Oppo A78 4G", "Oppo A57 4G", "Oppo A17", "Oppo A17k", "Oppo A96", "Oppo A76", "Oppo A55", "Oppo A16", "Oppo A16k", "Oppo A95", "Oppo A74 5G", "Oppo A74", "Oppo A54", "Oppo A15s", "Oppo A15", "Oppo A93", "Oppo A73", "Oppo A53", "Oppo A31", "Oppo A12", "Oppo A9 2020", "Oppo A5 2020"
+  ],
+  "Huawei": [
+    "Huawei Pura 70 Ultra", "Huawei Pura 70 Pro", "Huawei Pura 70", "Huawei Mate 60 Pro+", "Huawei Mate 60 Pro", "Huawei Mate 60", "Huawei Mate X5", "Huawei Mate X3",
+    "Huawei P60 Pro", "Huawei P60 Art", "Huawei P60", "Huawei Mate 50 Pro", "Huawei Mate 50", "Huawei P50 Pro", "Huawei P50", "Huawei P50 Pocket",
+    "Huawei nova 12 Ultra", "Huawei nova 12 Pro", "Huawei nova 12s", "Huawei nova 12 SE", "Huawei nova 12i", "Huawei nova 11 Pro", "Huawei nova 11", "Huawei nova 11i", "Huawei nova 10 Pro", "Huawei nova 10", "Huawei nova 10 SE", "Huawei nova 9 Pro", "Huawei nova 9", "Huawei nova 9 SE", "Huawei nova 8i", "Huawei nova 8", "Huawei nova 7 Pro", "Huawei nova 7 5G", "Huawei nova 7i", "Huawei nova 5T",
+    "Huawei nova Y91", "Huawei nova Y72", "Huawei nova Y71", "Huawei nova Y70", "Huawei nova Y61", "Huawei nova Y60", "Huawei Y9a", "Huawei Y8p", "Huawei Y7a", "Huawei Y6p", "Huawei Y5p", "Huawei Y9 Prime 2019", "Huawei Y9 2019", "Huawei Y7 Prime 2019", "Huawei Y6 Prime 2019",
+    "Huawei Mate 40 Pro", "Huawei Mate 30 Pro", "Huawei Mate 20 Pro", "Huawei Mate 20", "Huawei Mate 10 Pro", "Huawei Mate 10", "Huawei P40 Pro+", "Huawei P40 Pro", "Huawei P40", "Huawei P40 Lite", "Huawei P30 Pro", "Huawei P30", "Huawei P30 Lite", "Huawei P20 Pro", "Huawei P20", "Huawei P20 Lite", "Huawei P10 Plus", "Huawei P10"
+  ],
+  "Vivo": [
+    "Vivo X100 Ultra", "Vivo X100 Pro", "Vivo X100s", "Vivo X100", "Vivo X Fold 3 Pro", "Vivo X Fold 3", "Vivo X90 Pro", "Vivo X90", "Vivo X80 Pro", "Vivo X80", "Vivo X70 Pro+", "Vivo X70 Pro", "Vivo X60 Pro",
+    "Vivo V40 Pro", "Vivo V40", "Vivo V40 SE", "Vivo V30 Pro", "Vivo V30", "Vivo V30 Lite", "Vivo V30e", "Vivo V29 Pro", "Vivo V29", "Vivo V29 Lite", "Vivo V29e", "Vivo V27 Pro", "Vivo V27", "Vivo V27e", "Vivo V25 Pro", "Vivo V25", "Vivo V25e", "Vivo V23 5G", "Vivo V23e", "Vivo V21 5G", "Vivo V21e", "Vivo V20", "Vivo V19", "Vivo V17 Pro", "Vivo V15 Pro",
+    "Vivo Y300 Pro", "Vivo Y200", "Vivo Y200e", "Vivo Y100 5G", "Vivo Y58 5G", "Vivo Y28 5G", "Vivo Y28", "Vivo Y18", "Vivo Y18i", "Vivo Y03", "Vivo Y36 5G", "Vivo Y36", "Vivo Y27 5G", "Vivo Y27", "Vivo Y17s", "Vivo Y02t", "Vivo Y02s", "Vivo Y02", "Vivo Y35", "Vivo Y22", "Vivo Y16", "Vivo Y01", "Vivo Y33s", "Vivo Y21", "Vivo Y21s", "Vivo Y20", "Vivo Y20s", "Vivo Y12s", "Vivo Y11", "Vivo Y91"
+  ],
+  "Honor": [
+    "Honor Magic 6 Pro", "Honor Magic 6", "Honor Magic 6 Lite", "Honor Magic V3", "Honor Magic V2", "Honor Magic 5 Pro", "Honor Magic 5", "Honor Magic 5 Lite", "Honor Magic 4 Pro", "Honor Magic 4 Lite",
+    "Honor 200 Pro", "Honor 200", "Honor 200 Lite", "Honor 200 Smart", "Honor 90 Pro", "Honor 90", "Honor 90 Lite", "Honor 90 Smart", "Honor 70 Pro", "Honor 70", "Honor 70 Lite", "Honor 50 Pro", "Honor 50", "Honor 50 Lite",
+    "Honor X9b", "Honor X9a", "Honor X9 5G", "Honor X8b", "Honor X8a", "Honor X8 5G", "Honor X8", "Honor X7b 5G", "Honor X7b", "Honor X7a", "Honor X7", "Honor X6b", "Honor X6a", "Honor X6", "Honor X5 Plus", "Honor X5",
+    "Honor 8X", "Honor 9X Pro", "Honor 9X", "Honor 10i", "Honor 10 Lite", "Honor 10", "Honor Play", "Honor View 20", "Honor 20 Pro", "Honor 20", "Honor 20 Lite"
+  ],
+  "Nokia": [
+    "Nokia XR21", "Nokia X30 5G", "Nokia X20", "Nokia X10", "Nokia G42 5G", "Nokia G22", "Nokia G60 5G", "Nokia G50", "Nokia G21", "Nokia G20", "Nokia G11 Plus", "Nokia G11", "Nokia G10",
+    "Nokia C32", "Nokia C22", "Nokia C31", "Nokia C21 Plus", "Nokia C21", "Nokia C12 Pro", "Nokia C12", "Nokia C10", "Nokia C2 2nd Edition", "Nokia C1 2nd Edition", "Nokia C1",
+    "Nokia 8.3 5G", "Nokia 8.1", "Nokia 8 Sirocco", "Nokia 8", "Nokia 7.2", "Nokia 7.1", "Nokia 7 Plus", "Nokia 6.2", "Nokia 6.1 Plus", "Nokia 6.1", "Nokia 6", "Nokia 5.4", "Nokia 5.3", "Nokia 5.1 Plus", "Nokia 5", "Nokia 4.2", "Nokia 3.4", "Nokia 3.2", "Nokia 3.1 Plus", "Nokia 3", "Nokia 2.4", "Nokia 2.3", "Nokia 2.2", "Nokia 2", "Nokia 1.4", "Nokia 1.3", "Nokia 1 Plus", "Nokia 1", "Nokia 9 PureView"
+  ],
+  "HTC": [
+    "HTC U24 Pro", "HTC U23 Pro", "HTC U23", "HTC Desire 22 Pro", "HTC Desire 21 Pro 5G", "HTC Desire 20+ ", "HTC Desire 20 Pro",
+    "HTC Wildfire E3 Lite", "HTC Wildfire E2 Plus", "HTC Wildfire E3", "HTC Wildfire E2", "HTC Wildfire E1", "HTC Wildfire E", "HTC Wildfire R70",
+    "HTC U12+", "HTC U12 Life", "HTC U11+", "HTC U11 EYEs", "HTC U11", "HTC U11 Life", "HTC Ultra", "HTC Play",
+    "HTC Exodus 1", "HTC Exodus 1s", "HTC Desire 19+", "HTC Desire 19s", "HTC Desire 12+", "HTC Desire 12s", "HTC Desire 12", "HTC Desire 10 Pro", "HTC Desire 10 Lifestyle",
+    "HTC 10", "HTC 10 evo", "HTC One M9+", "HTC One M9", "HTC One A9", "HTC One A9s", "HTC One E9+", "HTC One ME", "HTC One M8", "HTC One E8", "HTC One Max", "HTC One M7", "HTC One Mini 2", "HTC One Mini", "HTC One X", "HTC One S", "HTC One V"
+  ]
 }
