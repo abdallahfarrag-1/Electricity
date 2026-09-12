@@ -591,95 +591,13 @@
             });
         }
 
-        // ================= محرك المعالجة والبحث الذكي =================
-
-        // تنظيف الأساسي للنصوص
-        function cleanText(text) {
-            if (!text) return '';
-            return text
-                .toLowerCase()
-                .replace(/[أإآء]/g, 'ا')
-                .replace(/ى/g, 'ي')
-                .replace(/ة/g, 'ه')
-                .replace(/[\.\-\_\,\/\\]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        // توحيد الموديلات وإزالة المسافات بين الحروف والأرقام
-        function normalizeModelCode(text) {
-            let str = cleanText(text);
-
-            // تحويلات النطق العربي
-            str = str.replace(/نوت\s*/g, 'note ');
-            str = str.replace(/ايه\s*/g, 'a');
-            str = str.replace(/اي\s*/g, 'a');
-            str = str.replace(/اس\s*/g, 's');
-            str = str.replace(/برو\s*/g, 'pro');
-            str = str.replace(/بلاص\s*|بلس\s*/g, 'plus');
-
-            // إزالة المسافات المتقاطعة بين الحروف والأرقام (مثال: A 30 -> a30 / A 05 s -> a05s)
-            str = str.replace(/([a-z])\s+([0-9])/gi, '$1$2');
-            str = str.replace(/([0-9])\s+([a-z])/gi, '$1$2');
-            str = str.replace(/\s+/g, '');
-
-            return str;
-        }
-
-        // توليد بدائل ذكية للموديل (مثل تحويل a5s إلى a05s)
-        function getModelVariants(normalizedText) {
-            const variants = new Set([normalizedText]);
-
-            // مطابقة نمط الحرف + رقم واحد + حرف (مثل a5s -> a05s)
-            const singleDigitMatch = normalizedText.match(/^([a-z]+)(\d)([a-z]*)$/i);
-            if (singleDigitMatch) {
-                const prefix = singleDigitMatch[1];
-                const digit = singleDigitMatch[2];
-                const suffix = singleDigitMatch[3];
-                variants.add(`${prefix}0${digit}${suffix}`);
-            }
-
-            // مطابقة نمط الحرف + رقمين أحدهما صفر (مثل a05s -> a5s)
-            const paddedMatch = normalizedText.match(/^([a-z]+)0(\d)([a-z]*)$/i);
-            if (paddedMatch) {
-                const prefix = paddedMatch[1];
-                const digit = paddedMatch[2];
-                const suffix = paddedMatch[3];
-                variants.add(`${prefix}${digit}${suffix}`);
-            }
-
-            return Array.from(variants);
-        }
-
-        function isModelMatched(query, targetModelName) {
-            const rawQueryClean = cleanText(query);
-            const targetClean = cleanText(targetModelName);
-
-            // 1. بحث عادي بالكلمات
-            if (targetClean.includes(rawQueryClean)) return true;
-
-            // 2. مطابقة الرموز الذكية
-            const normQuery = normalizeModelCode(query);
-            const normTarget = normalizeModelCode(targetModelName);
-
-            if (!normQuery) return false;
-
-            const queryVariants = getModelVariants(normQuery);
-
-            for (let variant of queryVariants) {
-                if (normTarget.includes(variant)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        // ================= دالة البحث المباشرة والأصلية =================
 
         function globalSearch() {
-            const query = document.getElementById('searchInput').value;
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
             const resultsContainer = document.getElementById('searchResultsContainer');
 
-            if (cleanText(query) === '') {
+            if (query === '') {
                 resultsContainer.style.display = 'none';
                 restoreStateView();
                 return;
@@ -690,23 +608,25 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            const matchedCategories = categoriesData.filter(cat => !cat.isEmpty && (cleanText(cat.name).includes(cleanText(query)) || cleanText(cat.alt).includes(cleanText(query))));
-            const matchedBrands = brandsData.filter(brand => cleanText(brand.name).includes(cleanText(query)) || cleanText(brand.alt).includes(cleanText(query)));
-            
-            // تجميع الموديلات ومنع التكرار نهائياً باستخدام unique set
-            const matchedItems = [];
-            const seenKeys = new Set();
+            // 1. بحث الأقسام
+            const matchedCategories = categoriesData.filter(cat => 
+                !cat.isEmpty && (
+                    cat.name.toLowerCase().includes(query) || 
+                    cat.alt.toLowerCase().includes(query)
+                )
+            );
 
-            itemsData.forEach(item => {
-                if (isModelMatched(query, item.name) || isModelMatched(query, item.altKeywords)) {
-                    // الفلترة باسم الموديل لعدم تكراره في نتائج البحث
-                    const uniqueKey = item.name.trim().toLowerCase();
-                    if (!seenKeys.has(uniqueKey)) {
-                        seenKeys.add(uniqueKey);
-                        matchedItems.push(item);
-                    }
-                }
-            });
+            // 2. بحث الماركات
+            const matchedBrands = brandsData.filter(brand => 
+                brand.name.toLowerCase().includes(query) || 
+                brand.alt.toLowerCase().includes(query)
+            );
+            
+            // 3. بحث الموديلات العادي والجامد المباشر
+            const matchedItems = itemsData.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                item.altKeywords.toLowerCase().includes(query)
+            );
 
             if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
                 resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
