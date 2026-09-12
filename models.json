@@ -44,49 +44,50 @@
     "Redmi Note 9 Pro", "Redmi Note 9S", "Redmi Note 9", "Redmi Note 8 Pro", "Redmi Note 8", "Redmi Note 8T", "Redmi Note 7 Pro", "Redmi Note 7"
   ],
   "Infinix": [
-    "Infinix Zero 40 5G", "Infinix Zero 40", "Infinix Zero 30 5G", "Infinix Zero 30", "Infinix Zero Ultra", "Infinix Zero 20", "Infinix Zero X Pro",
+    "Infinix Zero 40 5G", "Infinix Zero 40", "Infinix Zero 30 5G", "Infinix Zero 30", "Infinix Zero Ultra", "Infinix Zero 20", "Infinix Zero X Pro", "Infinix Zero X Neo", "Infinix Zero 8", "Infinix Zero 8i",
     "Infinix Note 40 Pro+ 5G", "Infinix Note 40 Pro 5G", "Infinix Note 40 Pro", "Infinix Note 40", "Infinix Note 40X 5G",
     "Infinix Note 30 VIP", "Infinix Note 30 Pro", "Infinix Note 30 5G", "Infinix Note 30", "Infinix Note 30i",
-    "Infinix Note 12 Pro 5G", "Infinix Note 12 Pro", "Infinix Note 12 G96", "Infinix Note 12 VIP", "Infinix Note 12", "Infinix Note 11 Pro", "Infinix Note 11", "Infinix Note 10 Pro", "Infinix Note 10",
+    "Infinix Note 12 Pro 5G", "Infinix Note 12 Pro", "Infinix Note 12 G96", "Infinix Note 12 VIP", "Infinix Note 12", "Infinix Note 11 Pro", "Infinix Note 11", "Infinix Note 10 Pro", "Infinix Note 10", "Infinix Note 8", "Infinix Note 8i", "Infinix Note 7", "Infinix Note 7 Lite",
     "Infinix Hot 50 Pro+", "Infinix Hot 50 Pro", "Infinix Hot 50 5G", "Infinix Hot 50", "Infinix Hot 50i",
     "Infinix Hot 40 Pro", "Infinix Hot 40", "Infinix Hot 40i", "Infinix Hot 30 Pro", "Infinix Hot 30", "Infinix Hot 30i", "Infinix Hot 20 5G", "Infinix Hot 20 Pro", "Infinix Hot 20i", "Infinix Hot 20",
-    "Infinix Hot 12 Play", "Infinix Hot 12 Pro", "Infinix Hot 12", "Infinix Hot 11S", "Infinix Hot 11 Play", "Infinix Hot 11", "Infinix Hot 10 Pro", "Infinix Hot 10S", "Infinix Hot 10 Play", "Infinix Hot 10",
-    "Infinix Smart 8 Pro", "Infinix Smart 8 Plus", "Infinix Smart 8", "Infinix Smart 7 HD", "Infinix Smart 7", "Infinix Smart 6 Plus", "Infinix Smart 6 HD", "Infinix Smart 6", "Infinix Smart 5 Pro", "Infinix Smart 5"
+    "Infinix Hot 12 Play", "Infinix Hot 12 Pro", "Infinix Hot 12", "Infinix Hot 11S", "Infinix Hot 11 Play", "Infinix Hot 11", "Infinix Hot 10 Pro", "Infinix Hot 10S", "Infinix Hot 10 Play", "Infinix Hot 10", "Infinix Hot 9 Pro", "Infinix Hot 9", "Infinix Hot 9 Play", "Infinix Hot 8",
+    "Infinix Smart 8 Pro", "Infinix Smart 8 Plus", "Infinix Smart 8", "Infinix Smart 7 HD", "Infinix Smart 7", "Infinix Smart 6 Plus", "Infinix Smart 6 HD", "Infinix Smart 6", "Infinix Smart 5 Pro", "Infinix Smart 5", "Infinix Smart 4", "Infinix Smart 3 Plus"
   ],
   "Oppo": [
-    "Oppo Find X7 Ultra", "Oppo Find X7", "Oppo Find N3 Flip", "Oppo Find N3", "Oppo Find X6 Pro", "Oppo Find X6", "Oppo Find X5 Pro", "Oppo Find X5", "Oppo Find X3 Pro",
+    "Oppo Find X7 Ultra", "Oppo Find X7", "Oppo Find N3 Flip", "Oppo Find N3", "Oppo Find X6 Pro", "Oppo Find X6", "Oppo Find X5 Pro", "Oppo Find X5", "Oppo Find X3 Pro", "Oppo Find X2 Pro", "Oppo Find X",
     "Oppo Reno 12 Pro", "Oppo Reno 12", "Oppo Reno 12 F 5G", "Oppo Reno 12 F", "Oppo Reno 11 Pro", "Oppo Reno 11", "Oppo Reno 11 F",
-    "Oppo Reno 10 Pro+ 5G", "Oppo Reno 10 Pro 5G", "Oppo Reno 10 5G", "Oppo Reno 8 Pro 5G", "Oppo Reno 8 5G", "Oppo Reno 8T 5G", "Oppo Reno 8T", "Oppo Reno 7 Pro 5G", "Oppo Reno 7 5G", "Oppo Reno 7", "Oppo Reno 6 Pro 5G", "Oppo Reno 6 5G", "Oppo Reno 5 5G", "Oppo Reno 5", "Oppo Reno 4 Pro", "Oppo Reno 4", "Oppo Reno 3 Pro", "Oppo Reno 3",
-    "Oppo A3 Pro", "Oppo A3", "Oppo A3x", "Oppo A60", "Oppo A59", "Oppo A79 5G", "Oppo A58 4G", "Oppo A38", "Oppo A18", "Oppo A78 5G", "Oppo A78 4G", "Oppo A57 4G", "Oppo A17", "Oppo A17k", "Oppo A96", "Oppo A76", "Oppo A55", "Oppo A16", "Oppo A16k", "Oppo A95", "Oppo A74 5G", "Oppo A74", "Oppo A54", "Oppo A15s", "Oppo A15", "Oppo A93", "Oppo A73", "Oppo A53", "Oppo A31", "Oppo A12", "Oppo A9 2020", "Oppo A5 2020"
+    "Oppo Reno 10 Pro+ 5G", "Oppo Reno 10 Pro 5G", "Oppo Reno 10 5G", "Oppo Reno 8 Pro 5G", "Oppo Reno 8 5G", "Oppo Reno 8T 5G", "Oppo Reno 8T", "Oppo Reno 7 Pro 5G", "Oppo Reno 7 5G", "Oppo Reno 7", "Oppo Reno 6 Pro 5G", "Oppo Reno 6 5G", "Oppo Reno 5 5G", "Oppo Reno 5", "Oppo Reno 4 Pro", "Oppo Reno 4", "Oppo Reno 3 Pro", "Oppo Reno 3", "Oppo Reno 2", "Oppo Reno2 F", "Oppo Reno",
+    "Oppo A3 Pro", "Oppo A3", "Oppo A3x", "Oppo A60", "Oppo A59", "Oppo A79 5G", "Oppo A58 4G", "Oppo A38", "Oppo A18", "Oppo A78 5G", "Oppo A78 4G", "Oppo A57 4G", "Oppo A17", "Oppo A17k", "Oppo A96", "Oppo A76", "Oppo A55", "Oppo A16", "Oppo A16k", "Oppo A95", "Oppo A74 5G", "Oppo A74", "Oppo A54", "Oppo A15s", "Oppo A15", "Oppo A93", "Oppo A73", "Oppo A53", "Oppo A31", "Oppo A12", "Oppo A9 2020", "Oppo A5 2020", "Oppo F19 Pro+", "Oppo F19 Pro", "Oppo F19", "Oppo F17 Pro", "Oppo F17", "Oppo F11 Pro", "Oppo F11", "Oppo F9 Pro", "Oppo F9"
   ],
   "Huawei": [
     "Huawei Pura 70 Ultra", "Huawei Pura 70 Pro", "Huawei Pura 70", "Huawei Mate 60 Pro+", "Huawei Mate 60 Pro", "Huawei Mate 60", "Huawei Mate X5", "Huawei Mate X3",
     "Huawei P60 Pro", "Huawei P60 Art", "Huawei P60", "Huawei Mate 50 Pro", "Huawei Mate 50", "Huawei P50 Pro", "Huawei P50", "Huawei P50 Pocket",
-    "Huawei nova 12 Ultra", "Huawei nova 12 Pro", "Huawei nova 12s", "Huawei nova 12 SE", "Huawei nova 12i", "Huawei nova 11 Pro", "Huawei nova 11", "Huawei nova 11i", "Huawei nova 10 Pro", "Huawei nova 10", "Huawei nova 10 SE", "Huawei nova 9 Pro", "Huawei nova 9", "Huawei nova 9 SE", "Huawei nova 8i", "Huawei nova 8", "Huawei nova 7 Pro", "Huawei nova 7 5G", "Huawei nova 7i", "Huawei nova 5T",
-    "Huawei nova Y91", "Huawei nova Y72", "Huawei nova Y71", "Huawei nova Y70", "Huawei nova Y61", "Huawei nova Y60", "Huawei Y9a", "Huawei Y8p", "Huawei Y7a", "Huawei Y6p", "Huawei Y5p", "Huawei Y9 Prime 2019", "Huawei Y9 2019", "Huawei Y7 Prime 2019", "Huawei Y6 Prime 2019",
-    "Huawei Mate 40 Pro", "Huawei Mate 30 Pro", "Huawei Mate 20 Pro", "Huawei Mate 20", "Huawei Mate 10 Pro", "Huawei Mate 10", "Huawei P40 Pro+", "Huawei P40 Pro", "Huawei P40", "Huawei P40 Lite", "Huawei P30 Pro", "Huawei P30", "Huawei P30 Lite", "Huawei P20 Pro", "Huawei P20", "Huawei P20 Lite", "Huawei P10 Plus", "Huawei P10"
+    "Huawei nova 12 Ultra", "Huawei nova 12 Pro", "Huawei nova 12s", "Huawei nova 12 SE", "Huawei nova 12i", "Huawei nova 11 Pro", "Huawei nova 11", "Huawei nova 11i", "Huawei nova 10 Pro", "Huawei nova 10", "Huawei nova 10 SE", "Huawei nova 9 Pro", "Huawei nova 9", "Huawei nova 9 SE", "Huawei nova 8i", "Huawei nova 8", "Huawei nova 7 Pro", "Huawei nova 7 5G", "Huawei nova 7i", "Huawei nova 5T", "Huawei nova 3i", "Huawei nova 3",
+    "Huawei nova Y91", "Huawei nova Y72", "Huawei nova Y71", "Huawei nova Y70", "Huawei nova Y61", "Huawei nova Y60", "Huawei Y9a", "Huawei Y8p", "Huawei Y7a", "Huawei Y6p", "Huawei Y5p", "Huawei Y9 Prime 2019", "Huawei Y9 2019", "Huawei Y7 Prime 2019", "Huawei Y6 Prime 2019", "Huawei Y9 2018",
+    "Huawei Mate 40 Pro", "Huawei Mate 30 Pro", "Huawei Mate 20 Pro", "Huawei Mate 20", "Huawei Mate 10 Pro", "Huawei Mate 10", "Huawei P40 Pro+", "Huawei P40 Pro", "Huawei P40", "Huawei P40 Lite", "Huawei P30 Pro", "Huawei P30", "Huawei P30 Lite", "Huawei P20 Pro", "Huawei P20", "Huawei P20 Lite", "Huawei P10 Plus", "Huawei P10", "Huawei Mate 9", "Huawei Mate 8"
   ],
   "Vivo": [
-    "Vivo X100 Ultra", "Vivo X100 Pro", "Vivo X100s", "Vivo X100", "Vivo X Fold 3 Pro", "Vivo X Fold 3", "Vivo X90 Pro", "Vivo X90", "Vivo X80 Pro", "Vivo X80", "Vivo X70 Pro+", "Vivo X70 Pro", "Vivo X60 Pro",
-    "Vivo V40 Pro", "Vivo V40", "Vivo V40 SE", "Vivo V30 Pro", "Vivo V30", "Vivo V30 Lite", "Vivo V30e", "Vivo V29 Pro", "Vivo V29", "Vivo V29 Lite", "Vivo V29e", "Vivo V27 Pro", "Vivo V27", "Vivo V27e", "Vivo V25 Pro", "Vivo V25", "Vivo V25e", "Vivo V23 5G", "Vivo V23e", "Vivo V21 5G", "Vivo V21e", "Vivo V20", "Vivo V19", "Vivo V17 Pro", "Vivo V15 Pro",
-    "Vivo Y300 Pro", "Vivo Y200", "Vivo Y200e", "Vivo Y100 5G", "Vivo Y58 5G", "Vivo Y28 5G", "Vivo Y28", "Vivo Y18", "Vivo Y18i", "Vivo Y03", "Vivo Y36 5G", "Vivo Y36", "Vivo Y27 5G", "Vivo Y27", "Vivo Y17s", "Vivo Y02t", "Vivo Y02s", "Vivo Y02", "Vivo Y35", "Vivo Y22", "Vivo Y16", "Vivo Y01", "Vivo Y33s", "Vivo Y21", "Vivo Y21s", "Vivo Y20", "Vivo Y20s", "Vivo Y12s", "Vivo Y11", "Vivo Y91"
+    "Vivo X100 Ultra", "Vivo X100 Pro", "Vivo X100s", "Vivo X100", "Vivo X Fold 3 Pro", "Vivo X Fold 3", "Vivo X90 Pro", "Vivo X90", "Vivo X80 Pro", "Vivo X80", "Vivo X70 Pro+", "Vivo X70 Pro", "Vivo X60 Pro", "Vivo X50 Pro", "Vivo X50",
+    "Vivo V40 Pro", "Vivo V40", "Vivo V40 SE", "Vivo V30 Pro", "Vivo V30", "Vivo V30 Lite", "Vivo V30e", "Vivo V29 Pro", "Vivo V29", "Vivo V29 Lite", "Vivo V29e", "Vivo V27 Pro", "Vivo V27", "Vivo V27e", "Vivo V25 Pro", "Vivo V25", "Vivo V25e", "Vivo V23 5G", "Vivo V23e", "Vivo V21 5G", "Vivo V21e", "Vivo V20", "Vivo V19", "Vivo V17 Pro", "Vivo V15 Pro", "Vivo V15", "Vivo V11 Pro", "Vivo V9",
+    "Vivo Y300 Pro", "Vivo Y200", "Vivo Y200e", "Vivo Y100 5G", "Vivo Y58 5G", "Vivo Y28 5G", "Vivo Y28", "Vivo Y18", "Vivo Y18i", "Vivo Y03", "Vivo Y36 5G", "Vivo Y36", "Vivo Y27 5G", "Vivo Y27", "Vivo Y17s", "Vivo Y02t", "Vivo Y02s", "Vivo Y02", "Vivo Y35", "Vivo Y22", "Vivo Y16", "Vivo Y01", "Vivo Y33s", "Vivo Y21", "Vivo Y21s", "Vivo Y20", "Vivo Y20s", "Vivo Y12s", "Vivo Y11", "Vivo Y91", "Vivo Y83", "Vivo Y53"
   ],
   "Honor": [
-    "Honor Magic 6 Pro", "Honor Magic 6", "Honor Magic 6 Lite", "Honor Magic V3", "Honor Magic V2", "Honor Magic 5 Pro", "Honor Magic 5", "Honor Magic 5 Lite", "Honor Magic 4 Pro", "Honor Magic 4 Lite",
-    "Honor 200 Pro", "Honor 200", "Honor 200 Lite", "Honor 200 Smart", "Honor 90 Pro", "Honor 90", "Honor 90 Lite", "Honor 90 Smart", "Honor 70 Pro", "Honor 70", "Honor 70 Lite", "Honor 50 Pro", "Honor 50", "Honor 50 Lite",
+    "Honor Magic 6 Pro", "Honor Magic 6", "Honor Magic 6 Lite", "Honor Magic V3", "Honor Magic V2", "Honor Magic 5 Pro", "Honor Magic 5", "Honor Magic 5 Lite", "Honor Magic 4 Pro", "Honor Magic 4 Lite", "Honor Magic3 Pro", "Honor Magic3",
+    "Honor 200 Pro", "Honor 200", "Honor 200 Lite", "Honor 200 Smart", "Honor 90 Pro", "Honor 90", "Honor 90 Lite", "Honor 90 Smart", "Honor 70 Pro", "Honor 70", "Honor 70 Lite", "Honor 50 Pro", "Honor 50", "Honor 50 Lite", "Honor 30 Pro+", "Honor 30", "Honor 30S",
     "Honor X9b", "Honor X9a", "Honor X9 5G", "Honor X8b", "Honor X8a", "Honor X8 5G", "Honor X8", "Honor X7b 5G", "Honor X7b", "Honor X7a", "Honor X7", "Honor X6b", "Honor X6a", "Honor X6", "Honor X5 Plus", "Honor X5",
-    "Honor 8X", "Honor 9X Pro", "Honor 9X", "Honor 10i", "Honor 10 Lite", "Honor 10", "Honor Play", "Honor View 20", "Honor 20 Pro", "Honor 20", "Honor 20 Lite"
+    "Honor 8X", "Honor 9X Pro", "Honor 9X", "Honor 10i", "Honor 10 Lite", "Honor 10", "Honor Play", "Honor View 20", "Honor 20 Pro", "Honor 20", "Honor 20 Lite", "Honor 8A", "Honor 7C", "Honor 7A"
   ],
   "Nokia": [
     "Nokia XR21", "Nokia X30 5G", "Nokia X20", "Nokia X10", "Nokia G42 5G", "Nokia G22", "Nokia G60 5G", "Nokia G50", "Nokia G21", "Nokia G20", "Nokia G11 Plus", "Nokia G11", "Nokia G10",
     "Nokia C32", "Nokia C22", "Nokia C31", "Nokia C21 Plus", "Nokia C21", "Nokia C12 Pro", "Nokia C12", "Nokia C10", "Nokia C2 2nd Edition", "Nokia C1 2nd Edition", "Nokia C1",
-    "Nokia 8.3 5G", "Nokia 8.1", "Nokia 8 Sirocco", "Nokia 8", "Nokia 7.2", "Nokia 7.1", "Nokia 7 Plus", "Nokia 6.2", "Nokia 6.1 Plus", "Nokia 6.1", "Nokia 6", "Nokia 5.4", "Nokia 5.3", "Nokia 5.1 Plus", "Nokia 5", "Nokia 4.2", "Nokia 3.4", "Nokia 3.2", "Nokia 3.1 Plus", "Nokia 3", "Nokia 2.4", "Nokia 2.3", "Nokia 2.2", "Nokia 2", "Nokia 1.4", "Nokia 1.3", "Nokia 1 Plus", "Nokia 1", "Nokia 9 PureView"
+    "Nokia 8.3 5G", "Nokia 8.1", "Nokia 8 Sirocco", "Nokia 8", "Nokia 7.2", "Nokia 7.1", "Nokia 7 Plus", "Nokia 6.2", "Nokia 6.1 Plus", "Nokia 6.1", "Nokia 6", "Nokia 5.4", "Nokia 5.3", "Nokia 5.1 Plus", "Nokia 5", "Nokia 4.2", "Nokia 3.4", "Nokia 3.2", "Nokia 3.1 Plus", "Nokia 3", "Nokia 2.4", "Nokia 2.3", "Nokia 2.2", "Nokia 2", "Nokia 1.4", "Nokia 1.3", "Nokia 1 Plus", "Nokia 1", "Nokia 9 PureView",
+    "Nokia 8110 4G", "Nokia 3310 (2017)", "Nokia Lumia 1520", "Nokia Lumia 1020", "Nokia Lumia 930", "Nokia Lumia 920", "Nokia Lumia 820", "Nokia Lumia 720", "Nokia Lumia 630", "Nokia Lumia 520", "Nokia N95", "Nokia N97", "Nokia E71", "Nokia E63"
   ],
   "HTC": [
-    "HTC U24 Pro", "HTC U23 Pro", "HTC U23", "HTC Desire 22 Pro", "HTC Desire 21 Pro 5G", "HTC Desire 20+ ", "HTC Desire 20 Pro",
-    "HTC Wildfire E3 Lite", "HTC Wildfire E2 Plus", "HTC Wildfire E3", "HTC Wildfire E2", "HTC Wildfire E1", "HTC Wildfire E", "HTC Wildfire R70",
+    "HTC U24 Pro", "HTC U23 Pro", "HTC U23", "HTC Desire 22 Pro", "HTC Desire 21 Pro 5G", "HTC Desire 20+", "HTC Desire 20 Pro",
+    "HTC Wildfire E3 Lite", "HTC Wildfire E2 Plus", "HTC Wildfire E3", "HTC Wildfire E2", "HTC Wildfire E1", "HTC Wildfire E", "HTC Wildfire R70", "HTC Wildfire X",
     "HTC U12+", "HTC U12 Life", "HTC U11+", "HTC U11 EYEs", "HTC U11", "HTC U11 Life", "HTC Ultra", "HTC Play",
-    "HTC Exodus 1", "HTC Exodus 1s", "HTC Desire 19+", "HTC Desire 19s", "HTC Desire 12+", "HTC Desire 12s", "HTC Desire 12", "HTC Desire 10 Pro", "HTC Desire 10 Lifestyle",
-    "HTC 10", "HTC 10 evo", "HTC One M9+", "HTC One M9", "HTC One A9", "HTC One A9s", "HTC One E9+", "HTC One ME", "HTC One M8", "HTC One E8", "HTC One Max", "HTC One M7", "HTC One Mini 2", "HTC One Mini", "HTC One X", "HTC One S", "HTC One V"
+    "HTC Exodus 1", "HTC Exodus 1s", "HTC Desire 19+", "HTC Desire 19s", "HTC Desire 12+", "HTC Desire 12s", "HTC Desire 12", "HTC Desire 10 Pro", "HTC Desire 10 Lifestyle", "HTC Desire 830", "HTC Desire 825", "HTC Desire 820", "HTC Desire 626",
+    "HTC 10", "HTC 10 evo", "HTC One M9+", "HTC One M9", "HTC One A9", "HTC One A9s", "HTC One E9+", "HTC One ME", "HTC One M8", "HTC One E8", "HTC One Max", "HTC One M7", "HTC One Mini 2", "HTC One Mini", "HTC One X", "HTC One S", "HTC One V", "HTC Sensation Pro", "HTC HD2"
   ]
 }
