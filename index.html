@@ -729,12 +729,13 @@
         let brandModelsMap = {};
         const itemsData = [];
 
-        // حفظ واسترجاع الـ API Key تلقائياً في المتصفح
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('user_gemini_api_key');
             if (savedKey) {
                 document.getElementById('apiKeyInput').value = savedKey;
             }
+            renderFingerprintsList();
+            openBrandsPage();
         });
 
         fetch('models.json')
@@ -1018,7 +1019,6 @@
             const status = document.getElementById('cameraStatus');
             const apiKey = document.getElementById('apiKeyInput').value.trim();
             
-            // حفظ المفتاح في التخزين المحلي للمتصفح
             localStorage.setItem('user_gemini_api_key', apiKey);
 
             try {
@@ -1132,7 +1132,6 @@
                 return;
             }
 
-            // طلب رقم الهاتف أولاً والتحقق منه
             const userPhone = prompt("أدخل رقم الهاتف المراد ربطه بالبصمة (يجب أن يكون من ضمن الأرقام المعتمدة):");
             if (!userPhone) return;
 
@@ -1150,7 +1149,6 @@
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
                 
-                // ربط الـ userId برقم الهاتف المدخل
                 const userId = Uint8Array.from(cleanPhone, c => c.charCodeAt(0));
 
                 const credential = await navigator.credentials.create({
@@ -1201,7 +1199,6 @@
                 });
 
                 if (assertion) {
-                    // تحديد البصمة التي تم استخدامها بدقة من خلال الـ rawId الخاص بها
                     const credentialIdDecoded = bufferEncode(assertion.rawId);
                     const matchedFp = savedFps.find(fp => fp.id === credentialIdDecoded);
                     const merchantId = matchedFp ? matchedFp.merchantId : savedFps[0].merchantId;
@@ -1211,7 +1208,6 @@
                     document.getElementById('main-page').style.display = "block";
                     document.getElementById('display-merchant').innerText = merchantId;
                     
-                    // إظهار قائمة المبيعات فقط لرقم 01155445215 حسب إعداداتك السابقة
                     document.getElementById('specialMenuWrapper').style.display = (merchantId === "01155445215") ? "block" : "none";
                     openBrandsPage();
                 }
@@ -1337,19 +1333,6 @@
             document.getElementById('searchInput').value = '';
 
             brandsContainer.innerHTML = '';
-            brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxInstance(brand))); // تم التصحيح هنا لـ createBrandBoxElement
-        }
-
-        // تم ضبط استدعاء دالة بناء الماركة لتكون صحيحة بالأسفل
-        function openBrandsPage() {
-            hideAllContainers();
-            const brandsContainer = document.getElementById('brandsContainer');
-            brandsContainer.style.display = 'grid';
-            document.getElementById('backBtn').style.display = 'none';
-            currentState = 'brands';
-            document.getElementById('searchInput').value = '';
-
-            brandsContainer.innerHTML = '';
             brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxElement(brand)));
         }
 
@@ -1402,11 +1385,6 @@
             } else {
                 openBrandsPage();
             }
-        }
-
-        window.onload = function() {
-            renderFingerprintsList();
-            openBrandsPage();
         }
     </script>
 </body>
