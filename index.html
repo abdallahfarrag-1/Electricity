@@ -433,7 +433,7 @@
             text-align: right;
         }
 
-        /* نافذة الكاميرا الذكية */
+        /* نافذة الكاميرا الذكية واستيراد الصور */
         #cameraModal {
             display: none;
             position: fixed;
@@ -441,7 +441,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92);
             z-index: 1000;
             flex-direction: column;
             align-items: center;
@@ -451,9 +451,22 @@
 
         #videoElement {
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
+            max-height: 280px;
             border-radius: 12px;
             border: 3px solid #17a2b8;
+            object-fit: cover;
+            background-color: #000;
+        }
+
+        #previewImage {
+            display: none;
+            width: 100%;
+            max-width: 380px;
+            max-height: 280px;
+            border-radius: 12px;
+            border: 3px solid #28a745;
+            object-fit: contain;
         }
 
         .camera-overlay {
@@ -463,14 +476,34 @@
             text-align: center;
         }
 
+        .camera-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            margin-top: 15px;
+        }
+
+        .upload-btn {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
         .close-camera-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
+            padding: 12px;
             background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             font-weight: bold;
         }
@@ -549,7 +582,7 @@
 
         <div class="search-section">
             <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
-                📷 البحث بالكاميرا (وجه ضهر الهاتف للكاميرا)
+                📷 البحث بالكاميرا أو استيراد صورة
             </button>
             
             <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
@@ -572,11 +605,20 @@
         </div>
     </div>
 
-    <!-- نافذة عرض الكاميرا -->
+    <!-- نافذة عرض الكاميرا واستيراد الصور -->
     <div id="cameraModal">
         <video id="videoElement" autoplay playsinline></video>
-        <div class="camera-overlay" id="cameraStatus">جاري تحميل نموذج الذكاء الاصطناعي...</div>
-        <button class="close-camera-btn" onclick="closeCamera()">إغلاق الكاميرا</button>
+        <img id="previewImage" alt="الصورة المختارة">
+        <div class="camera-overlay" id="cameraStatus">جاري التحميل...</div>
+
+        <div class="camera-actions">
+            <!-- زر اختيار صورة من المعرض -->
+            <label class="upload-btn">
+                📁 اختر صورة من المعرض/الجهاز
+                <input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            </label>
+            <button class="close-camera-btn" onclick="closeCamera()">إغلاق</button>
+        </div>
     </div>
 
     <script>
@@ -663,19 +705,20 @@
                      .replace(/ة/g, 'ه')
                      .replace(/[\.\-\_\,\/\\]/g, ' ');
 
+            // خريطة تحويل الصوتيات والترجمة الحرفية الشاملة
             const phoneticMap = [
-                { ar: /\b(ايه|اي|إيه|أيه)\b/g, en: 'a' },
-                { ar: /\b(اس|إس)\b/g, en: 's' },
+                { ar: /\b(اس|إس|س)\b/g, en: 's' },
+                { ar: /\b(ايه|اي|إيه|أيه|أ)\b/g, en: 'a' },
                 { ar: /\b(نوت)\b/g, en: 'note' },
                 { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
-                { ar: /\b(سامسونج|سامسونغ)\b/g, en: 'samsung' },
-                { ar: /\b(ايفون|أيفون)\b/g, en: 'iphone' },
+                { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
+                { ar: /\b(ايفون|أيفون|أيفون)\b/g, en: 'iphone' },
                 { ar: /\b(شاومي|شومي)\b/g, en: 'xiaomi' },
                 { ar: /\b(ريدمي)\b/g, en: 'redmi' },
                 { ar: /\b(انفينكس|انفنكس)\b/g, en: 'infinix' },
                 { ar: /\b(اوبو|أوبو)\b/g, en: 'oppo' },
                 { ar: /\b(هواوي)\b/g, en: 'huawei' },
-                { ar: /\b(هونر|هونور|هونوز)\b/g, en: 'honor' },
+                { ar: /\b(هونر|هونور)\b/g, en: 'honor' },
                 { ar: /\b(برو)\b/g, en: 'pro' },
                 { ar: /\b(بلس|بلاص)\b/g, en: 'plus' },
                 { ar: /\b(الترا)\b/g, en: 'ultra' },
@@ -687,6 +730,7 @@
                 str = str.replace(m.ar, m.en);
             });
 
+            // دمج الحروف مع الأرقام (مثلاً: s 20 تسير s20)
             str = str.replace(/([a-z])\s+([0-9])/gi, '$1$2');
             str = str.replace(/([0-9])\s+([a-z])/gi, '$1$2');
             
@@ -740,7 +784,7 @@
             const targetWords = normTarget.split(' ');
 
             return queryWords.every(qWord => {
-                if (qWord.length <= 2) {
+                if (qWord.length <= 1) {
                     return targetWords.some(tWord => tWord.includes(qWord));
                 }
                 return targetWords.some(tWord => {
@@ -830,13 +874,16 @@
             }
         }
 
-        // ================= خاصية البحث الذكي بالكاميرا =================
+        // ================= خاصية البحث الذكي بالكاميرا واستيراد الصور =================
 
         async function triggerCameraSearch() {
             const modal = document.getElementById('cameraModal');
             const video = document.getElementById('videoElement');
+            const preview = document.getElementById('previewImage');
             const status = document.getElementById('cameraStatus');
 
+            preview.style.display = 'none';
+            video.style.display = 'block';
             modal.style.display = 'flex';
             status.innerText = 'جاري فتح الكاميرا...';
 
@@ -851,13 +898,12 @@
                     model = await mobilenet.load();
                 }
 
-                status.innerText = 'وجه الكاميرا لظهر الهاتف بوضوح...';
+                status.innerText = 'وجه الكاميرا لظهر الهاتف أو استورد صورة...';
                 isAnalyzing = true;
                 analyzeCameraFrame();
 
             } catch (err) {
-                alert("تعذر فتح الكاميرا، يرجى السماح بصلاحيات الوصول للكاميرا.");
-                closeCamera();
+                status.innerText = 'تعذر فتح الكاميرا مباشر، يمكنك استيراد صورة من المعرض.';
             }
         }
 
@@ -869,31 +915,67 @@
 
             if (video.readyState === 4 && model) {
                 const predictions = await model.classify(video);
-                
-                if (predictions && predictions.length > 0) {
-                    const topPrediction = predictions[0].className.toLowerCase();
-                    status.innerText = `التعرف اللحظي: ${topPrediction}`;
-
-                    // مطابقة الكائن المكتشف مع الأجهزة والماركات
-                    for (let brand of brandsData) {
-                        if (topPrediction.includes(brand.name.toLowerCase()) || topPrediction.includes('phone') || topPrediction.includes('cellular') || topPrediction.includes('ipod')) {
-                            
-                            // ابحث عن اسم الماركة المكتشفة أو اترك البحث الذكي يشتغل
-                            let detectedText = brand.name;
-                            if (topPrediction.includes('iphone') || topPrediction.includes('ipod')) detectedText = 'Apple';
-                            
-                            document.getElementById('searchInput').value = detectedText;
-                            globalSearch();
-                            closeCamera();
-                            return;
-                        }
-                    }
-                }
+                processPredictions(predictions);
             }
 
             setTimeout(() => {
                 if (isAnalyzing) requestAnimationFrame(analyzeCameraFrame);
-            }, 500); 
+            }, 600); 
+        }
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            isAnalyzing = false; // إيقاف قراءة الفيديو الحية
+            const video = document.getElementById('videoElement');
+            const preview = document.getElementById('previewImage');
+            const status = document.getElementById('cameraStatus');
+
+            status.innerText = 'جاري تحليل الصورة المختارة...';
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                preview.src = e.target.result;
+                video.style.display = 'none';
+                preview.style.display = 'block';
+
+                if (!model) {
+                    model = await mobilenet.load();
+                }
+
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = async function() {
+                    const predictions = await model.classify(img);
+                    processPredictions(predictions, true);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function processPredictions(predictions, isImage = false) {
+            const status = document.getElementById('cameraStatus');
+            if (predictions && predictions.length > 0) {
+                const topPrediction = predictions[0].className.toLowerCase();
+                status.innerText = `النتيجة المكتشفة: ${topPrediction}`;
+
+                for (let brand of brandsData) {
+                    if (topPrediction.includes(brand.name.toLowerCase()) || topPrediction.includes('phone') || topPrediction.includes('cellular') || topPrediction.includes('ipod')) {
+                        let detectedText = brand.name;
+                        if (topPrediction.includes('iphone') || topPrediction.includes('ipod')) detectedText = 'Apple';
+                        
+                        document.getElementById('searchInput').value = detectedText;
+                        globalSearch();
+                        closeCamera();
+                        return;
+                    }
+                }
+
+                if (isImage) {
+                    status.innerText = 'تعذر التعرف الدقيق على الموبايل، جرب صورة أخرى أوضح.';
+                }
+            }
         }
 
         function closeCamera() {
@@ -904,7 +986,7 @@
             document.getElementById('cameraModal').style.display = 'none';
         }
 
-        // ================= Voice & Biometrics & Helpers =================
+        // ================= البحث بالصوت المحسّن =================
 
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
