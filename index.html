@@ -332,14 +332,13 @@
             font-size: 14px;
         }
 
-        /* شبكة الأقسام والماركات (ثنائية) */
+        /* شبكة الأقسام والماركات */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
 
-        /* حاوية الموديلات بعرض كامل الصفحة */
         .items-single-container {
             display: flex;
             flex-direction: column;
@@ -365,7 +364,6 @@
             text-align: center;
         }
 
-        /* تصميم مربع الموديل: إجبار اتجاه ومحاذاة اليسار (LTR) */
         .item-box-single {
             height: 60px;
             display: flex;
@@ -384,7 +382,6 @@
             border-left: 5px solid #007bff !important;
             border-right: none !important;
             border-radius: 6px;
-            
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -513,7 +510,7 @@
                 🎤 البحث بالصوت (تكلم بالميكروفون)
             </button>
 
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, Note 10S)..." oninput="globalSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, Note 10S, A5s)..." oninput="globalSearch()">
         </div>
 
         <div class="container">
@@ -523,7 +520,6 @@
 
             <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- حاوية الموديلات الفعلية دون تكرار -->
             <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
 
             <div class="search-results-container" id="searchResultsContainer"></div>
@@ -535,7 +531,6 @@
         let selectedCategory = null;
         let selectedBrand = null;
 
-        // الأقسام الرئيسية
         const categoriesData = [
             { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
             { id: 2, name: 'بطارية', alt: 'battery بطاريه', img: './battery.jpg' },
@@ -547,7 +542,6 @@
             { id: 8, name: '', alt: '', img: '', isEmpty: true }
         ];
 
-        // قائمة الماركات المطلوبة مع أسمائها وصورها المحددة
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
@@ -564,7 +558,6 @@
         let brandModelsMap = {};
         const itemsData = [];
 
-        // جلب البيانات من ملف models.json الخارجي
         fetch('models.json')
             .then(response => response.json())
             .then(data => {
@@ -572,10 +565,9 @@
                 generateItemsData();
             })
             .catch(err => {
-                console.error("لم يتم العثور على ملف models.json، جارٍ استخدام الوضع الافتراضي:", err);
+                console.error("لم يتم العثور على ملف models.json:", err);
             });
 
-        // ✅ التعديل هنا: توليد الموديلات الحقيقية فقط لجميع الأقسام بدون تكرار وبدون فرض 400 عنصر
         function generateItemsData() {
             itemsData.length = 0;
             let itemId = 1;
@@ -599,20 +591,179 @@
             });
         }
 
-        // ================= محرك البحث بالصوت (Web Speech API) =================
+        // ================= محرك المعالجة والبحث الذكي =================
+
+        // تنظيف الأساسي للنصوص
+        function cleanText(text) {
+            if (!text) return '';
+            return text
+                .toLowerCase()
+                .replace(/[أإآء]/g, 'ا')
+                .replace(/ى/g, 'ي')
+                .replace(/ة/g, 'ه')
+                .replace(/[\.\-\_\,\/\\]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // توحيد الموديلات وإزالة المسافات بين الحروف والأرقام
+        function normalizeModelCode(text) {
+            let str = cleanText(text);
+
+            // تحويلات النطق العربي
+            str = str.replace(/نوت\s*/g, 'note ');
+            str = str.replace(/ايه\s*/g, 'a');
+            str = str.replace(/اي\s*/g, 'a');
+            str = str.replace(/اس\s*/g, 's');
+            str = str.replace(/برو\s*/g, 'pro');
+            str = str.replace(/بلاص\s*|بلس\s*/g, 'plus');
+
+            // إزالة المسافات المتقاطعة بين الحروف والأرقام (مثال: A 30 -> a30 / A 05 s -> a05s)
+            str = str.replace(/([a-z])\s+([0-9])/gi, '$1$2');
+            str = str.replace(/([0-9])\s+([a-z])/gi, '$1$2');
+            str = str.replace(/\s+/g, '');
+
+            return str;
+        }
+
+        // توليد بدائل ذكية للموديل (مثل تحويل a5s إلى a05s)
+        function getModelVariants(normalizedText) {
+            const variants = new Set([normalizedText]);
+
+            // مطابقة نمط الحرف + رقم واحد + حرف (مثل a5s -> a05s)
+            const singleDigitMatch = normalizedText.match(/^([a-z]+)(\d)([a-z]*)$/i);
+            if (singleDigitMatch) {
+                const prefix = singleDigitMatch[1];
+                const digit = singleDigitMatch[2];
+                const suffix = singleDigitMatch[3];
+                variants.add(`${prefix}0${digit}${suffix}`);
+            }
+
+            // مطابقة نمط الحرف + رقمين أحدهما صفر (مثل a05s -> a5s)
+            const paddedMatch = normalizedText.match(/^([a-z]+)0(\d)([a-z]*)$/i);
+            if (paddedMatch) {
+                const prefix = paddedMatch[1];
+                const digit = paddedMatch[2];
+                const suffix = paddedMatch[3];
+                variants.add(`${prefix}${digit}${suffix}`);
+            }
+
+            return Array.from(variants);
+        }
+
+        function isModelMatched(query, targetModelName) {
+            const rawQueryClean = cleanText(query);
+            const targetClean = cleanText(targetModelName);
+
+            // 1. بحث عادي بالكلمات
+            if (targetClean.includes(rawQueryClean)) return true;
+
+            // 2. مطابقة الرموز الذكية
+            const normQuery = normalizeModelCode(query);
+            const normTarget = normalizeModelCode(targetModelName);
+
+            if (!normQuery) return false;
+
+            const queryVariants = getModelVariants(normQuery);
+
+            for (let variant of queryVariants) {
+                if (normTarget.includes(variant)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function globalSearch() {
+            const query = document.getElementById('searchInput').value;
+            const resultsContainer = document.getElementById('searchResultsContainer');
+
+            if (cleanText(query) === '') {
+                resultsContainer.style.display = 'none';
+                restoreStateView();
+                return;
+            }
+
+            hideAllContainers();
+            resultsContainer.style.display = 'flex';
+            document.getElementById('backBtn').style.display = 'block';
+            resultsContainer.innerHTML = '';
+
+            const matchedCategories = categoriesData.filter(cat => !cat.isEmpty && (cleanText(cat.name).includes(cleanText(query)) || cleanText(cat.alt).includes(cleanText(query))));
+            const matchedBrands = brandsData.filter(brand => cleanText(brand.name).includes(cleanText(query)) || cleanText(brand.alt).includes(cleanText(query)));
+            
+            // تجميع الموديلات ومنع التكرار نهائياً باستخدام unique set
+            const matchedItems = [];
+            const seenKeys = new Set();
+
+            itemsData.forEach(item => {
+                if (isModelMatched(query, item.name) || isModelMatched(query, item.altKeywords)) {
+                    // الفلترة باسم الموديل لعدم تكراره في نتائج البحث
+                    const uniqueKey = item.name.trim().toLowerCase();
+                    if (!seenKeys.has(uniqueKey)) {
+                        seenKeys.add(uniqueKey);
+                        matchedItems.push(item);
+                    }
+                }
+            });
+
+            if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
+                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
+                return;
+            }
+
+            if (matchedCategories.length > 0) {
+                const catTitle = document.createElement('div');
+                catTitle.className = 'search-section-title';
+                catTitle.innerText = 'الأقسام الرئيسية المتطابقة:';
+                resultsContainer.appendChild(catTitle);
+
+                const gridWrapper = document.createElement('div');
+                gridWrapper.className = 'grid-container';
+                matchedCategories.forEach(cat => gridWrapper.appendChild(createCategoryBoxElement(cat)));
+                resultsContainer.appendChild(gridWrapper);
+            }
+
+            if (matchedBrands.length > 0) {
+                const brandTitle = document.createElement('div');
+                brandTitle.className = 'search-section-title';
+                brandTitle.style.marginTop = '15px';
+                brandTitle.innerText = 'الماركات المتطابقة:';
+                resultsContainer.appendChild(brandTitle);
+
+                const brandsWrapper = document.createElement('div');
+                brandsWrapper.className = 'grid-container';
+                matchedBrands.forEach(brand => brandsWrapper.appendChild(createBrandBoxElement(brand)));
+                resultsContainer.appendChild(brandsWrapper);
+            }
+
+            if (matchedItems.length > 0) {
+                const itemTitle = document.createElement('div');
+                itemTitle.className = 'search-section-title';
+                itemTitle.style.marginTop = '15px';
+                itemTitle.innerText = 'الموديلات المتطابقة:';
+                resultsContainer.appendChild(itemTitle);
+
+                const itemsWrapper = document.createElement('div');
+                itemsWrapper.className = 'items-single-container';
+                matchedItems.forEach(item => itemsWrapper.appendChild(createItemBoxElement(item)));
+                resultsContainer.appendChild(itemsWrapper);
+            }
+        }
+
+        // ================= Voice & Biometrics & Helper Navigation =================
 
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
             if (!SpeechRecognition) {
-                alert("المتصفح الخاص بك لا يدعم ميزة البحث بالصوت. يرجى تجربة متصفح Google Chrome.");
+                alert("المتصفح الخاص بك لا يدعم ميزة البحث بالصوت.");
                 return;
             }
 
             const recognition = new SpeechRecognition();
             recognition.lang = 'ar-EG'; 
             recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
 
             const voiceBtn = document.getElementById('voiceBtn');
             voiceBtn.classList.add('listening');
@@ -622,28 +773,18 @@
 
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
-                const searchInput = document.getElementById('searchInput');
-                searchInput.value = spokenText;
-                
+                document.getElementById('searchInput').value = spokenText;
                 globalSearch();
 
                 voiceBtn.classList.remove('listening');
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
             };
 
-            recognition.onerror = function() {
-                alert("تعذر التقاط الصوت، يرجى المحاولة مرة أخرى والـتأكد من السماح للميكروفون.");
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-
-            recognition.onend = function() {
+            recognition.onerror = recognition.onend = function() {
                 voiceBtn.classList.remove('listening');
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
             };
         }
-
-        // ================= WebAuthn Biometrics =================
 
         function bufferDecode(value) {
             return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
@@ -673,32 +814,29 @@
 
         async function registerFingerprint() {
             if (!window.PublicKeyCredential) {
-                alert("متصفحك أو جهازك لا يدعم خاصية البصمة (WebAuthn).");
+                alert("جهازك لا يدعم خاصية البصمة.");
                 return;
             }
 
-            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة:", "بصمة 1");
+            const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة 1");
             if (!fpName) return;
 
             try {
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
-
                 const userId = new Uint8Array(16);
                 window.crypto.getRandomValues(userId);
 
-                const createCredentialOptions = {
+                const credential = await navigator.credentials.create({
                     publicKey: {
-                        challenge: challenge,
+                        challenge,
                         rp: { name: "Electricity App" },
                         user: { id: userId, name: "merchant_user", displayName: "التاجر" },
                         pubKeyCredParams: [{ alg: -7, type: "public-key" }],
                         authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
                         timeout: 60000
                     }
-                };
-
-                const credential = await navigator.credentials.create(createCredentialOptions);
+                });
 
                 if (credential) {
                     const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
@@ -708,7 +846,7 @@
                     renderFingerprintsList();
                 }
             } catch (err) {
-                alert("فشلت عملية التسجيل أو تم إلغاء المحاولة.");
+                alert("فشلت عملية التسجيل.");
             }
         }
 
@@ -722,7 +860,6 @@
             try {
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
-
                 const allowCredentials = savedFps.map(fp => ({ id: bufferDecode(fp.id), type: 'public-key' }));
 
                 const assertion = await navigator.credentials.get({
@@ -748,8 +885,6 @@
             localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
             renderFingerprintsList();
         }
-
-        // ================= الدخول والتحقق =================
 
         function validateAndNavigate() {
             const val1 = document.getElementById('merchant-id').value.trim();
@@ -791,11 +926,8 @@
             document.getElementById('dropdownMenu').style.display = 'none';
         }
 
-        // ================= عرض الصفحة والشبكات =================
-
         function createCategoryBoxElement(cat) {
             const box = document.createElement('div');
-            
             if (cat.isEmpty) {
                 box.className = 'grid-box empty-box';
                 return box;
@@ -877,122 +1009,6 @@
             document.getElementById('brandsContainer').style.display = 'none';
             document.getElementById('itemsContainer').style.display = 'none';
             document.getElementById('searchResultsContainer').style.display = 'none';
-        }
-
-        // ================= محرك البحث الذكي =================
-
-        function cleanText(text) {
-            if (!text) return '';
-            return text
-                .toLowerCase()
-                .replace(/[أإآء]/g, 'ا')
-                .replace(/ى/g, 'ي')
-                .replace(/ة/g, 'ه')
-                .replace(/[\.\-\_\,\/\\]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function translateArabicModelQuery(query) {
-            let q = cleanText(query);
-            
-            q = q.replace(/نوت\s*(\d+)\s*اس\s*برو/g, 'note $1s pro');
-            q = q.replace(/نوت\s*(\d+)\s*اس/g, 'note $1s');
-            q = q.replace(/نوت\s*(\d+)/g, 'note $1');
-            q = q.replace(/ايه\s*(\d+)/g, 'a$1');
-            q = q.replace(/اي\s*(\d+)/g, 'a$1');
-            q = q.replace(/اس\s*(\d+)/g, 's$1');
-            q = q.replace(/(\d+)\s*اس/g, '$1s');
-
-            return q;
-        }
-
-        function isStrictModelMatch(queryToken, targetFullText) {
-            const token = cleanText(queryToken);
-            const target = cleanText(targetFullText);
-
-            if (!token) return false;
-
-            const isModelToken = /^([a-z]*\d+[a-z]*|\d+[a-z]+)$/i.test(token);
-
-            if (isModelToken) {
-                const regex = new RegExp(`(?:^|\\s)${token}(?:$|\\s)`, 'i');
-                return regex.test(target);
-            }
-
-            return target.includes(token);
-        }
-
-        function isSmartMatch(sourceObject, rawQuery) {
-            const translatedQuery = translateArabicModelQuery(rawQuery);
-            const queryTokens = translatedQuery.split(' ').filter(t => t.length > 0);
-
-            const sourceFullText = cleanText(`${sourceObject.name} ${sourceObject.alt || ''} ${sourceObject.altKeywords || ''}`);
-
-            return queryTokens.every(token => isStrictModelMatch(token, sourceFullText));
-        }
-
-        function globalSearch() {
-            const query = document.getElementById('searchInput').value;
-            const resultsContainer = document.getElementById('searchResultsContainer');
-
-            if (cleanText(query) === '') {
-                resultsContainer.style.display = 'none';
-                restoreStateView();
-                return;
-            }
-
-            hideAllContainers();
-            resultsContainer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            resultsContainer.innerHTML = '';
-
-            const matchedCategories = categoriesData.filter(cat => !cat.isEmpty && isSmartMatch(cat, query));
-            const matchedBrands = brandsData.filter(brand => isSmartMatch(brand, query));
-            const matchedItems = itemsData.filter(item => isSmartMatch(item, query));
-
-            if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
-                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
-                return;
-            }
-
-            if (matchedCategories.length > 0) {
-                const catTitle = document.createElement('div');
-                catTitle.className = 'search-section-title';
-                catTitle.innerText = 'الأقسام الرئيسية المتطابقة:';
-                resultsContainer.appendChild(catTitle);
-
-                const gridWrapper = document.createElement('div');
-                gridWrapper.className = 'grid-container';
-                matchedCategories.forEach(cat => gridWrapper.appendChild(createCategoryBoxElement(cat)));
-                resultsContainer.appendChild(gridWrapper);
-            }
-
-            if (matchedBrands.length > 0) {
-                const brandTitle = document.createElement('div');
-                brandTitle.className = 'search-section-title';
-                brandTitle.style.marginTop = '15px';
-                brandTitle.innerText = 'الماركات المتطابقة:';
-                resultsContainer.appendChild(brandTitle);
-
-                const brandsWrapper = document.createElement('div');
-                brandsWrapper.className = 'grid-container';
-                matchedBrands.forEach(brand => brandsWrapper.appendChild(createBrandBoxElement(brand)));
-                resultsContainer.appendChild(brandsWrapper);
-            }
-
-            if (matchedItems.length > 0) {
-                const itemTitle = document.createElement('div');
-                itemTitle.className = 'search-section-title';
-                itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة:';
-                resultsContainer.appendChild(itemTitle);
-
-                const itemsWrapper = document.createElement('div');
-                itemsWrapper.className = 'items-single-container';
-                matchedItems.forEach(item => itemsWrapper.appendChild(createItemBoxElement(item)));
-                resultsContainer.appendChild(itemsWrapper);
-            }
         }
 
         function triggerCameraSearch() {
