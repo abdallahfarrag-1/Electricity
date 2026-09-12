@@ -678,16 +678,20 @@
             return str;
         }
 
+        // محرك التطبيع والبحث الموسع والمطور جداً
         function smartNormalize(text) {
             if (!text) return '';
             let str = text.toLowerCase();
             str = convertArabicNumbers(str);
             str = str.replace(/\+/g, ' plus ');
+            
+            // توحيد الحروف العربية المتشابهة
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
-                     .replace(/[\.\-\_\,\/\\]/g, ' ');
+                     .replace(/[\.\-\_\,\/\(\)]/g, ' ');
 
+            // جدول تحويل الكلمات الصوتية العامية إلى إنجليزية دقيقة لتسهيل المطابقة مع ملف الموديلات
             const phoneticMap = [
                 { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
                 { ar: /\b(بي|بيه)\b/g, en: 'b' },
@@ -717,7 +721,7 @@
                 { ar: /\b(زد|زي)\b/g, en: 'z' },
                 { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
                 { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
-                { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
+                { ar: /\b(جالاكسي|جالكسي|جلكسي)\b/g, en: 'galaxy' },
                 { ar: /\b(برو)\b/g, en: 'pro' },
                 { ar: /\b(ماكس)\b/g, en: 'max' },
                 { ar: /\b(بلس|بلاص)\b/g, en: 'plus' },
@@ -735,8 +739,10 @@
                 str = str.replace(m.ar, m.en);
             });
 
+            // دمج الحروف والأرقام المنفصلة (مثل a 5 أو s 21 لتصبح a5 أو s21)
             str = str.replace(/\b([a-z])\s+([a-z])\s+(\d+)\b/g, '$1$2$3');
             str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
+            str = str.replace(/\b(\d+)\s+([a-z])\b/g, '$1$2');
 
             return str.trim().replace(/\s+/g, ' ');
         }
@@ -757,7 +763,13 @@
             resultsContainer.innerHTML = '';
 
             const normalizedQuery = smartNormalize(rawQuery);
-            const queryWords = normalizedQuery.split(' ');
+            const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
+
+            if (queryWords.length === 0) {
+                resultsContainer.style.display = 'none';
+                restoreStateView();
+                return;
+            }
 
             const matchedBrands = brandsData.filter(brand => {
                 const normBrand = smartNormalize(brand.name + ' ' + brand.alt);
@@ -768,8 +780,11 @@
             const seenKeys = new Set();
 
             itemsData.forEach(item => {
-                const normTarget = smartNormalize(item.name + ' ' + item.altKeywords);
-                const isMatch = queryWords.every(qWord => normTarget.includes(qWord));
+                const normTarget = smartNormalize(item.name + ' ' + item.brand + ' ' + item.altKeywords);
+                
+                // مطابقة موسعة: إذا كانت الكلمات المدخلة موجودة في الموديل أو متطابقة معه جزئياً
+                const isMatch = queryWords.every(qWord => normTarget.includes(qWord)) || 
+                                queryWords.some(qWord => normTarget.split(' ').includes(qWord));
 
                 if (isMatch) {
                     const uniqueKey = item.name.trim().toLowerCase();
@@ -801,7 +816,7 @@
                 const itemTitle = document.createElement('div');
                 itemTitle.className = 'search-section-title';
                 itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة:';
+                itemTitle.innerText = 'الموديلات المتطابقة (بحث موسع):';
                 resultsContainer.appendChild(itemTitle);
 
                 const itemsWrapper = document.createElement('div');
@@ -968,6 +983,7 @@
             document.getElementById('cameraModal').style.display = 'none';
         }
 
+        // البحث الصوتي الموسع والمحدث ليضع الكلام المنطوق مباشرة في خانة البحث
         window.startVoiceSearch = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -987,8 +1003,9 @@
 
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
-                document.getElementById('searchInput').value = spokenText;
-                globalSearch();
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = spokenText; // يكتب الكلام اللي فهمه في خانة البحث بالكتابة فوراً
+                globalSearch(); // يشغل محرك البحث الشامل على النص المكتوب
 
                 voiceBtn.classList.remove('listening');
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
@@ -1026,7 +1043,6 @@
             `).join('');
         }
 
-        // تسجيل بصمة جديدة مع التحقق الإجباري من رقم الهاتف وكلمة السر الخاصة به
         window.registerFingerprint = async function() {
             if (!window.PublicKeyCredential) {
                 alert("جهازك لا يدعم خاصية البصمة.");
@@ -1037,7 +1053,6 @@
             if (!userPhone) return;
             const cleanPhone = userPhone.trim();
 
-            // التحقق هل الرقم مدرج في السيستم وليه باسورد
             if (!validCredentials.hasOwnProperty(cleanPhone)) {
                 alert("عذراً، رقم الهاتف المدخل غير مسجل في النظام!");
                 return;
@@ -1046,15 +1061,12 @@
             const userPassword = prompt(`أدخل كلمة السر الخاصة برقم الهاتف (${cleanPhone}):`);
             if (!userPassword) return;
 
-            // التحقق من صحة كلمة السر المرتبطة برقم الهاتف
             if (validCredentials[cleanPhone] !== userPassword.trim()) {
                 alert("❌ كلمة السر غير صحيحة لهذا الرقم! لا يمكن تسجيل البصمة.");
                 return;
             }
 
             let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            
-            // التحقق هل تم تسجيل بصمة لهذه الرقم مسبقاً محلياً
             const existingForPhone = savedFps.find(fp => fp.merchantId === cleanPhone);
             if (existingForPhone) {
                 alert(`⚠️ عذراً، رقم الهاتف (${cleanPhone}) مسجل له بصمة بالفعل على هذا الجهاز (${existingForPhone.name}).`);
@@ -1381,7 +1393,7 @@
                 🎤 البحث بالصوت (تكلم بالميكروفون)
             </button>
 
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: iPhone 16 Pro Max, A10, Galaxy Ultra...)" oninput="globalSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: سامسونج A5, iPhone 16 Pro Max, Galaxy Ultra...)" oninput="globalSearch()">
         </div>
 
         <div class="container">
