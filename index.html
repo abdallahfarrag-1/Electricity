@@ -306,6 +306,7 @@
             border-radius: 6px;
             font-size: 16px;
             outline: none;
+            text-align: right;
         }
 
         .search-input:focus {
@@ -338,7 +339,7 @@
             gap: 20px;
         }
 
-        /* شبكة العناصر والقطع الـ 300 (فردية - بعرض كامل الصفحة) */
+        /* حاوية الموديلات بعرض كامل الصفحة */
         .items-single-container {
             display: flex;
             flex-direction: column;
@@ -364,16 +365,22 @@
             text-align: center;
         }
 
-        /* تصميم المربع الفردي المخصص للقطع والموديلات */
+        /* تصميم مربع الموديل: من اليسار إلى اليمين لتناسب النص الإنجليزي */
         .item-box-single {
-            height: 65px;
+            height: 60px;
             flex-direction: row;
             justify-content: flex-start;
+            align-items: center;
             padding: 0 20px;
-            font-size: 17px;
+            font-size: 18px;
+            font-weight: bold;
             color: #1a252f;
             background-color: #ffffff;
             border-left: 5px solid #007bff;
+            border-right: none;
+            dir: ltr; /* ضبط اتجاه الكتابة من اليسار لليمن */
+            text-align: left; /* محاذاة لليسار */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .grid-box:hover {
@@ -417,6 +424,7 @@
             border-bottom: 2px solid #007bff;
             padding-bottom: 5px;
             margin-bottom: 10px;
+            text-align: right;
         }
 
         @media (max-width: 500px) {
@@ -428,8 +436,8 @@
                 font-size: 15px;
             }
             .item-box-single {
-                height: 55px;
-                font-size: 15px;
+                height: 52px;
+                font-size: 16px;
                 padding: 0 15px;
             }
             .box-img {
@@ -500,7 +508,7 @@
                 🎤 البحث بالصوت (تكلم بالميكروفون)
             </button>
 
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, 10S, Note 10S Pro)..." oninput="globalSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, Note 10S)..." oninput="globalSearch()">
         </div>
 
         <div class="container">
@@ -510,7 +518,7 @@
 
             <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- حاوية العناصر الـ 300 بشكل فردي -->
+            <!-- حاوية الموديلات الـ 300 بشكل فردي -->
             <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
 
             <div class="search-results-container" id="searchResultsContainer"></div>
@@ -522,7 +530,7 @@
         let selectedCategory = null;
         let selectedBrand = null;
 
-        // الأقسام متضمنة الخانات الفاضية
+        // الأقسام الرئيسية
         const categoriesData = [
             { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
             { id: 2, name: 'بطارية', alt: 'battery بطاريه', img: './battery.jpg' },
@@ -534,7 +542,7 @@
             { id: 8, name: '', alt: '', img: '', isEmpty: true }
         ];
 
-        // قائمة الماركات الكاملة
+        // قائمة الماركات
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
@@ -562,7 +570,7 @@
                 console.error("لم يتم العثور على ملف models.json، جارٍ استخدام الوضع الافتراضي:", err);
             });
 
-        // توليد الـ 300 عنصر لكل شركة من الأحدث للأقدم
+        // توليد الموديلات بدون اسم الشركة وبدون اسم القطعة
         function generateItemsData() {
             itemsData.length = 0;
             let itemId = 1;
@@ -577,18 +585,18 @@
                         if (i <= models.length) {
                             modelName = models[i - 1];
                         } else {
-                            const baseModel = models[(i - 1) % baseCount] || `موديل ${i}`;
-                            modelName = `${baseModel} (إصدار قديم ${i})`;
+                            const baseModel = models[(i - 1) % baseCount] || `Model ${i}`;
+                            modelName = `${baseModel} (${i})`;
                         }
 
                         itemsData.push({
                             id: itemId++,
                             itemNumber: i,
-                            name: `${brand.name} ${modelName}`, // إظهار الماركة والموديل فقط بدون اسم القسم
+                            name: modelName, // اسم الموديل فقط بالإنجليزية
                             category: cat.name,
                             brand: brand.name,
                             model: modelName,
-                            altKeywords: `${cat.name} ${cat.alt} ${brand.alt} ${modelName}` // الاحتفاظ بالقسم في الكلمات المفتاحية للبحث
+                            altKeywords: `${cat.name} ${cat.alt} ${brand.name} ${brand.alt} ${modelName}` // للبحث
                         });
                     }
                 });
@@ -627,7 +635,7 @@
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
             };
 
-            recognition.onerror = function(event) {
+            recognition.onerror = function() {
                 alert("تعذر التقاط الصوت، يرجى المحاولة مرة أخرى والـتأكد من السماح للميكروفون.");
                 voiceBtn.classList.remove('listening');
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
@@ -825,11 +833,11 @@
             return box;
         }
 
-        // إنشاء المربع الفردي المخصص للموديل
+        // إنشاء المربع المخصص للموديل بخط واتجاه LTR
         function createItemBoxElement(item) {
             const box = document.createElement('div');
             box.className = 'grid-box item-box-single';
-            box.innerText = item.name;
+            box.innerText = item.name; 
             return box;
         }
 
@@ -853,7 +861,7 @@
         function openItemsPage() {
             hideAllContainers();
             const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.style.display = 'flex'; // استخدام Flex للعرض الفردي
+            itemsContainer.style.display = 'flex';
             document.getElementById('backBtn').style.display = 'block';
             currentState = 'items';
 
@@ -876,7 +884,7 @@
             document.getElementById('searchResultsContainer').style.display = 'none';
         }
 
-        // ================= محرك البحث الذكي والدقيق =================
+        // ================= محرك البحث الذكي =================
 
         function cleanText(text) {
             if (!text) return '';
@@ -982,7 +990,7 @@
                 const itemTitle = document.createElement('div');
                 itemTitle.className = 'search-section-title';
                 itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'العناصر المتطابقة:';
+                itemTitle.innerText = 'الموديلات المتطابقة:';
                 resultsContainer.appendChild(itemTitle);
 
                 const itemsWrapper = document.createElement('div');
