@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity</title>
+    <!-- مكتبات الذكاء الاصطناعي والتعرف على الصور (TensorFlow.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    
     <style>
         * {
             box-sizing: border-box;
@@ -429,6 +433,48 @@
             text-align: right;
         }
 
+        /* نافذة الكاميرا الذكية */
+        #cameraModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #videoElement {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            border: 3px solid #17a2b8;
+        }
+
+        .camera-overlay {
+            color: white;
+            margin-top: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .close-camera-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         @media (max-width: 500px) {
             .grid-container {
                 gap: 12px;
@@ -503,7 +549,7 @@
 
         <div class="search-section">
             <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
-                📷 البحث بالكاميرا
+                📷 البحث بالكاميرا (وجه ضهر الهاتف للكاميرا)
             </button>
             
             <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
@@ -526,10 +572,20 @@
         </div>
     </div>
 
+    <!-- نافذة عرض الكاميرا -->
+    <div id="cameraModal">
+        <video id="videoElement" autoplay playsinline></video>
+        <div class="camera-overlay" id="cameraStatus">جاري تحميل نموذج الذكاء الاصطناعي...</div>
+        <button class="close-camera-btn" onclick="closeCamera()">إغلاق الكاميرا</button>
+    </div>
+
     <script>
         let currentState = 'main'; 
         let selectedCategory = null;
         let selectedBrand = null;
+        let model = null; 
+        let videoStream = null;
+        let isAnalyzing = false;
 
         const categoriesData = [
             { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
@@ -593,24 +649,20 @@
 
         // ================= محرك المعالجة والبحث الذكي الفائق =================
 
-        // 1. تحويل الأرقام العربية الهندية (١, ٢, ٣...) إلى إنجليزية (1, 2, 3...)
         function parseArabicDigits(str) {
             return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
         }
 
-        // 2. تنظيف وتوحيد النطق وتحويل الصوت/العربي للإنجليزية
         function smartNormalize(text) {
             if (!text) return '';
             let str = text.toLowerCase();
             str = parseArabicDigits(str);
 
-            // توحيد الحروف العربية والرموز
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
                      .replace(/[\.\-\_\,\/\\]/g, ' ');
 
-            // ترجمة الصوتيات العربية الشائعة للماركات والموديلات إلى الإنجليزية
             const phoneticMap = [
                 { ar: /\b(ايه|اي|إيه|أيه)\b/g, en: 'a' },
                 { ar: /\b(اس|إس)\b/g, en: 's' },
@@ -635,14 +687,12 @@
                 str = str.replace(m.ar, m.en);
             });
 
-            // دمج الحروف بالأرقام (مثال: a 17 -> a17 أو note 10 s -> note10s)
             str = str.replace(/([a-z])\s+([0-9])/gi, '$1$2');
             str = str.replace(/([0-9])\s+([a-z])/gi, '$1$2');
             
             return str.trim().replace(/\s+/g, ' ');
         }
 
-        // 3. خوارزمية حساب نسبة التشابه لمسامحة الأخطاء الإملائية (Levenshtein Distance)
         function similarityScore(s1, s2) {
             let longer = s1;
             let shorter = s2;
@@ -680,15 +730,12 @@
             return costs[s2.length];
         }
 
-        // 4. دالة التحقق الذكي من تطابق الكلمات والمقصد
         function smartMatch(query, target) {
             const normQuery = smartNormalize(query);
             const normTarget = smartNormalize(target);
 
-            // مطابقة مباشرة بعد التبسيط
             if (normTarget.includes(normQuery)) return true;
 
-            // مطابقة الكلمات المنفصلة مع نسبة خطأ مسموحة للأخطاء الإملائية
             const queryWords = normQuery.split(' ');
             const targetWords = normTarget.split(' ');
 
@@ -698,13 +745,10 @@
                 }
                 return targetWords.some(tWord => {
                     if (tWord.includes(qWord)) return true;
-                    // سماح بنسبة خطأ إملائي تصل إلى 70% تشابه للكلمات الطويلة
                     return similarityScore(qWord, tWord) >= 0.70;
                 });
             });
         }
-
-        // ================= دالة البحث الشاملة =================
 
         function globalSearch() {
             const rawQuery = document.getElementById('searchInput').value;
@@ -721,17 +765,14 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            // 1. بحث الأقسام
             const matchedCategories = categoriesData.filter(cat => 
                 !cat.isEmpty && (smartMatch(rawQuery, cat.name) || smartMatch(rawQuery, cat.alt))
             );
 
-            // 2. بحث الماركات
             const matchedBrands = brandsData.filter(brand => 
                 smartMatch(rawQuery, brand.name) || smartMatch(rawQuery, brand.alt)
             );
 
-            // 3. بحث الموديلات الذكي مع منع التكرار
             const matchedItems = [];
             const seenKeys = new Set();
 
@@ -789,7 +830,81 @@
             }
         }
 
-        // ================= Voice & Biometrics & Helper Navigation =================
+        // ================= خاصية البحث الذكي بالكاميرا =================
+
+        async function triggerCameraSearch() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('videoElement');
+            const status = document.getElementById('cameraStatus');
+
+            modal.style.display = 'flex';
+            status.innerText = 'جاري فتح الكاميرا...';
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" } 
+                });
+                video.srcObject = videoStream;
+
+                if (!model) {
+                    status.innerText = 'جاري تحميل نموذج الذكاء الاصطناعي...';
+                    model = await mobilenet.load();
+                }
+
+                status.innerText = 'وجه الكاميرا لظهر الهاتف بوضوح...';
+                isAnalyzing = true;
+                analyzeCameraFrame();
+
+            } catch (err) {
+                alert("تعذر فتح الكاميرا، يرجى السماح بصلاحيات الوصول للكاميرا.");
+                closeCamera();
+            }
+        }
+
+        async function analyzeCameraFrame() {
+            if (!isAnalyzing) return;
+
+            const video = document.getElementById('videoElement');
+            const status = document.getElementById('cameraStatus');
+
+            if (video.readyState === 4 && model) {
+                const predictions = await model.classify(video);
+                
+                if (predictions && predictions.length > 0) {
+                    const topPrediction = predictions[0].className.toLowerCase();
+                    status.innerText = `التعرف اللحظي: ${topPrediction}`;
+
+                    // مطابقة الكائن المكتشف مع الأجهزة والماركات
+                    for (let brand of brandsData) {
+                        if (topPrediction.includes(brand.name.toLowerCase()) || topPrediction.includes('phone') || topPrediction.includes('cellular') || topPrediction.includes('ipod')) {
+                            
+                            // ابحث عن اسم الماركة المكتشفة أو اترك البحث الذكي يشتغل
+                            let detectedText = brand.name;
+                            if (topPrediction.includes('iphone') || topPrediction.includes('ipod')) detectedText = 'Apple';
+                            
+                            document.getElementById('searchInput').value = detectedText;
+                            globalSearch();
+                            closeCamera();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                if (isAnalyzing) requestAnimationFrame(analyzeCameraFrame);
+            }, 500); 
+        }
+
+        function closeCamera() {
+            isAnalyzing = false;
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('cameraModal').style.display = 'none';
+        }
+
+        // ================= Voice & Biometrics & Helpers =================
 
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -811,8 +926,6 @@
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
                 document.getElementById('searchInput').value = spokenText;
-                
-                // تشغيل البحث الذكي فوراً على النص الصوتي المسموع
                 globalSearch();
 
                 voiceBtn.classList.remove('listening');
@@ -1048,10 +1161,6 @@
             document.getElementById('brandsContainer').style.display = 'none';
             document.getElementById('itemsContainer').style.display = 'none';
             document.getElementById('searchResultsContainer').style.display = 'none';
-        }
-
-        function triggerCameraSearch() {
-            alert("تم فتح الكاميرا للتعرف الذكي على المنتج...");
         }
 
         function restoreStateView() {
