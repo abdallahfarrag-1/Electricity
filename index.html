@@ -1142,6 +1142,14 @@
                 return;
             }
 
+            // التحقق مما إذا كان رقم الهاتف مسجلاً مسبقاً بجهاز أو بصمة أخرى في التخزين المحلي
+            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+            const existingForPhone = savedFps.find(fp => fp.merchantId === cleanPhone);
+            if (existingForPhone) {
+                alert("عذراً، هذا الرقم مرتبط مسبقاً ببصمة مسجلة ولا يمكن إعادة تسجيله أو ربطه بجهاز/بصمة أخرى.");
+                return;
+            }
+
             const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة " + cleanPhone);
             if (!fpName) return;
 
@@ -1167,14 +1175,22 @@
                 });
 
                 if (credential) {
-                    const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
+                    const credentialIdEncoded = bufferEncode(credential.rawId);
+                    
+                    // منع تكرار نفس معرف البصمة الفيزيائية الحيوية أيضاً (إذا حاول شخص تسجيل رقم آخر بنفس بصمة الجهاز)
+                    const existingCredential = savedFps.find(fp => fp.id === credentialIdEncoded);
+                    if (existingCredential) {
+                        alert("هذه البصمة مسجلة مسبقاً لرقم هاتف آخر على هذا الجهاز!");
+                        return;
+                    }
+
                     savedFps.push({ 
-                        id: bufferEncode(credential.rawId), 
+                        id: credentialIdEncoded, 
                         name: fpName, 
                         merchantId: cleanPhone 
                     });
                     localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                    alert(`تم تسجيل البصمة وربطها برقم الهاتف (${cleanPhone}) بنجاح!`);
+                    alert(`تم تسجيل البصمة وربطها برقم الهاتف (${cleanPhone}) بنجاح وللأبد!`);
                     renderFingerprintsList();
                 }
             } catch (err) {
@@ -1201,7 +1217,13 @@
                 if (assertion) {
                     const credentialIdDecoded = bufferEncode(assertion.rawId);
                     const matchedFp = savedFps.find(fp => fp.id === credentialIdDecoded);
-                    const merchantId = matchedFp ? matchedFp.merchantId : savedFps[0].merchantId;
+                    
+                    if (!matchedFp) {
+                        alert("هذه البصمة غير مطابقة لأي رقم هاتف مسجل مسبقاً.");
+                        return;
+                    }
+
+                    const merchantId = matchedFp.merchantId;
 
                     document.getElementById('error').style.display = "none";
                     document.getElementById('login-page').style.display = "none";
@@ -1212,7 +1234,7 @@
                     openBrandsPage();
                 }
             } catch (err) {
-                alert("لم يتم التعرف على البصمة.");
+                alert("لم يتم التعرف على البصمة أو تم إلغاء العملية.");
             }
         }
 
@@ -1375,7 +1397,7 @@
 
             if (searchResults.style.display === 'flex' || searchInput.value.trim() !== '') {
                 searchInput.value = '';
-                searchResults.style.display = 'none';
+                searchResults.style.display, searchResults.style.display = 'none';
                 restoreStateView();
                 return;
             }
