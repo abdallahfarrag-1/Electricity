@@ -691,9 +691,7 @@
                      .replace(/ة/g, 'ه')
                      .replace(/[\.\-\_\,\/\\]/g, ' ');
 
-            // خريطة تحويل كافة الحروف الأبجدية الإنجليزية (A-Z) والكلمات الرئيسية
             const phoneticMap = [
-                // الحروف من A إلى Z
                 { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
                 { ar: /\b(بي|بيه)\b/g, en: 'b' },
                 { ar: /\b(سي)\b/g, en: 'c' },
@@ -721,7 +719,6 @@
                 { ar: /\b(واي)\b/g, en: 'y' },
                 { ar: /\b(زد|زي)\b/g, en: 'z' },
 
-                // الكلمات الشائعة للماركات والموديلات
                 { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
                 { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
                 { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
@@ -742,7 +739,6 @@
                 str = str.replace(m.ar, m.en);
             });
 
-            // الدمج التلقائي للحروف والأرقام (مثال: g v 15 -> gv15 / s 23 -> s23 / z 20 -> z20)
             str = str.replace(/\b([a-z])\s+([a-z])\s+(\d+)\b/g, '$1$2$3');
             str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
 
@@ -819,7 +815,7 @@
             }
         }
 
-        // ================= البحث بالصورة المباشر ותصحيح الرفع =================
+        // ================= معالجة الكاميرا والرفع مع ضغط حجم الصورة تلقائياً =================
 
         async function triggerCameraSearch() {
             const modal = document.getElementById('cameraModal');
@@ -851,12 +847,14 @@
             const snapBtn = document.getElementById('snapBtn');
 
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
+            // تصغير الأبعاد قليلاً لتسريع الرفع وضمان عدم حدوث خطأ الحجم
+            canvas.width = 640;
+            canvas.height = (video.videoHeight / video.videoWidth) * 640 || 480;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+            // ضغط الجودة لـ 0.7 لتكون خفيفة وسريعة الرفع
+            const base64Data = canvas.toDataURL('image/jpeg', 0.7);
             preview.src = base64Data;
             video.style.display = 'none';
             preview.style.display = 'block';
@@ -875,20 +873,40 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const base64Data = e.target.result;
-                preview.src = base64Data;
-                video.style.display = 'none';
-                preview.style.display = 'block';
-                snapBtn.style.display = 'none';
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // تصغير المقاسات إذا كانت الصورة الكبيرة جداً
+                    const MAX_WIDTH = 800;
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height *= MAX_WIDTH / width));
+                        width = MAX_WIDTH;
+                    }
 
-                searchByCameraDesign(base64Data);
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    preview.src = compressedBase64;
+                    video.style.display = 'none';
+                    preview.style.display = 'block';
+                    snapBtn.style.display = 'none';
+
+                    searchByCameraDesign(compressedBase64);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
         async function searchByCameraDesign(base64Image) {
             const status = document.getElementById('cameraStatus');
-            status.innerText = 'جاري رفع الصورة وتحليلها...';
+            status.innerText = 'جاري ضغط ورفع الصورة للتحليل...';
 
             try {
                 const res = await fetch(base64Image);
@@ -908,7 +926,7 @@
 
                 if (uploadData && uploadData.success && uploadData.data && uploadData.data.url) {
                     const imageUrl = uploadData.data.url;
-                    status.innerText = 'تم الرفع! جاري تحويلك لمطابقة Google Lens...';
+                    status.innerText = 'تم الرفع بنجاح! جاري تحويلك لمطابقة Google Lens...';
 
                     setTimeout(() => {
                         window.open(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`, '_blank');
@@ -919,7 +937,7 @@
                 }
             } catch (error) {
                 console.error("خطأ الرفع:", error);
-                status.innerText = 'حدث خطأ أثناء رفع الصورة، تأكد من اتصال الإنترنت أو اختر صورة بحجم أصغر.';
+                status.innerText = 'حدث خطأ أثناء رفع الصورة، تأكد من اتصال الإنترنت أو حاول اختيار صورة أخرى.';
             }
         }
 
