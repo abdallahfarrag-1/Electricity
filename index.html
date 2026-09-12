@@ -3,1042 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
+    <title>دليل موديلات الهواتف</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f8;
-            color: #333;
-            min-height: 100vh;
-        }
-
-        /* صفحة الدخول */
-        #login-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header-title {
-            position: absolute;
-            top: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #007bff;
-            letter-spacing: 1px;
-        }
-
-        .login-box {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-        }
-
-        .input-group {
-            margin-bottom: 18px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            text-align: center;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: #007bff;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 10px;
-        }
-
-        .login-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .biometric-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .biometric-btn.secondary {
-            background-color: #6c757d;
-        }
-
-        .biometric-warning {
-            font-size: 12px;
-            color: #d9534f;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            font-weight: bold;
-        }
-
-        .fingerprint-list {
-            margin-top: 15px;
-            text-align: right;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-            font-size: 13px;
-        }
-
-        .fingerprint-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8f9fa;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-
-        .delete-fp {
-            color: #d9534f;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .error-message {
-            color: #d9534f;
-            font-size: 14px;
-            margin-top: 12px;
-            display: none;
-        }
-
-        /* صفحة العرض الرئيسية */
-        #main-page {
-            display: none;
-            padding-bottom: 40px;
-        }
-
-        .nav-bar {
-            background-color: #1a252f;
-            color: #ffffff;
-            text-align: center;
-            padding: 18px;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .merchant-bar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .merchant-info {
-            margin: 0 auto;
-        }
-
-        .merchant-bar span {
-            color: #007bff;
-        }
-
-        .menu-wrapper {
-            position: absolute;
-            right: 20px;
-            display: none;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            padding: 4px 8px;
-            color: #1a252f;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .menu-btn:hover {
-            background-color: #f0f0f0;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 110%;
-            background-color: #ffffff;
-            min-width: 160px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
-            z-index: 100;
-            overflow: hidden;
-        }
-
-        .dropdown-menu a {
-            color: #333;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            font-weight: normal;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #f4f6f8;
-            color: #007bff;
-        }
-
-        .search-section {
-            background-color: #ffffff;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .action-btn {
-            width: 100%;
-            max-width: 900px;
-            padding: 11px;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        .action-btn:active {
-            transform: scale(0.99);
-        }
-
-        .voice-search-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .voice-search-btn:hover {
-            background-color: #218838;
-        }
-
-        .voice-search-btn.listening {
-            background-color: #dc3545;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        .camera-search-btn {
-            background-color: #17a2b8;
-            color: white;
-        }
-
-        .camera-search-btn:hover {
-            background-color: #138496;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 900px;
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            outline: none;
-            text-align: right;
-        }
-
-        .search-input:focus {
-            border-color: #007bff;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .back-btn {
-            display: none;
-            margin-bottom: 15px;
-            padding: 8px 16px;
-            background-color: #1a252f;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* شبكة الأقسام والماركات (ثنائية) */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        /* حاوية الموديلات بعرض كامل الصفحة */
-        .items-single-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .grid-box {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            height: 140px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #555;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            padding: 10px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        /* تصميم مربع الموديل: إجبار اتجاه ومحاذاة اليسار (LTR) */
-        .item-box-single {
-            height: 60px;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a252f;
-            background-color: #ffffff;
-            
-            direction: ltr !important;
-            text-align: left !important;
-            
-            border-left: 5px solid #007bff !important;
-            border-right: none !important;
-            border-radius: 6px;
-            
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .grid-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
         }
 
-        .grid-box.empty-box {
-            border: 2px dashed #ccc;
-            background-color: #fcfcfc;
-            cursor: default;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
         }
 
-        .grid-box.empty-box:hover {
-            transform: none;
-            box-shadow: none;
+        h1 {
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
-        .box-title {
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
             margin-bottom: 8px;
-            font-size: 16px;
-            color: #1a252f;
+            color: #4a5568;
         }
 
-        .box-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
+        select, input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s ease;
         }
 
-        .search-results-container {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
+        select:focus, input:focus {
+            border-color: #3182ce;
         }
 
-        .search-section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-            text-align: right;
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        @media (max-width: 500px) {
-            .grid-container {
-                gap: 12px;
-            }
-            .grid-box {
-                height: 120px;
-                font-size: 15px;
-            }
-            .item-box-single {
-                height: 52px;
-                font-size: 16px;
-                padding: 0 15px;
-            }
-            .box-img {
-                width: 60px;
-                height: 60px;
-            }
+        .models-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .models-list li {
+            padding: 12px 18px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .models-list li:last-child {
+            border-bottom: none;
+        }
+
+        .models-list li:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .badge {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #a0aec0;
         }
     </style>
 </head>
 <body>
 
-    <!-- صفحة الدخول -->
-    <div id="login-page">
-        <div class="header-title">Electricity</div>
-        <div class="login-box">
-            <div class="input-group">
-                <label for="merchant-id">رقم الهاتف</label>
-                <input type="text" id="merchant-id" placeholder="أدخل رقم الهاتف">
-            </div>
-            <div class="input-group">
-                <label for="code-id">كلمة المرور</label>
-                <input type="text" id="code-id" placeholder="أدخل كلمة المرور">
-            </div>
-            <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
-            
-            <button class="biometric-btn" onclick="loginWithFingerprint()">
-                <span>☝️ الدخول باستخدام البصمة</span>
-            </button>
-            
-            <button class="biometric-btn secondary" onclick="registerFingerprint()">
-                <span>📝 تسجيل بصمة جديدة</span>
-            </button>
+    <div class="container">
+        <h1>📱 دليل موديلات الهواتف (من الأحدث للأقدم)</h1>
 
-            <div class="biometric-warning">(تنبيه، في حالة حذف سجل التصفح، فيجب إعادة تسجيل البصمة)</div>
-
-            <div class="fingerprint-list" id="fingerprintListContainer">
-                <strong>البصمات المسجلة:</strong>
-                <div id="fingerprintsList">لا توجد بصمات مسجلة حالياً</div>
+        <div class="controls">
+            <div class="control-group">
+                <label for="brandSelect">اختر الماركة:</label>
+                <select id="brandSelect">
+                    <option value="">-- اختر الماركة --</option>
+                </select>
             </div>
 
-            <div id="error" class="error-message">البيانات المدخلة غير متطابقة، يرجى إدخال الرقم الصحيح ومفتاحه.</div>
-        </div>
-    </div>
-
-    <!-- صفحة العرض الرئيسية -->
-    <div id="main-page">
-        <div class="nav-bar">Electricity</div>
-
-        <div class="merchant-bar">
-            <div class="menu-wrapper" id="specialMenuWrapper">
-                <button class="menu-btn" onclick="toggleDropdown(event)">☰</button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="#" onclick="openSalesLog(event)">سجل المبيعات</a>
-                </div>
-            </div>
-
-            <div class="merchant-info">
-                التاجر: <span id="display-merchant"></span>
+            <div class="control-group">
+                <label for="searchInput">بحث عن موديل:</label>
+                <input type="text" id="searchInput" placeholder="ابحث باسم الموديل..." disabled>
             </div>
         </div>
 
-        <div class="search-section">
-            <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
-                📷 البحث بالكاميرا
-            </button>
-            
-            <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
-                🎤 البحث بالصوت (تكلم بالميكروفون)
-            </button>
-
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: A10, A12, Note 10S)..." oninput="globalSearch()">
+        <div class="stats-bar">
+            <span id="selectedBrandName">الماركة: -</span>
+            <span id="modelCount">عدد الموديلات: 0</span>
         </div>
 
-        <div class="container">
-            <button id="backBtn" class="back-btn" onclick="goBack()">← عودة</button>
-
-            <div class="grid-container" id="grid"></div>
-
-            <div class="grid-container" id="brandsContainer" style="display: none;"></div>
-
-            <!-- حاوية الموديلات الـ 400 بشكل فردي -->
-            <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
-
-            <div class="search-results-container" id="searchResultsContainer"></div>
-        </div>
+        <ul class="models-list" id="modelsList">
+            <li class="empty-state">اختر ماركة لعرض الموديلات الخاصة بها</li>
+        </ul>
     </div>
 
     <script>
-        let currentState = 'main'; 
-        let selectedCategory = null;
-        let selectedBrand = null;
+        let allData = {};
 
-        // الأقسام الرئيسية
-        const categoriesData = [
-            { id: 1, name: 'شاشة', alt: 'screen display شاشه', img: './screen.jpg' },
-            { id: 2, name: 'بطارية', alt: 'battery بطاريه', img: './battery.jpg' },
-            { id: 3, name: 'فلاتة ربط', alt: 'flex cable فلاته ربط', img: './flex.jpg' },
-            { id: 4, name: 'فلاتة باور', alt: 'power flex فلاته باور تشغيل', img: './power flex.jpg' },
-            { id: 5, name: 'فلاتة شحن', alt: 'charging flex فلاته شحن سوكت', img: './charging flex.jpg' },
-            { id: 6, name: '', alt: '', img: '', isEmpty: true },
-            { id: 7, name: '', alt: '', img: '', isEmpty: true },
-            { id: 8, name: '', alt: '', img: '', isEmpty: true }
-        ];
-
-        // قائمة الماركات المطلوبة مع أسمائها وصورها المحددة
-        const brandsData = [
-            { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
-            { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
-            { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
-            { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.jpg' },
-            { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.jpg' },
-            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.jpg' },
-            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
-            { name: 'Honor', alt: 'هونر honor', img: 'honor.jpg' },
-            { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.jpg' },
-            { name: 'HTC', alt: 'اتش تي سي htc', img: 'htc.jpg' }
-        ];
-
-        let brandModelsMap = {};
-        const itemsData = [];
-
-        // جلب البيانات من ملف models.json الخارجي
+        // 1. جلب البيانات من ملف models.json
         fetch('models.json')
-            .then(response => response.json())
-            .then(data => {
-                brandModelsMap = data;
-                generateItemsData();
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('تعذر تحميل ملف البيانات');
+                }
+                return response.json();
             })
-            .catch(err => {
-                console.error("لم يتم العثور على ملف models.json، جارٍ استخدام الوضع الافتراضي:", err);
+            .then(data => {
+                allData = data;
+                initBrandSelect();
+            })
+            .catch(error => {
+                console.error('خطأ:', error);
+                document.getElementById('modelsList').innerHTML = `<li class="empty-state" style="color: red;">خطأ في تحميل ملف models.json</li>`;
             });
 
-        // توليد الموديلات الـ 400 لكل ماركة
-        function generateItemsData() {
-            itemsData.length = 0;
-            let itemId = 1;
+        // 2. تعبئة قائمة الماركات المتاحة
+        function initBrandSelect() {
+            const brandSelect = document.getElementById('brandSelect');
+            brandSelect.innerHTML = '<option value="">-- اختر الماركة --</option>';
 
-            categoriesData.filter(c => !c.isEmpty).forEach(cat => {
-                brandsData.forEach(brand => {
-                    const models = brandModelsMap[brand.name] || [];
-                    const baseCount = models.length > 0 ? models.length : 1;
-
-                    for (let i = 1; i <= 400; i++) {
-                        let modelName = "";
-                        if (i <= models.length) {
-                            modelName = models[i - 1];
-                        } else {
-                            const baseModel = models[(i - 1) % baseCount] || `Model ${i}`;
-                            modelName = `${baseModel} (${i})`;
-                        }
-
-                        itemsData.push({
-                            id: itemId++,
-                            itemNumber: i,
-                            name: modelName,
-                            category: cat.name,
-                            brand: brand.name,
-                            model: modelName,
-                            altKeywords: `${cat.name} ${cat.alt} ${brand.name} ${brand.alt} ${modelName}`
-                        });
-                    }
-                });
+            Object.keys(allData).forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandSelect.appendChild(option);
             });
         }
 
-        // ================= محرك البحث بالصوت (Web Speech API) =================
+        // 3. الاستماع لتغيير الماركة
+        document.getElementById('brandSelect').addEventListener('change', function () {
+            const selectedBrand = this.value;
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = ''; // إعادة ضبط البحث
 
-        function startVoiceSearch() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (!SpeechRecognition) {
-                alert("المتصفح الخاص بك لا يدعم ميزة البحث بالصوت. يرجى تجربة متصفح Google Chrome.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-EG'; 
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            const voiceBtn = document.getElementById('voiceBtn');
-            voiceBtn.classList.add('listening');
-            voiceBtn.innerHTML = '🎙️ جاري الاستماع، اتكلم الآن...';
-
-            recognition.start();
-
-            recognition.onresult = function(event) {
-                const spokenText = event.results[0][0].transcript;
-                const searchInput = document.getElementById('searchInput');
-                searchInput.value = spokenText;
-                
-                globalSearch();
-
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-
-            recognition.onerror = function() {
-                alert("تعذر التقاط الصوت، يرجى المحاولة مرة أخرى والـتأكد من السماح للميكروفون.");
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-
-            recognition.onend = function() {
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-        }
-
-        // ================= WebAuthn Biometrics =================
-
-        function bufferDecode(value) {
-            return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
-        }
-
-        function bufferEncode(value) {
-            return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
-                .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-        }
-
-        function renderFingerprintsList() {
-            const listEl = document.getElementById('fingerprintsList');
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            
-            if (savedFps.length === 0) {
-                listEl.innerHTML = 'لا توجد بصمات مسجلة حالياً';
-                return;
-            }
-
-            listEl.innerHTML = savedFps.map((fp, index) => `
-                <div class="fingerprint-item">
-                    <span>☝️ ${fp.name}</span>
-                    <span class="delete-fp" onclick="deleteFingerprint(${index})">حذف</span>
-                </div>
-            `).join('');
-        }
-
-        async function registerFingerprint() {
-            if (!window.PublicKeyCredential) {
-                alert("متصفحك أو جهازك لا يدعم خاصية البصمة (WebAuthn).");
-                return;
-            }
-
-            const fpName = prompt("أدخل اسماً أو رقماً لهذه البصمة:", "بصمة 1");
-            if (!fpName) return;
-
-            try {
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-
-                const userId = new Uint8Array(16);
-                window.crypto.getRandomValues(userId);
-
-                const createCredentialOptions = {
-                    publicKey: {
-                        challenge: challenge,
-                        rp: { name: "Electricity App" },
-                        user: { id: userId, name: "merchant_user", displayName: "التاجر" },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        timeout: 60000
-                    }
-                };
-
-                const credential = await navigator.credentials.create(createCredentialOptions);
-
-                if (credential) {
-                    const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-                    savedFps.push({ id: bufferEncode(credential.rawId), name: fpName, merchantId: "01155445215" });
-                    localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                    alert(`تم تسجيل "${fpName}" بنجاح!`);
-                    renderFingerprintsList();
-                }
-            } catch (err) {
-                alert("فشلت عملية التسجيل أو تم إلغاء المحاولة.");
-            }
-        }
-
-        async function loginWithFingerprint() {
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            if (savedFps.length === 0) {
-                alert("لم يتم تسجيل أي بصمة بعد.");
-                return;
-            }
-
-            try {
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-
-                const allowCredentials = savedFps.map(fp => ({ id: bufferDecode(fp.id), type: 'public-key' }));
-
-                const assertion = await navigator.credentials.get({
-                    publicKey: { challenge, allowCredentials, userVerification: "required", timeout: 60000 }
-                });
-
-                if (assertion) {
-                    document.getElementById('error').style.display = "none";
-                    document.getElementById('login-page').style.display = "none";
-                    document.getElementById('main-page').style.display = "block";
-                    document.getElementById('display-merchant').innerText = savedFps[0].merchantId;
-                    document.getElementById('specialMenuWrapper').style.display = "block";
-                    generateBoxes();
-                }
-            } catch (err) {
-                alert("لم يتم التعرف على البصمة.");
-            }
-        }
-
-        function deleteFingerprint(index) {
-            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            savedFps.splice(index, 1);
-            localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-            renderFingerprintsList();
-        }
-
-        // ================= الدخول والتحقق =================
-
-        function validateAndNavigate() {
-            const val1 = document.getElementById('merchant-id').value.trim();
-            const val2 = document.getElementById('code-id').value.trim();
-            const errorMsg = document.getElementById('error');
-
-            const isPair1 = (val1 === "01155445544" && val2 === "0022");
-            const isPair2 = (val1 === "01155445215" && val2 === "0000");
-            const isPair3 = (val1 === "01119129158" && val2 === "1100");
-            const isPair4 = (val1 === "01152791344" && val2 === "1101");
-
-            if (isPair1 || isPair2 || isPair3 || isPair4) {
-                errorMsg.style.display = "none";
-                document.getElementById('login-page').style.display = "none";
-                document.getElementById('main-page').style.display = "block";
-                document.getElementById('display-merchant').innerText = val1;
-
-                document.getElementById('specialMenuWrapper').style.display = (val1 === "01155445215") ? "block" : "none";
-                generateBoxes();
+            if (selectedBrand && allData[selectedBrand]) {
+                searchInput.disabled = false;
+                renderModels(selectedBrand, allData[selectedBrand]);
             } else {
-                errorMsg.style.display = "block";
+                searchInput.disabled = true;
+                resetView();
             }
-        }
+        });
 
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('dropdownMenu');
-            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-        }
+        // 4. الاستماع لمدخلات البحث
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const selectedBrand = document.getElementById('brandSelect').value;
+            const query = this.value.toLowerCase().trim();
 
-        window.onclick = function() {
-            const dropdown = document.getElementById('dropdownMenu');
-            if (dropdown) dropdown.style.display = 'none';
-        }
-
-        function openSalesLog(event) {
-            event.preventDefault();
-            alert('تم فتح سجل المبيعات');
-            document.getElementById('dropdownMenu').style.display = 'none';
-        }
-
-        // ================= عرض الصفحة والشبكات =================
-
-        function createCategoryBoxElement(cat) {
-            const box = document.createElement('div');
-            
-            if (cat.isEmpty) {
-                box.className = 'grid-box empty-box';
-                return box;
+            if (selectedBrand && allData[selectedBrand]) {
+                const filteredModels = allData[selectedBrand].filter(model => 
+                    model.toLowerCase().includes(query)
+                );
+                renderModels(selectedBrand, filteredModels, true);
             }
+        });
 
-            box.className = 'grid-box';
-            box.onclick = function() { 
-                document.getElementById('searchInput').value = '';
-                selectedCategory = cat;
-                openBrandsPage(); 
-            };
-            
-            box.innerHTML = cat.img ? 
-                `<span class="box-title">${cat.name}</span><img src="${cat.img}" alt="${cat.name}" class="box-img" onerror="this.style.display='none'">` : 
-                cat.name;
-            return box;
-        }
+        // 5. عرض الموديلات الفعلية دون أي تكرار أو فرض أعداد ثابته
+        function renderModels(brandName, models, isFiltering = false) {
+            const modelsList = document.getElementById('modelsList');
+            const selectedBrandName = document.getElementById('selectedBrandName');
+            const modelCount = document.getElementById('modelCount');
 
-        function createBrandBoxElement(brand) {
-            const box = document.createElement('div');
-            box.className = 'grid-box';
-            box.onclick = function() { 
-                document.getElementById('searchInput').value = '';
-                selectedBrand = brand;
-                openItemsPage(); 
-            };
+            modelsList.innerHTML = '';
+            selectedBrandName.textContent = `الماركة: ${brandName}`;
+            modelCount.textContent = `عدد الموديلات: ${models.length}`;
 
-            box.innerHTML = brand.img ? 
-                `<span class="box-title">${brand.name}</span><img src="${brand.img}" alt="${brand.name}" class="box-img" onerror="this.style.display='none'">` : 
-                brand.name;
-            return box;
-        }
-
-        function createItemBoxElement(item) {
-            const box = document.createElement('div');
-            box.className = 'grid-box item-box-single';
-            box.innerText = item.name; 
-            return box;
-        }
-
-        function generateBoxes() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = "";
-            categoriesData.forEach(cat => grid.appendChild(createCategoryBoxElement(cat)));
-        }
-
-        function openBrandsPage() {
-            hideAllContainers();
-            const brandsContainer = document.getElementById('brandsContainer');
-            brandsContainer.style.display = 'grid';
-            document.getElementById('backBtn').style.display = 'block';
-            currentState = 'brands';
-
-            brandsContainer.innerHTML = '';
-            brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxElement(brand)));
-        }
-
-        function openItemsPage() {
-            hideAllContainers();
-            const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            currentState = 'items';
-
-            itemsContainer.innerHTML = '';
-            const filteredItems = itemsData.filter(item => 
-                item.category === selectedCategory.name && item.brand === selectedBrand.name
-            );
-
-            if (filteredItems.length > 0) {
-                filteredItems.forEach(item => itemsContainer.appendChild(createItemBoxElement(item)));
-            } else {
-                itemsContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#777;">لا توجد عناصر مضافة</div>`;
-            }
-        }
-
-        function hideAllContainers() {
-            document.getElementById('grid').style.display = 'none';
-            document.getElementById('brandsContainer').style.display = 'none';
-            document.getElementById('itemsContainer').style.display = 'none';
-            document.getElementById('searchResultsContainer').style.display = 'none';
-        }
-
-        // ================= محرك البحث الذكي =================
-
-        function cleanText(text) {
-            if (!text) return '';
-            return text
-                .toLowerCase()
-                .replace(/[أإآء]/g, 'ا')
-                .replace(/ى/g, 'ي')
-                .replace(/ة/g, 'ه')
-                .replace(/[\.\-\_\,\/\\]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function translateArabicModelQuery(query) {
-            let q = cleanText(query);
-            
-            q = q.replace(/نوت\s*(\d+)\s*اس\s*برو/g, 'note $1s pro');
-            q = q.replace(/نوت\s*(\d+)\s*اس/g, 'note $1s');
-            q = q.replace(/نوت\s*(\d+)/g, 'note $1');
-            q = q.replace(/ايه\s*(\d+)/g, 'a$1');
-            q = q.replace(/اي\s*(\d+)/g, 'a$1');
-            q = q.replace(/اس\s*(\d+)/g, 's$1');
-            q = q.replace(/(\d+)\s*اس/g, '$1s');
-
-            return q;
-        }
-
-        function isStrictModelMatch(queryToken, targetFullText) {
-            const token = cleanText(queryToken);
-            const target = cleanText(targetFullText);
-
-            if (!token) return false;
-
-            const isModelToken = /^([a-z]*\d+[a-z]*|\d+[a-z]+)$/i.test(token);
-
-            if (isModelToken) {
-                const regex = new RegExp(`(?:^|\\s)${token}(?:$|\\s)`, 'i');
-                return regex.test(target);
-            }
-
-            return target.includes(token);
-        }
-
-        function isSmartMatch(sourceObject, rawQuery) {
-            const translatedQuery = translateArabicModelQuery(rawQuery);
-            const queryTokens = translatedQuery.split(' ').filter(t => t.length > 0);
-
-            const sourceFullText = cleanText(`${sourceObject.name} ${sourceObject.alt || ''} ${sourceObject.altKeywords || ''}`);
-
-            return queryTokens.every(token => isStrictModelMatch(token, sourceFullText));
-        }
-
-        function globalSearch() {
-            const query = document.getElementById('searchInput').value;
-            const resultsContainer = document.getElementById('searchResultsContainer');
-
-            if (cleanText(query) === '') {
-                resultsContainer.style.display = 'none';
-                restoreStateView();
+            if (models.length === 0) {
+                modelsList.innerHTML = `<li class="empty-state">${isFiltering ? 'لا توجد نتائج تطابق بحثك' : 'لا توجد موديلات متاحة'}</li>`;
                 return;
             }
 
-            hideAllContainers();
-            resultsContainer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            resultsContainer.innerHTML = '';
-
-            const matchedCategories = categoriesData.filter(cat => !cat.isEmpty && isSmartMatch(cat, query));
-            const matchedBrands = brandsData.filter(brand => isSmartMatch(brand, query));
-            const matchedItems = itemsData.filter(item => isSmartMatch(item, query));
-
-            if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
-                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
-                return;
-            }
-
-            if (matchedCategories.length > 0) {
-                const catTitle = document.createElement('div');
-                catTitle.className = 'search-section-title';
-                catTitle.innerText = 'الأقسام الرئيسية المتطابقة:';
-                resultsContainer.appendChild(catTitle);
-
-                const gridWrapper = document.createElement('div');
-                gridWrapper.className = 'grid-container';
-                matchedCategories.forEach(cat => gridWrapper.appendChild(createCategoryBoxElement(cat)));
-                resultsContainer.appendChild(gridWrapper);
-            }
-
-            if (matchedBrands.length > 0) {
-                const brandTitle = document.createElement('div');
-                brandTitle.className = 'search-section-title';
-                brandTitle.style.marginTop = '15px';
-                brandTitle.innerText = 'الماركات المتطابقة:';
-                resultsContainer.appendChild(brandTitle);
-
-                const brandsWrapper = document.createElement('div');
-                brandsWrapper.className = 'grid-container';
-                matchedBrands.forEach(brand => brandsWrapper.appendChild(createBrandBoxElement(brand)));
-                resultsContainer.appendChild(brandsWrapper);
-            }
-
-            if (matchedItems.length > 0) {
-                const itemTitle = document.createElement('div');
-                itemTitle.className = 'search-section-title';
-                itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة:';
-                resultsContainer.appendChild(itemTitle);
-
-                const itemsWrapper = document.createElement('div');
-                itemsWrapper.className = 'items-single-container';
-                matchedItems.forEach(item => itemsWrapper.appendChild(createItemBoxElement(item)));
-                resultsContainer.appendChild(itemsWrapper);
-            }
+            // الاعتماد الكامل على طول القائمة الفعلي (models.length)
+            models.forEach((model, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${model}</span>
+                    <span class="badge">#${index + 1}</span>
+                `;
+                modelsList.appendChild(li);
+            });
         }
 
-        function triggerCameraSearch() {
-            alert("تم فتح الكاميرا للتعرف الذكي على المنتج...");
-        }
-
-        function restoreStateView() {
-            if (currentState === 'main') {
-                document.getElementById('grid').style.display = 'grid';
-                document.getElementById('backBtn').style.display = 'none';
-            } else if (currentState === 'brands') {
-                document.getElementById('brandsContainer').style.display = 'grid';
-                document.getElementById('backBtn').style.display = 'block';
-            } else if (currentState === 'items') {
-                document.getElementById('itemsContainer').style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
-            }
-        }
-
-        function goBack() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResultsContainer').style.display = 'none';
-
-            if (currentState === 'items') {
-                document.getElementById('itemsContainer').style.display = 'none';
-                document.getElementById('brandsContainer').style.display = 'grid';
-                currentState = 'brands';
-            } else if (currentState === 'brands') {
-                document.getElementById('brandsContainer').style.display = 'none';
-                document.getElementById('grid').style.display = 'grid';
-                document.getElementById('backBtn').style.display = 'none';
-                currentState = 'main';
-            }
-        }
-
-        window.onload = function() {
-            renderFingerprintsList();
+        function resetView() {
+            document.getElementById('modelsList').innerHTML = '<li class="empty-state">اختر ماركة لعرض الموديلات الخاصة بها</li>';
+            document.getElementById('selectedBrandName').textContent = 'الماركة: -';
+            document.getElementById('modelCount').textContent = 'عدد الموديلات: 0';
         }
     </script>
 </body>
