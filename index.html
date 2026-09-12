@@ -390,7 +390,7 @@
             cursor: pointer;
         }
 
-        /* تنسيق الأجزاء الـ 8 الرئيسية الأفقية من الشمال لليمين */
+        /* تنسيق الأجزاء الرئيسية أفقياً */
         .eight-parts-panel {
             display: none;
             background-color: #f8f9fa;
@@ -459,7 +459,7 @@
             text-align: right;
         }
 
-        /* نافذة الكاميرا */
+        /* نافذة الكاميرا الداخلية لعرض البث ومعالجة Lens API */
         #cameraModal {
             display: none;
             position: fixed;
@@ -498,7 +498,7 @@
         .camera-overlay {
             color: white;
             margin-top: 15px;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
         }
 
@@ -629,7 +629,7 @@
 
         <div class="search-section">
             <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
-                📷 البحث بالكاميرا أو استيراد صورة
+                📷 البحث بالكاميرا (عبر Google Lens API ونقله لخانة البحث)
             </button>
             
             <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
@@ -651,14 +651,14 @@
         </div>
     </div>
 
-    <!-- نافذة عرض الكاميرا واستيراد الصور -->
+    <!-- نافذة الكاميرا الداخلية ومعالجة Lens API -->
     <div id="cameraModal">
         <video id="videoElement" autoplay playsinline></video>
         <img id="previewImage" alt="الصورة المختارة">
-        <div class="camera-overlay" id="cameraStatus">جاري التحميل...</div>
+        <div class="camera-overlay" id="cameraStatus">وجه الكاميرا نحو الموديل ثم اضغط التقاط</div>
 
         <div class="camera-actions">
-            <button id="snapBtn" class="snap-btn" onclick="captureFrame()">📸 التقاط وبحث مباشر</button>
+            <button id="snapBtn" class="snap-btn" onclick="captureAndSendToLensAPI()">📸 التقاط وإرسال لـ Google Lens API</button>
 
             <label class="upload-btn">
                 📁 اختر صورة من المعرض/الجهاز
@@ -864,7 +864,7 @@
             }
         }
 
-        // ================= الكاميرا والبحث بالصوت =================
+        // ================= الكاميرا وإرسال الصورة لـ Google Lens API =================
 
         async function triggerCameraSearch() {
             const modal = document.getElementById('cameraModal');
@@ -884,13 +884,13 @@
                     video: { facingMode: "environment" } 
                 });
                 video.srcObject = videoStream;
-                status.innerText = 'وجه الكاميرا نحو الموديل ثم اضغط "التقاط وبحث مباشر"...';
+                status.innerText = 'وجه الكاميرا نحو الموديل ثم اضغط التقاط...';
             } catch (err) {
-                status.innerText = 'تعذر فتح الكاميرا، يمكنك اختيار صورة من المعرض أدناه.';
+                status.innerText = 'تعذر فتح الكاميرا، يمكنك اختيار صورة من الجهاز أدناه.';
             }
         }
 
-        function captureFrame() {
+        function captureAndSendToLensAPI() {
             const video = document.getElementById('videoElement');
             const preview = document.getElementById('previewImage');
             const snapBtn = document.getElementById('snapBtn');
@@ -908,13 +908,13 @@
             preview.style.display = 'block';
             snapBtn.style.display = 'none';
 
-            status.innerText = 'جاري فتح بحث الصور للتعرف على الموديل...';
-            
-            // فتح Google Lens عبر البحث المباشر بالملفات المحلية أو البحث البصري البديل
-            processDirectImageSearch(base64Data);
+            status.innerText = 'جاري إرسال الصورة إلى Google Lens API للتعرف على الموديل...';
+
+            // استدعاء دالة الاتصال بـ Google Lens API
+            processWithGoogleLensAPI(base64Data);
         }
 
-        async function handleImageUpload(event) {
+        function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -923,7 +923,7 @@
             const snapBtn = document.getElementById('snapBtn');
             const status = document.getElementById('cameraStatus');
 
-            status.innerText = 'جاري معالجة الصورة...';
+            status.innerText = 'جاري قراءة المعالجة المحلية للصورة...';
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -949,17 +949,19 @@
                     preview.style.display = 'block';
                     snapBtn.style.display = 'none';
 
-                    status.innerText = 'جاري فتح البحث البصري...';
-                    processDirectImageSearch(compressedBase64);
+                    status.innerText = 'جاري إرسال الصورة المرفوعة لـ Google Lens API...';
+                    processWithGoogleLensAPI(compressedBase64);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function processDirectImageSearch(base64Image) {
-            // تحويل الصورة المباشرة إلى ملف مؤقت أو فتح نافذة جوجل للبحث بالصور لتجاوز مشاكل السيرفر الخارجي تماماً
+        // دالة ربط واجهة Google Lens API لنقل النتيجة لخانة البحث مباشرة
+        async function processWithGoogleLensAPI(base64Image) {
+            const status = document.getElementById('cameraStatus');
             try {
+                // تحويل Base64 إلى ملف مرسل
                 const arr = base64Image.split(',');
                 const mime = arr[0].match(/:(.*?);/)[1];
                 const bstr = atob(arr[1]);
@@ -968,27 +970,41 @@
                 while(n--) {
                     u8arr[n] = bstr.charCodeAt(n);
                 }
-                const file = new File([u8arr], "search_image.jpg", {type:mime});
+                const file = new File([u8arr], "lens_search.jpg", {type: mime});
                 
                 const formData = new FormData();
-                formData.append('encoded_image', file);
+                formData.append('image', file);
 
-                // فتح محرك بحث جوجل للصور بالملف مباشرة بطريقة آمنة
-                fetch('https://images.google.com/searchbyimage/upload', {
+                /* 
+                  ملاحظة هامة: هنا يتم استدعاء مسار الـ API الخاص بك (مثلاً سيرفر Node.js أو PHP يربطك بـ SerpApi Google Lens)
+                  أو يمكنك استبداله بالرابط المباشر للخادم الذي يتعامل مع Lens API
+                */
+                const response = await fetch('https://api.yourdomain.com/google-lens-search', {
                     method: 'POST',
-                    body: formData,
-                    mode: 'no-cors'
-                }).finally(() => {
-                    document.getElementById('cameraStatus').innerText = 'تم تحويلك لصفحة البحث البصري بنجاح!';
-                    setTimeout(() => {
-                        window.open('https://images.google.com', '_blank');
-                        closeCamera();
-                    }, 1000);
+                    body: formData
                 });
-            } catch (e) {
-                // بديل نهائي آمن ومباشر
-                window.open('https://lens.google.com', '_blank');
-                closeCamera();
+
+                const data = await response.json();
+
+                if (data && (data.detected_title || data.model_name)) {
+                    const detectedName = data.detected_title || data.model_name;
+                    
+                    status.innerText = `تم التعرف بنجاح: ${detectedName}`;
+                    
+                    setTimeout(() => {
+                        closeCamera();
+                        // نقل النتيجة مباشرة إلى خانة البحث النصي وتفعيل البحث فوراً في الصفحة
+                        const searchInput = document.getElementById('searchInput');
+                        searchInput.value = detectedName;
+                        globalSearch();
+                    }, 1000);
+                } else {
+                    status.innerText = 'لم يتعرف Lens API على الموديل، يرجى المحاولة مرة أخرى أو الكتابة يدوياً.';
+                }
+
+            } catch (error) {
+                console.error("خطأ في الاتصال بـ Google Lens API:", error);
+                status.innerText = 'تعذر الاتصال بخدمة Google Lens API حالياً.';
             }
         }
 
