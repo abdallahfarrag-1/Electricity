@@ -291,7 +291,7 @@
         }
 
         .camera-search-btn {
-            background-color: #7b1fa2; /* لون مميز لـ Gemini */
+            background-color: #7b1fa2;
             color: white;
         }
 
@@ -390,7 +390,6 @@
             cursor: pointer;
         }
 
-        /* تنسيق الأجزاء الرئيسية أفقياً */
         .eight-parts-panel {
             display: none;
             background-color: #f8f9fa;
@@ -459,7 +458,6 @@
             text-align: right;
         }
 
-        /* نافذة الكاميرا الداخلية لعرض البث ومعالجة Gemini API */
         #cameraModal {
             display: none;
             position: fixed;
@@ -575,7 +573,6 @@
         }
     </style>
 
-    <!-- استدعاء مكتبة Google Gen AI الرسمية (Gemini API) -->
     <script type="importmap">
       {
         "imports": {
@@ -586,7 +583,6 @@
 </head>
 <body>
 
-    <!-- صفحة الدخول -->
     <div id="login-page">
         <div class="header-title">Electricity</div>
         <div class="login-box">
@@ -619,7 +615,6 @@
         </div>
     </div>
 
-    <!-- صفحة العرض الرئيسية -->
     <div id="main-page">
         <div class="nav-bar">Electricity</div>
 
@@ -651,7 +646,6 @@
         <div class="container">
             <button id="backBtn" class="back-btn" onclick="goBack()">← عودة للصفحة السابقة</button>
 
-            <!-- الماركات كواجهة رئيسية مباشرة -->
             <div class="grid-container" id="brandsContainer"></div>
 
             <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
@@ -660,7 +654,6 @@
         </div>
     </div>
 
-    <!-- نافذة الكاميرا الداخلية ومعالجة Gemini AI -->
     <div id="cameraModal">
         <video id="videoElement" autoplay playsinline></video>
         <img id="previewImage" alt="الصورة المختارة">
@@ -680,7 +673,6 @@
     <script type="module">
         import { GoogleGenAI } from "@google/genai";
 
-        // تم دمج مفتاح الـ API الخاص بك هنا
         const GEMINI_API_KEY = "AQ.Ab8RN6JDY0nxYhdgKwqYUvwsT5fUFN49rg0ch3cOxobm_a1duw";
 
         let currentState = 'brands'; 
@@ -734,8 +726,6 @@
                 });
             });
         }
-
-        // ================= محرك المعالجة والبحث الذكي =================
 
         function convertArabicNumbers(str) {
             const numbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
@@ -878,8 +868,6 @@
             }
         }
 
-        // ================= الكاميرا ومعالجة الصورة عبر Gemini AI =================
-
         window.triggerCameraSearch = async function() {
             const modal = document.getElementById('cameraModal');
             const video = document.getElementById('videoElement');
@@ -970,19 +958,16 @@
             reader.readAsDataURL(file);
         }
 
-        // دالة الاتصال بمكتبة Gemini AI لمعالجة الصورة واستخراج اسم الموديل
+        // تم تحديث النموذج هنا إلى gemini-1.5-flash الصحيح والمتوافق مع جميع المفاتيح
         async function processWithGeminiAPI(base64Image) {
             const status = document.getElementById('cameraStatus');
 
             try {
-                // تهيئة عملاء Gemini باستخدام المكتبة الرسمية
                 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-                
-                // استخراج بيانات الـ base64 النقية دون بادئة الـ data URL
                 const base64DataClean = base64Image.split(',')[1];
 
                 const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model: 'gemini-1.5-flash',
                     contents: [
                         {
                             inlineData: {
@@ -991,7 +976,7 @@
                             }
                         },
                         {
-                            text: "Identify the exact model name and brand of the mobile phone shown in this image. Return ONLY the brand and model name clearly and concisely (e.g., iPhone 13 Pro Max or Galaxy S24 Ultra), with no extra conversational filler."
+                            text: "Identify the exact model name and brand of the mobile phone shown in this image. Return ONLY the brand and model name clearly and concisely (e.g., iPhone 13 Pro Max or Galaxy A50), with no extra conversational filler."
                         }
                     ]
                 });
@@ -1055,8 +1040,6 @@
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
             };
         }
-
-        // ================= البصمة والأذونات =================
 
         function bufferDecode(value) {
             return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
