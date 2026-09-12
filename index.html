@@ -599,6 +599,7 @@
         }
     </style>
 
+    <!-- استيراد مكتبة Gemini الرسمية الحديثة عبر ES Modules CDN -->
     <script type="importmap">
       {
         "imports": {
@@ -661,7 +662,7 @@
             <!-- خانة إدخال مفتاح الـ API داخل الموقع -->
             <div class="api-key-box">
                 <label for="apiKeyInput">مفتاح Gemini API Key:</label>
-                <input type="text" id="apiKeyInput" class="api-key-input" placeholder="أدخل مفتاح الـ API الخاص بك هنا (يبدأ بـ AIza...)">
+                <input type="text" id="apiKeyInput" class="api-key-input" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ...)">
             </div>
 
             <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
@@ -725,7 +726,7 @@
         let brandModelsMap = {};
         const itemsData = [];
 
-        // حفظ واسترجاع الـ API Key تلقائياً في المتصفح لكي لا تبحث عنه كل مرة
+        // حفظ واسترجاع الـ API Key تلقائياً في المتصفح
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('user_gemini_api_key');
             if (savedKey) {
@@ -1014,7 +1015,7 @@
             const status = document.getElementById('cameraStatus');
             const apiKey = document.getElementById('apiKeyInput').value.trim();
             
-            // حفظ المفتاح مؤقتاً في المتصفح
+            // حفظ المفتاح في التخزين المحلي للمتصفح
             localStorage.setItem('user_gemini_api_key', apiKey);
 
             try {
