@@ -678,14 +678,14 @@
             return str;
         }
 
-        // محرك التطبيع والبحث الموسع والمطور جداً
+        // محرك البحث الدلالي المتقدم والمرن جداً (Order-Agnostic & Token-aware)
         function smartNormalize(text) {
             if (!text) return '';
             let str = text.toLowerCase();
             str = convertArabicNumbers(str);
             str = str.replace(/\+/g, ' plus ');
             
-            // توحيد الحروف العربية المتشابهة
+            // توحيد الحروف العربية المتشابهة والرموز
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
@@ -739,7 +739,7 @@
                 str = str.replace(m.ar, m.en);
             });
 
-            // دمج الحروف والأرقام المنفصلة (مثل a 5 أو s 21 لتصبح a5 أو s21)
+            // دمج الحروف والأرقام المنفصلة (مثل s 23 لتصبح s23، أو a 10 لتصبح a10)
             str = str.replace(/\b([a-z])\s+([a-z])\s+(\d+)\b/g, '$1$2$3');
             str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
             str = str.replace(/\b(\d+)\s+([a-z])\b/g, '$1$2');
@@ -781,10 +781,10 @@
 
             itemsData.forEach(item => {
                 const normTarget = smartNormalize(item.name + ' ' + item.brand + ' ' + item.altKeywords);
-                
-                // مطابقة موسعة: إذا كانت الكلمات المدخلة موجودة في الموديل أو متطابقة معه جزئياً
-                const isMatch = queryWords.every(qWord => normTarget.includes(qWord)) || 
-                                queryWords.some(qWord => normTarget.split(' ').includes(qWord));
+                const targetWords = normTarget.split(' ');
+
+                // بحث دلالي ذكي يعتمد على تطابق الكلمات بغض النظر عن الترتيب (Bag-of-Words Match)
+                const isMatch = queryWords.every(qWord => targetWords.some(tWord => tWord.includes(qWord) || qWord.includes(tWord)));
 
                 if (isMatch) {
                     const uniqueKey = item.name.trim().toLowerCase();
@@ -816,7 +816,7 @@
                 const itemTitle = document.createElement('div');
                 itemTitle.className = 'search-section-title';
                 itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة (بحث موسع):';
+                itemTitle.innerText = 'الموديلات المتطابقة (بحث دلالي مرن):';
                 resultsContainer.appendChild(itemTitle);
 
                 const itemsWrapper = document.createElement('div');
@@ -983,7 +983,6 @@
             document.getElementById('cameraModal').style.display = 'none';
         }
 
-        // البحث الصوتي الموسع والمحدث ليضع الكلام المنطوق مباشرة في خانة البحث
         window.startVoiceSearch = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -1004,8 +1003,8 @@
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
                 const searchInput = document.getElementById('searchInput');
-                searchInput.value = spokenText; // يكتب الكلام اللي فهمه في خانة البحث بالكتابة فوراً
-                globalSearch(); // يشغل محرك البحث الشامل على النص المكتوب
+                searchInput.value = spokenText;
+                globalSearch();
 
                 voiceBtn.classList.remove('listening');
                 voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
@@ -1302,7 +1301,7 @@
 
         function restoreStateView() {
             if (currentState === 'brands') {
-                openBrandsManager();
+                openBrandsPage();
             } else if (currentState === 'items' && selectedBrand) {
                 openItemsPage();
             } else {
