@@ -584,7 +584,7 @@
                 🎤 البحث بالصوت (تكلم بالميكروفون)
             </button>
 
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: iPhone 16 Pro Max, A10, Note 10S)..." oninput="globalSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: iPhone 16 Pro Max, A10, Galaxy Ultra...)" oninput="globalSearch()">
         </div>
 
         <div class="container">
@@ -655,19 +655,21 @@
                 const models = brandModelsMap[brand.name] || [];
 
                 models.forEach((modelName, index) => {
+                    const cleanedModelName = modelName.replace(/\+/g, ' Plus ');
+
                     itemsData.push({
                         id: itemId++,
                         itemNumber: index + 1,
-                        name: modelName,
+                        name: cleanedModelName,
                         brand: brand.name,
-                        model: modelName,
-                        altKeywords: `${brand.name} ${brand.alt} ${modelName}`
+                        model: cleanedModelName,
+                        altKeywords: `${brand.name} ${brand.alt} ${cleanedModelName}`
                     });
                 });
             });
         }
 
-        // ================= محرك المعالجة والبحث الذكي =================
+        // ================= محرك المعالجة والبحث الذكي الشامل للحروف (A-Z) =================
 
         function convertArabicNumbers(str) {
             const numbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
@@ -682,19 +684,51 @@
             let str = text.toLowerCase();
             str = convertArabicNumbers(str);
 
+            str = str.replace(/\+/g, ' plus ');
+
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
                      .replace(/[\.\-\_\,\/\\]/g, ' ');
 
+            // خريطة تحويل كافة الحروف الأبجدية الإنجليزية (A-Z) والكلمات الرئيسية
             const phoneticMap = [
+                // الحروف من A إلى Z
+                { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
+                { ar: /\b(بي|بيه)\b/g, en: 'b' },
+                { ar: /\b(سي)\b/g, en: 'c' },
+                { ar: /\b(دي)\b/g, en: 'd' },
+                { ar: /\b(اي|إي)\b/g, en: 'e' },
+                { ar: /\b(اف|إف)\b/g, en: 'f' },
+                { ar: /\b(جي)\b/g, en: 'g' },
+                { ar: /\b(اتش|إتش)\b/g, en: 'h' },
+                { ar: /\b(اي|آي)\b/g, en: 'i' },
+                { ar: /\b(جيه)\b/g, en: 'j' },
+                { ar: /\b(كي)\b/g, en: 'k' },
+                { ar: /\b(ال|إل)\b/g, en: 'l' },
+                { ar: /\b(ام|إم)\b/g, en: 'm' },
+                { ar: /\b(ان|إن)\b/g, en: 'n' },
+                { ar: /\b(او|أو)\b/g, en: 'o' },
+                { ar: /\b(بي|بيه)\b/g, en: 'p' },
+                { ar: /\b(كيو)\b/g, en: 'q' },
+                { ar: /\b(ار|آر)\b/g, en: 'r' },
+                { ar: /\b(اس|إس|س)\b/g, en: 's' },
+                { ar: /\b(تي)\b/g, en: 't' },
+                { ar: /\b(يو)\b/g, en: 'u' },
+                { ar: /\b(في|فيي)\b/g, en: 'v' },
+                { ar: /\b(دبليو)\b/g, en: 'w' },
+                { ar: /\b(اكس|إكس)\b/g, en: 'x' },
+                { ar: /\b(واي)\b/g, en: 'y' },
+                { ar: /\b(زد|زي)\b/g, en: 'z' },
+
+                // الكلمات الشائعة للماركات والموديلات
                 { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
                 { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
                 { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
                 { ar: /\b(برو)\b/g, en: 'pro' },
                 { ar: /\b(ماكس)\b/g, en: 'max' },
                 { ar: /\b(بلس|بلاص)\b/g, en: 'plus' },
-                { ar: /\b(الترا)\b/g, en: 'ultra' },
+                { ar: /\b(الترا|ألترا)\b/g, en: 'ultra' },
                 { ar: /\b(شاومي|شومي)\b/g, en: 'xiaomi' },
                 { ar: /\b(ريدمي)\b/g, en: 'redmi' },
                 { ar: /\b(انفينكس|انفنكس)\b/g, en: 'infinix' },
@@ -707,6 +741,10 @@
             phoneticMap.forEach(m => {
                 str = str.replace(m.ar, m.en);
             });
+
+            // الدمج التلقائي للحروف والأرقام (مثال: g v 15 -> gv15 / s 23 -> s23 / z 20 -> z20)
+            str = str.replace(/\b([a-z])\s+([a-z])\s+(\d+)\b/g, '$1$2$3');
+            str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
 
             return str.trim().replace(/\s+/g, ' ');
         }
@@ -739,7 +777,6 @@
 
             itemsData.forEach(item => {
                 const normTarget = smartNormalize(item.name + ' ' + item.altKeywords);
-                
                 const isMatch = queryWords.every(qWord => normTarget.includes(qWord));
 
                 if (isMatch) {
@@ -782,7 +819,7 @@
             }
         }
 
-        // ================= البحث بالصورة عبر Google Lens Direct =================
+        // ================= البحث بالصورة المباشر ותصحيح الرفع =================
 
         async function triggerCameraSearch() {
             const modal = document.getElementById('cameraModal');
@@ -819,7 +856,7 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const base64Data = canvas.toDataURL('image/jpeg');
+            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
             preview.src = base64Data;
             video.style.display = 'none';
             preview.style.display = 'block';
@@ -851,12 +888,14 @@
 
         async function searchByCameraDesign(base64Image) {
             const status = document.getElementById('cameraStatus');
-            status.innerText = 'جاري تجهيز الصورة لعدسة Google Lens...';
+            status.innerText = 'جاري رفع الصورة وتحليلها...';
 
             try {
-                const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
+                const res = await fetch(base64Image);
+                const blob = await res.blob();
+
                 const formData = new FormData();
-                formData.append("image", cleanBase64);
+                formData.append("image", blob, "image.jpg");
 
                 const imgbbApiKey = "3b0e3be5b69c6a7e089d71c86e00b852";
                 
@@ -864,23 +903,23 @@
                     method: "POST",
                     body: formData
                 });
-                
+
                 const uploadData = await uploadRes.json();
 
-                if (uploadData && uploadData.success) {
+                if (uploadData && uploadData.success && uploadData.data && uploadData.data.url) {
                     const imageUrl = uploadData.data.url;
-                    status.innerText = 'تم رفع الصورة! جاري تحويلك لمطابقة Google Lens...';
+                    status.innerText = 'تم الرفع! جاري تحويلك لمطابقة Google Lens...';
 
                     setTimeout(() => {
                         window.open(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`, '_blank');
                         closeCamera();
-                    }, 1000);
+                    }, 800);
                 } else {
-                    throw new Error("فشل الرفع");
+                    throw new Error(uploadData.error ? uploadData.error.message : "فشل الرفع");
                 }
             } catch (error) {
-                console.error(error);
-                status.innerText = 'حدث خطأ أثناء رفع الصورة، تأكد من اتصال الإنترنت.';
+                console.error("خطأ الرفع:", error);
+                status.innerText = 'حدث خطأ أثناء رفع الصورة، تأكد من اتصال الإنترنت أو اختر صورة بحجم أصغر.';
             }
         }
 
@@ -891,7 +930,7 @@
             document.getElementById('cameraModal').style.display = 'none';
         }
 
-        // ================= البحث بالصوت المحسّن =================
+        // ================= البحث بالصوت =================
 
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
