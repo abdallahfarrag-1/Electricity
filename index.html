@@ -543,14 +543,14 @@
         ];
 
         const brandsData = [
-            { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
-            { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
+            { name: 'Apple', alt: 'ابل أبل ايفون iphone ايفون', img: 'apple.png' },
+            { name: 'Samsung', alt: 'سامسونج جالكسي جالاكسي galaxy', img: 'samsung.png' },
             { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
             { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.jpg' },
             { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.jpg' },
             { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.jpg' },
             { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
-            { name: 'Honor', alt: 'هونر honor', img: 'honor.jpg' },
+            { name: 'Honor', alt: 'هونر هونور honor', img: 'honor.jpg' },
             { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.jpg' },
             { name: 'HTC', alt: 'اتش تي سي htc', img: 'htc.jpg' }
         ];
@@ -591,13 +591,126 @@
             });
         }
 
-        // ================= دالة البحث المباشرة والأصلية =================
+        // ================= محرك المعالجة والبحث الذكي الفائق =================
+
+        // 1. تحويل الأرقام العربية الهندية (١, ٢, ٣...) إلى إنجليزية (1, 2, 3...)
+        function parseArabicDigits(str) {
+            return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        }
+
+        // 2. تنظيف وتوحيد النطق وتحويل الصوت/العربي للإنجليزية
+        function smartNormalize(text) {
+            if (!text) return '';
+            let str = text.toLowerCase();
+            str = parseArabicDigits(str);
+
+            // توحيد الحروف العربية والرموز
+            str = str.replace(/[أإآء]/g, 'ا')
+                     .replace(/ى/g, 'ي')
+                     .replace(/ة/g, 'ه')
+                     .replace(/[\.\-\_\,\/\\]/g, ' ');
+
+            // ترجمة الصوتيات العربية الشائعة للماركات والموديلات إلى الإنجليزية
+            const phoneticMap = [
+                { ar: /\b(ايه|اي|إيه|أيه)\b/g, en: 'a' },
+                { ar: /\b(اس|إس)\b/g, en: 's' },
+                { ar: /\b(نوت)\b/g, en: 'note' },
+                { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
+                { ar: /\b(سامسونج|سامسونغ)\b/g, en: 'samsung' },
+                { ar: /\b(ايفون|أيفون)\b/g, en: 'iphone' },
+                { ar: /\b(شاومي|شومي)\b/g, en: 'xiaomi' },
+                { ar: /\b(ريدمي)\b/g, en: 'redmi' },
+                { ar: /\b(انفينكس|انفنكس)\b/g, en: 'infinix' },
+                { ar: /\b(اوبو|أوبو)\b/g, en: 'oppo' },
+                { ar: /\b(هواوي)\b/g, en: 'huawei' },
+                { ar: /\b(هونر|هونور|هونوز)\b/g, en: 'honor' },
+                { ar: /\b(برو)\b/g, en: 'pro' },
+                { ar: /\b(بلس|بلاص)\b/g, en: 'plus' },
+                { ar: /\b(الترا)\b/g, en: 'ultra' },
+                { ar: /\b(شاشه|شاشة)\b/g, en: 'screen' },
+                { ar: /\b(بطاريه|بطارية)\b/g, en: 'battery' }
+            ];
+
+            phoneticMap.forEach(m => {
+                str = str.replace(m.ar, m.en);
+            });
+
+            // دمج الحروف بالأرقام (مثال: a 17 -> a17 أو note 10 s -> note10s)
+            str = str.replace(/([a-z])\s+([0-9])/gi, '$1$2');
+            str = str.replace(/([0-9])\s+([a-z])/gi, '$1$2');
+            
+            return str.trim().replace(/\s+/g, ' ');
+        }
+
+        // 3. خوارزمية حساب نسبة التشابه لمسامحة الأخطاء الإملائية (Levenshtein Distance)
+        function similarityScore(s1, s2) {
+            let longer = s1;
+            let shorter = s2;
+            if (s1.length < s2.length) {
+                longer = s2;
+                shorter = s1;
+            }
+            let longerLength = longer.length;
+            if (longerLength === 0) return 1.0;
+            
+            let editDistance = editDistanceCalc(longer, shorter);
+            return (longerLength - editDistance) / parseFloat(longerLength);
+        }
+
+        function editDistanceCalc(s1, s2) {
+            s1 = s1.toLowerCase();
+            s2 = s2.toLowerCase();
+            let costs = new Array();
+            for (let i = 0; i <= s1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= s2.length; j++) {
+                    if (i == 0) costs[j] = j;
+                    else {
+                        if (j > 0) {
+                            let newValue = costs[j - 1];
+                            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                                newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                            costs[j - 1] = lastValue;
+                            lastValue = newValue;
+                        }
+                    }
+                }
+                if (i > 0) costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
+
+        // 4. دالة التحقق الذكي من تطابق الكلمات والمقصد
+        function smartMatch(query, target) {
+            const normQuery = smartNormalize(query);
+            const normTarget = smartNormalize(target);
+
+            // مطابقة مباشرة بعد التبسيط
+            if (normTarget.includes(normQuery)) return true;
+
+            // مطابقة الكلمات المنفصلة مع نسبة خطأ مسموحة للأخطاء الإملائية
+            const queryWords = normQuery.split(' ');
+            const targetWords = normTarget.split(' ');
+
+            return queryWords.every(qWord => {
+                if (qWord.length <= 2) {
+                    return targetWords.some(tWord => tWord.includes(qWord));
+                }
+                return targetWords.some(tWord => {
+                    if (tWord.includes(qWord)) return true;
+                    // سماح بنسبة خطأ إملائي تصل إلى 70% تشابه للكلمات الطويلة
+                    return similarityScore(qWord, tWord) >= 0.70;
+                });
+            });
+        }
+
+        // ================= دالة البحث الشاملة =================
 
         function globalSearch() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const rawQuery = document.getElementById('searchInput').value;
             const resultsContainer = document.getElementById('searchResultsContainer');
 
-            if (query === '') {
+            if (!rawQuery || rawQuery.trim() === '') {
                 resultsContainer.style.display = 'none';
                 restoreStateView();
                 return;
@@ -610,26 +723,30 @@
 
             // 1. بحث الأقسام
             const matchedCategories = categoriesData.filter(cat => 
-                !cat.isEmpty && (
-                    cat.name.toLowerCase().includes(query) || 
-                    cat.alt.toLowerCase().includes(query)
-                )
+                !cat.isEmpty && (smartMatch(rawQuery, cat.name) || smartMatch(rawQuery, cat.alt))
             );
 
             // 2. بحث الماركات
             const matchedBrands = brandsData.filter(brand => 
-                brand.name.toLowerCase().includes(query) || 
-                brand.alt.toLowerCase().includes(query)
-            );
-            
-            // 3. بحث الموديلات العادي والجامد المباشر
-            const matchedItems = itemsData.filter(item => 
-                item.name.toLowerCase().includes(query) || 
-                item.altKeywords.toLowerCase().includes(query)
+                smartMatch(rawQuery, brand.name) || smartMatch(rawQuery, brand.alt)
             );
 
+            // 3. بحث الموديلات الذكي مع منع التكرار
+            const matchedItems = [];
+            const seenKeys = new Set();
+
+            itemsData.forEach(item => {
+                if (smartMatch(rawQuery, item.name) || smartMatch(rawQuery, item.altKeywords)) {
+                    const uniqueKey = item.name.trim().toLowerCase();
+                    if (!seenKeys.has(uniqueKey)) {
+                        seenKeys.add(uniqueKey);
+                        matchedItems.push(item);
+                    }
+                }
+            });
+
             if (matchedCategories.length === 0 && matchedBrands.length === 0 && matchedItems.length === 0) {
-                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${query}"</div>`;
+                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${rawQuery}"</div>`;
                 return;
             }
 
@@ -694,6 +811,8 @@
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
                 document.getElementById('searchInput').value = spokenText;
+                
+                // تشغيل البحث الذكي فوراً على النص الصوتي المسموع
                 globalSearch();
 
                 voiceBtn.classList.remove('listening');
