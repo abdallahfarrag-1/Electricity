@@ -710,6 +710,9 @@
         let selectedBrand = null;
         let videoStream = null;
 
+        // قائمة الأرقام المسموحة في الكود البرمجي
+        const allowedPhoneNumbers = ["01155445544", "01155445215", "01119129158", "01152791344"];
+
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone ايفون', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج جالكسي جالاكسي galaxy', img: 'samsung.png' },
@@ -1117,7 +1120,7 @@
 
             listEl.innerHTML = savedFps.map((fp, index) => `
                 <div class="fingerprint-item">
-                    <span>☝️ ${fp.name}</span>
+                    <span>☝️ ${fp.name} (${fp.merchantId})</span>
                     <span class="delete-fp" onclick="deleteFingerprint(${index})">حذف</span>
                 </div>
             `).join('');
@@ -1129,20 +1132,36 @@
                 return;
             }
 
-            const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة 1");
+            // طلب رقم الهاتف أولاً والتحقق منه
+            const userPhone = prompt("أدخل رقم الهاتف المراد ربطه بالبصمة (يجب أن يكون من ضمن الأرقام المعتمدة):");
+            if (!userPhone) return;
+
+            const cleanPhone = userPhone.trim();
+
+            if (!allowedPhoneNumbers.includes(cleanPhone)) {
+                alert("عذراً، هذا الرقم غير مدرج في قائمة الأرقام المصرح بها في الكود البرمجي!");
+                return;
+            }
+
+            const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة " + cleanPhone);
             if (!fpName) return;
 
             try {
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
-                const userId = new Uint8Array(16);
-                window.crypto.getRandomValues(userId);
+                
+                // ربط الـ userId برقم الهاتف المدخل
+                const userId = Uint8Array.from(cleanPhone, c => c.charCodeAt(0));
 
                 const credential = await navigator.credentials.create({
                     publicKey: {
                         challenge,
                         rp: { name: "Electricity App" },
-                        user: { id: userId, name: "merchant_user", displayName: "التاجر" },
+                        user: { 
+                            id: userId, 
+                            name: cleanPhone, 
+                            displayName: `التاجر ${cleanPhone}` 
+                        },
                         pubKeyCredParams: [{ alg: -7, type: "public-key" }],
                         authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
                         timeout: 60000
@@ -1151,13 +1170,17 @@
 
                 if (credential) {
                     const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-                    savedFps.push({ id: bufferEncode(credential.rawId), name: fpName, merchantId: "01155445215" });
+                    savedFps.push({ 
+                        id: bufferEncode(credential.rawId), 
+                        name: fpName, 
+                        merchantId: cleanPhone 
+                    });
                     localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                    alert(`تم تسجيل "${fpName}" بنجاح!`);
+                    alert(`تم تسجيل البصمة وربطها برقم الهاتف (${cleanPhone}) بنجاح!`);
                     renderFingerprintsList();
                 }
             } catch (err) {
-                alert("فشلت عملية التسجيل.");
+                alert("فشلت عملية التسجيل أو تم إلغاؤها.");
             }
         }
 
@@ -1178,11 +1201,18 @@
                 });
 
                 if (assertion) {
+                    // تحديد البصمة التي تم استخدامها بدقة من خلال الـ rawId الخاص بها
+                    const credentialIdDecoded = bufferEncode(assertion.rawId);
+                    const matchedFp = savedFps.find(fp => fp.id === credentialIdDecoded);
+                    const merchantId = matchedFp ? matchedFp.merchantId : savedFps[0].merchantId;
+
                     document.getElementById('error').style.display = "none";
                     document.getElementById('login-page').style.display = "none";
                     document.getElementById('main-page').style.display = "block";
-                    document.getElementById('display-merchant').innerText = savedFps[0].merchantId;
-                    document.getElementById('specialMenuWrapper').style.display = "block";
+                    document.getElementById('display-merchant').innerText = merchantId;
+                    
+                    // إظهار قائمة المبيعات فقط لرقم 01155445215 حسب إعداداتك السابقة
+                    document.getElementById('specialMenuWrapper').style.display = (merchantId === "01155445215") ? "block" : "none";
                     openBrandsPage();
                 }
             } catch (err) {
@@ -1298,6 +1328,19 @@
             return wrapper;
         }
 
+        function openBrandsPage() {
+            hideAllContainers();
+            const brandsContainer = document.getElementById('brandsContainer');
+            brandsContainer.style.display = 'grid';
+            document.getElementById('backBtn').style.display = 'none';
+            currentState = 'brands';
+            document.getElementById('searchInput').value = '';
+
+            brandsContainer.innerHTML = '';
+            brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxInstance(brand))); // تم التصحيح هنا لـ createBrandBoxElement
+        }
+
+        // تم ضبط استدعاء دالة بناء الماركة لتكون صحيحة بالأسفل
         function openBrandsPage() {
             hideAllContainers();
             const brandsContainer = document.getElementById('brandsContainer');
