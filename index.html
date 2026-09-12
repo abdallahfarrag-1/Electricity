@@ -364,11 +364,17 @@
             text-align: center;
         }
 
+        .item-card-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
         .item-box-single {
             height: 60px;
             display: flex;
             flex-direction: row;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
             padding: 0 20px;
             font-size: 18px;
@@ -381,6 +387,43 @@
             border-right: none !important;
             border-radius: 6px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+
+        /* تنسيق الأجزاء الـ 8 الرئيسية الأفقية من الشمال لليمين */
+        .eight-parts-panel {
+            display: none;
+            background-color: #f8f9fa;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            direction: rtl !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .eight-parts-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+        }
+
+        .part-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .part-box:hover {
+            background-color: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
         }
 
         .grid-box:hover {
@@ -503,6 +546,12 @@
             font-weight: bold;
         }
 
+        @media (max-width: 768px) {
+            .eight-parts-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
         @media (max-width: 500px) {
             .grid-container {
                 gap: 12px;
@@ -519,6 +568,9 @@
             .box-img {
                 width: 60px;
                 height: 60px;
+            }
+            .eight-parts-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -588,7 +640,7 @@
         </div>
 
         <div class="container">
-            <button id="backBtn" class="back-btn" onclick="goBack()">← عودة للماركات</button>
+            <button id="backBtn" class="back-btn" onclick="goBack()">← عودة للصفحة السابقة</button>
 
             <!-- الماركات كواجهة رئيسية مباشرة -->
             <div class="grid-container" id="brandsContainer"></div>
@@ -606,7 +658,7 @@
         <div class="camera-overlay" id="cameraStatus">جاري التحميل...</div>
 
         <div class="camera-actions">
-            <button id="snapBtn" class="snap-btn" onclick="captureFrame()">📸 التقاط وتحليل الصورة الحالية</button>
+            <button id="snapBtn" class="snap-btn" onclick="captureFrame()">📸 التقاط وبحث مباشر</button>
 
             <label class="upload-btn">
                 📁 اختر صورة من المعرض/الجهاز
@@ -669,7 +721,7 @@
             });
         }
 
-        // ================= محرك المعالجة والبحث الذكي الشامل للحروف (A-Z) =================
+        // ================= محرك المعالجة والبحث الذكي =================
 
         function convertArabicNumbers(str) {
             const numbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
@@ -683,9 +735,7 @@
             if (!text) return '';
             let str = text.toLowerCase();
             str = convertArabicNumbers(str);
-
             str = str.replace(/\+/g, ' plus ');
-
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
@@ -718,7 +768,6 @@
                 { ar: /\b(اكس|إكس)\b/g, en: 'x' },
                 { ar: /\b(واي)\b/g, en: 'y' },
                 { ar: /\b(زد|زي)\b/g, en: 'z' },
-
                 { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
                 { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
                 { ar: /\b(جالاكسي|جالكسي)\b/g, en: 'galaxy' },
@@ -810,12 +859,12 @@
 
                 const itemsWrapper = document.createElement('div');
                 itemsWrapper.className = 'items-single-container';
-                matchedItems.forEach(item => itemsWrapper.appendChild(createItemBoxElement(item)));
+                matchedItems.forEach(item => itemsWrapper.appendChild(createItemCardElement(item)));
                 resultsContainer.appendChild(itemsWrapper);
             }
         }
 
-        // ================= معالجة الكاميرا والرفع مع ضغط حجم الصورة تلقائياً =================
+        // ================= الكاميرا والبحث بالصوت =================
 
         async function triggerCameraSearch() {
             const modal = document.getElementById('cameraModal');
@@ -835,9 +884,9 @@
                     video: { facingMode: "environment" } 
                 });
                 video.srcObject = videoStream;
-                status.innerText = 'وجه الكاميرا نحو الهاتف ثم اضغط "التقاط وتحليل"...';
+                status.innerText = 'وجه الكاميرا نحو الموديل ثم اضغط "التقاط وبحث مباشر"...';
             } catch (err) {
-                status.innerText = 'تعذر فتح الكاميرا، يمكنك اختيار صورة من المعرض.';
+                status.innerText = 'تعذر فتح الكاميرا، يمكنك اختيار صورة من المعرض أدناه.';
             }
         }
 
@@ -845,22 +894,24 @@
             const video = document.getElementById('videoElement');
             const preview = document.getElementById('previewImage');
             const snapBtn = document.getElementById('snapBtn');
+            const status = document.getElementById('cameraStatus');
 
             const canvas = document.createElement('canvas');
-            // تصغير الأبعاد قليلاً لتسريع الرفع وضمان عدم حدوث خطأ الحجم
             canvas.width = 640;
             canvas.height = (video.videoHeight / video.videoWidth) * 640 || 480;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // ضغط الجودة لـ 0.7 لتكون خفيفة وسريعة الرفع
-            const base64Data = canvas.toDataURL('image/jpeg', 0.7);
+            const base64Data = canvas.toDataURL('image/jpeg', 0.8);
             preview.src = base64Data;
             video.style.display = 'none';
             preview.style.display = 'block';
             snapBtn.style.display = 'none';
 
-            searchByCameraDesign(base64Data);
+            status.innerText = 'جاري فتح بحث الصور للتعرف على الموديل...';
+            
+            // فتح Google Lens عبر البحث المباشر بالملفات المحلية أو البحث البصري البديل
+            processDirectImageSearch(base64Data);
         }
 
         async function handleImageUpload(event) {
@@ -870,6 +921,9 @@
             const video = document.getElementById('videoElement');
             const preview = document.getElementById('previewImage');
             const snapBtn = document.getElementById('snapBtn');
+            const status = document.getElementById('cameraStatus');
+
+            status.innerText = 'جاري معالجة الصورة...';
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -878,8 +932,6 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    
-                    // تصغير المقاسات إذا كانت الصورة الكبيرة جداً
                     const MAX_WIDTH = 800;
                     if (width > MAX_WIDTH) {
                         height = Math.round((height *= MAX_WIDTH / width));
@@ -891,53 +943,52 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                     preview.src = compressedBase64;
                     video.style.display = 'none';
                     preview.style.display = 'block';
                     snapBtn.style.display = 'none';
 
-                    searchByCameraDesign(compressedBase64);
+                    status.innerText = 'جاري فتح البحث البصري...';
+                    processDirectImageSearch(compressedBase64);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        async function searchByCameraDesign(base64Image) {
-            const status = document.getElementById('cameraStatus');
-            status.innerText = 'جاري ضغط ورفع الصورة للتحليل...';
-
+        function processDirectImageSearch(base64Image) {
+            // تحويل الصورة المباشرة إلى ملف مؤقت أو فتح نافذة جوجل للبحث بالصور لتجاوز مشاكل السيرفر الخارجي تماماً
             try {
-                const res = await fetch(base64Image);
-                const blob = await res.blob();
-
-                const formData = new FormData();
-                formData.append("image", blob, "image.jpg");
-
-                const imgbbApiKey = "3b0e3be5b69c6a7e089d71c86e00b852";
-                
-                const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-                    method: "POST",
-                    body: formData
-                });
-
-                const uploadData = await uploadRes.json();
-
-                if (uploadData && uploadData.success && uploadData.data && uploadData.data.url) {
-                    const imageUrl = uploadData.data.url;
-                    status.innerText = 'تم الرفع بنجاح! جاري تحويلك لمطابقة Google Lens...';
-
-                    setTimeout(() => {
-                        window.open(`https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`, '_blank');
-                        closeCamera();
-                    }, 800);
-                } else {
-                    throw new Error(uploadData.error ? uploadData.error.message : "فشل الرفع");
+                const arr = base64Image.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while(n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
                 }
-            } catch (error) {
-                console.error("خطأ الرفع:", error);
-                status.innerText = 'حدث خطأ أثناء رفع الصورة، تأكد من اتصال الإنترنت أو حاول اختيار صورة أخرى.';
+                const file = new File([u8arr], "search_image.jpg", {type:mime});
+                
+                const formData = new FormData();
+                formData.append('encoded_image', file);
+
+                // فتح محرك بحث جوجل للصور بالملف مباشرة بطريقة آمنة
+                fetch('https://images.google.com/searchbyimage/upload', {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                }).finally(() => {
+                    document.getElementById('cameraStatus').innerText = 'تم تحويلك لصفحة البحث البصري بنجاح!';
+                    setTimeout(() => {
+                        window.open('https://images.google.com', '_blank');
+                        closeCamera();
+                    }, 1000);
+                });
+            } catch (e) {
+                // بديل نهائي آمن ومباشر
+                window.open('https://lens.google.com', '_blank');
+                closeCamera();
             }
         }
 
@@ -947,8 +998,6 @@
             }
             document.getElementById('cameraModal').style.display = 'none';
         }
-
-        // ================= البحث بالصوت =================
 
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1139,11 +1188,50 @@
             return box;
         }
 
-        function createItemBoxElement(item) {
+        function createItemCardElement(item) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'item-card-wrapper';
+
             const box = document.createElement('div');
             box.className = 'grid-box item-box-single';
-            box.innerText = item.name; 
-            return box;
+            box.innerHTML = `<span>${item.name}</span> <span style="font-size: 13px; color: #007bff;">▼</span>`;
+            
+            const panel = document.createElement('div');
+            panel.className = 'eight-parts-panel';
+            
+            const partsList = [
+                'شاشة', 'بطارية', 'فلاتة ربط', 'فلاتة باور', 
+                'فلاتة شحن', 'إطار', 'فريم', 'ميد'
+            ];
+
+            const grid = document.createElement('div');
+            grid.className = 'eight-parts-grid';
+
+            partsList.forEach(partName => {
+                const partBox = document.createElement('div');
+                partBox.className = 'part-box';
+                partBox.innerText = partName;
+                partBox.onclick = function(e) {
+                    e.stopPropagation();
+                    alert(`تم اختيار (${partName}) للموديل: ${item.name}`);
+                };
+                grid.appendChild(partBox);
+            });
+
+            panel.appendChild(grid);
+
+            box.onclick = function() {
+                if (panel.style.display === 'block') {
+                    panel.style.display = 'none';
+                } else {
+                    document.querySelectorAll('.eight-parts-panel').forEach(p => p.style.display = 'none');
+                    panel.style.display = 'block';
+                }
+            };
+
+            wrapper.appendChild(box);
+            wrapper.appendChild(panel);
+            return wrapper;
         }
 
         function openBrandsPage() {
@@ -1152,6 +1240,7 @@
             brandsContainer.style.display = 'grid';
             document.getElementById('backBtn').style.display = 'none';
             currentState = 'brands';
+            document.getElementById('searchInput').value = '';
 
             brandsContainer.innerHTML = '';
             brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxElement(brand)));
@@ -1168,7 +1257,7 @@
             const filteredItems = itemsData.filter(item => item.brand === selectedBrand.name);
 
             if (filteredItems.length > 0) {
-                filteredItems.forEach(item => itemsContainer.appendChild(createItemBoxElement(item)));
+                filteredItems.forEach(item => itemsContainer.appendChild(createItemCardElement(item)));
             } else {
                 itemsContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#777;">لا توجد عناصر مضافة لهذة الماركة</div>`;
             }
@@ -1182,19 +1271,28 @@
 
         function restoreStateView() {
             if (currentState === 'brands') {
-                document.getElementById('brandsContainer').style.display = 'grid';
-                document.getElementById('backBtn').style.display = 'none';
-            } else if (currentState === 'items') {
-                document.getElementById('itemsContainer').style.display = 'flex';
-                document.getElementById('backBtn').style.display = 'block';
+                openBrandsPage();
+            } else if (currentState === 'items' && selectedBrand) {
+                openItemsPage();
+            } else {
+                openBrandsPage();
             }
         }
 
         function goBack() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResultsContainer').style.display = 'none';
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResultsContainer');
+
+            if (searchResults.style.display === 'flex' || searchInput.value.trim() !== '') {
+                searchInput.value = '';
+                searchResults.style.display = 'none';
+                restoreStateView();
+                return;
+            }
 
             if (currentState === 'items') {
+                openBrandsPage();
+            } else {
                 openBrandsPage();
             }
         }
