@@ -331,7 +331,8 @@
             border-radius: 6px;
             font-size: 16px;
             outline: none;
-            text-align: right;
+            text-align: left;
+            direction: ltr;
         }
 
         .search-input:focus {
@@ -678,47 +679,19 @@
             return str;
         }
 
-        // محرك بحث دلالي ذكي يدمج الحروف المنفصلة بالأرقام ويدعم المطابقة الجزئية والمرنة
-        function smartNormalize(text) {
-            if (!text) return '';
-            let str = text.toLowerCase();
+        // محرك تحويل النص الصوتي المكتوب بالعربي إلى صيغة إنجليزية دقيقة تلقائياً
+        function translateVoiceToEnglish(spokenText) {
+            if (!spokenText) return '';
+            let str = spokenText.toLowerCase();
             str = convertArabicNumbers(str);
             str = str.replace(/\+/g, ' plus ');
             
-            // توحيد الحروف والتشكيل
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
                      .replace(/[\.\-\_\,\/\(\)]/g, ' ');
 
-            // جدول تحويل الكلمات الصوتية العامية إلى إنجليزية دقيقة لتسهيل المطابقة مع ملف الموديلات
             const phoneticMap = [
-                { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
-                { ar: /\b(بي|بيه)\b/g, en: 'b' },
-                { ar: /\b(سي)\b/g, en: 'c' },
-                { ar: /\b(دي)\b/g, en: 'd' },
-                { ar: /\b(اي|إي)\b/g, en: 'e' },
-                { ar: /\b(اف|إف)\b/g, en: 'f' },
-                { ar: /\b(جي)\b/g, en: 'g' },
-                { ar: /\b(اتش|إتش)\b/g, en: 'h' },
-                { ar: /\b(اي|آي)\b/g, en: 'i' },
-                { ar: /\b(جيه)\b/g, en: 'j' },
-                { ar: /\b(كي)\b/g, en: 'k' },
-                { ar: /\b(ال|إل)\b/g, en: 'l' },
-                { ar: /\b(ام|إم)\b/g, en: 'm' },
-                { ar: /\b(ان|إن)\b/g, en: 'n' },
-                { ar: /\b(او|أو)\b/g, en: 'o' },
-                { ar: /\b(بي|بيه)\b/g, en: 'p' },
-                { ar: /\b(كيو)\b/g, en: 'q' },
-                { ar: /\b(ار|آر)\b/g, en: 'r' },
-                { ar: /\b(اس|إس|س)\b/g, en: 's' },
-                { ar: /\b(تي)\b/g, en: 't' },
-                { ar: /\b(يو)\b/g, en: 'u' },
-                { ar: /\b(في|فيي)\b/g, en: 'v' },
-                { ar: /\b(دبليو)\b/g, en: 'w' },
-                { ar: /\b(اكس|إكس)\b/g, en: 'x' },
-                { ar: /\b(واي)\b/g, en: 'y' },
-                { ar: /\b(زد|زي)\b/g, en: 'z' },
                 { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
                 { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
                 { ar: /\b(جالاكسي|جالكسي|جلكسي)\b/g, en: 'galaxy' },
@@ -732,18 +705,50 @@
                 { ar: /\b(اوبو|أوبو)\b/g, en: 'oppo' },
                 { ar: /\b(هواوي)\b/g, en: 'huawei' },
                 { ar: /\b(هونر|هونور)\b/g, en: 'honor' },
-                { ar: /\b(نوت)\b/g, en: 'note' }
+                { ar: /\b(نوت)\b/g, en: 'note' },
+                { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
+                { ar: /\b(اس|إس|س)\b/g, en: 's' },
+                { ar: /\b(اتش|إتش)\b/g, en: 'h' },
+                { ar: /\b(بي|بيه)\b/g, en: 'b' },
+                { ar: /\b(سي)\b/g, en: 'c' },
+                { ar: /\b(دي)\b/g, en: 'd' },
+                { ar: /\b(جي)\b/g, en: 'g' },
+                { ar: /\b(كي)\b/g, en: 'k' },
+                { ar: /\b(ام|إم)\b/g, en: 'm' },
+                { ar: /\b(ان|إن)\b/g, en: 'n' },
+                { ar: /\b(ار|آر)\b/g, en: 'r' },
+                { ar: /\b(تي)\b/g, en: 't' },
+                { ar: /\b(اكس|إكس)\b/g, en: 'x' }
             ];
 
             phoneticMap.forEach(m => {
                 str = str.replace(m.ar, m.en);
             });
 
-            // دمج الحروف المفصولة بالأرقام فوراً (مثل s 23 أو a 15 أو a 5 لتصبح s23 و a15 و a5)
+            // دمج الحروف المفصولة بالأرقام مثل s 23 أو a 15 لتصبح s23 و a15
             str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
             str = str.replace(/\b(\d+)\s+([a-z])\b/g, '$1$2');
 
             return str.trim().replace(/\s+/g, ' ');
+        }
+
+        // حساب نسبة التشابه بين الكلمات (Fuzzy Matching) لضمان مطابقة أي تقارب في الحروف
+        function getSimilarityScore(str1, str2) {
+            let matches = 0;
+            let length = Math.max(str1.length, str2.length);
+            if (length === 0) return 1.0;
+            
+            // تحقق من الاحتواء المباشر أو التقارب
+            if (str1.includes(str2) || str2.includes(str1)) {
+                return 0.9;
+            }
+
+            for (let i = 0; i < str1.length; i++) {
+                if (str2.includes(str1[i])) {
+                    matches++;
+                }
+            }
+            return matches / length;
         }
 
         window.globalSearch = function() {
@@ -761,7 +766,7 @@
             document.getElementById('backBtn').style.display = 'block';
             resultsContainer.innerHTML = '';
 
-            const normalizedQuery = smartNormalize(rawQuery);
+            const normalizedQuery = translateVoiceToEnglish(rawQuery);
             const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
 
             if (queryWords.length === 0) {
@@ -770,20 +775,41 @@
                 return;
             }
 
+            // البحث الشامل في الماركات
             const matchedBrands = brandsData.filter(brand => {
-                const normBrand = smartNormalize(brand.name + ' ' + brand.alt);
+                const normBrand = translateVoiceToEnglish(brand.name + ' ' + brand.alt);
                 return queryWords.some(word => normBrand.includes(word));
             });
 
+            // البحث الذكي الشامل في كل موديلات ملف models.json مقارنة بالكلمة المنطوقة أو المكتوبة
             const matchedItems = [];
             const seenKeys = new Set();
 
             itemsData.forEach(item => {
-                const normTarget = smartNormalize(item.name + ' ' + item.brand + ' ' + item.altKeywords);
+                const normTarget = translateVoiceToEnglish(item.name + ' ' + item.brand + ' ' + item.altKeywords);
                 
-                // نظام مطابقة ذكي: إما تطابق تام لجميع الكلمات أو تطابق جزئي لأي كلمة رئيسية (يدعم البحث بكلمة واحدة أو متعددة وبأي ترتيب)
-                const isMatch = queryWords.some(qWord => normTarget.includes(qWord)) || 
-                                queryWords.every(qWord => normTarget.includes(qWord));
+                // تحقق هل الكلمات موجودة بالكامل أو بشكل جزئي أو بنسبة تشابه عالية في اسم أي تليفون بالملف
+                let isMatch = false;
+                
+                // مطابقة تامة أو احتواء للأجزاء
+                const exactMatch = queryWords.every(qWord => normTarget.includes(qWord));
+                const partialMatch = queryWords.some(qWord => normTarget.includes(qWord));
+
+                if (exactMatch || partialMatch) {
+                    isMatch = true;
+                } else {
+                    // مطابقة تقريبية بالحروف لكل كلمة بحث مع الكلمات الموجودة في الموديل
+                    const targetWords = normTarget.split(' ');
+                    for (let qW of queryWords) {
+                        for (let tW of targetWords) {
+                            if (getSimilarityScore(qW, tW) >= 0.75) {
+                                isMatch = true;
+                                break;
+                            }
+                        }
+                        if (isMatch) break;
+                    }
+                }
 
                 if (isMatch) {
                     const uniqueKey = item.name.trim().toLowerCase();
@@ -795,7 +821,7 @@
             });
 
             if (matchedBrands.length === 0 && matchedItems.length === 0) {
-                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد نتائج تطابق "${rawQuery}"</div>`;
+                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد أي موديلات مطابقة لـ "${rawQuery}" في ملف الموديلات</div>`;
                 return;
             }
 
@@ -815,7 +841,7 @@
                 const itemTitle = document.createElement('div');
                 itemTitle.className = 'search-section-title';
                 itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة (بحث ذكي مرن):';
+                itemTitle.innerText = `الموديلات المتطابقة من ملف الموديلات (${matchedItems.length} نتيجة):`;
                 resultsContainer.appendChild(itemTitle);
 
                 const itemsWrapper = document.createElement('div');
@@ -982,6 +1008,7 @@
             document.getElementById('cameraModal').style.display = 'none';
         }
 
+        // البحث الصوتي مع الترجمة التلقائية ثم البحث داخل كل ملف الموديلات
         window.startVoiceSearch = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -1001,8 +1028,10 @@
 
             recognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
+                const translatedText = translateVoiceToEnglish(spokenText);
+                
                 const searchInput = document.getElementById('searchInput');
-                searchInput.value = spokenText;
+                searchInput.value = translatedText;
                 globalSearch();
 
                 voiceBtn.classList.remove('listening');
@@ -1223,7 +1252,7 @@
 
             const box = document.createElement('div');
             box.className = 'grid-box item-box-single';
-            box.innerHTML = `<span>${item.name}</span> <span style="font-size: 13px; color: #007bff;">▼</span>`;
+            box.innerHTML = `<span>${item.name} (${item.brand})</span> <span style="font-size: 13px; color: #007bff;">▼</span>`;
             
             const panel = document.createElement('div');
             panel.className = 'eight-parts-panel';
