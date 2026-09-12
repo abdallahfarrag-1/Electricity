@@ -678,14 +678,14 @@
             return str;
         }
 
-        // محرك البحث الدلالي المتقدم والمرن جداً (Order-Agnostic & Token-aware)
+        // محرك بحث دلالي ذكي يدمج الحروف المنفصلة بالأرقام ويدعم المطابقة الجزئية والمرنة
         function smartNormalize(text) {
             if (!text) return '';
             let str = text.toLowerCase();
             str = convertArabicNumbers(str);
             str = str.replace(/\+/g, ' plus ');
             
-            // توحيد الحروف العربية المتشابهة والرموز
+            // توحيد الحروف والتشكيل
             str = str.replace(/[أإآء]/g, 'ا')
                      .replace(/ى/g, 'ي')
                      .replace(/ة/g, 'ه')
@@ -739,8 +739,7 @@
                 str = str.replace(m.ar, m.en);
             });
 
-            // دمج الحروف والأرقام المنفصلة (مثل s 23 لتصبح s23، أو a 10 لتصبح a10)
-            str = str.replace(/\b([a-z])\s+([a-z])\s+(\d+)\b/g, '$1$2$3');
+            // دمج الحروف المفصولة بالأرقام فوراً (مثل s 23 أو a 15 أو a 5 لتصبح s23 و a15 و a5)
             str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
             str = str.replace(/\b(\d+)\s+([a-z])\b/g, '$1$2');
 
@@ -781,10 +780,10 @@
 
             itemsData.forEach(item => {
                 const normTarget = smartNormalize(item.name + ' ' + item.brand + ' ' + item.altKeywords);
-                const targetWords = normTarget.split(' ');
-
-                // بحث دلالي ذكي يعتمد على تطابق الكلمات بغض النظر عن الترتيب (Bag-of-Words Match)
-                const isMatch = queryWords.every(qWord => targetWords.some(tWord => tWord.includes(qWord) || qWord.includes(tWord)));
+                
+                // نظام مطابقة ذكي: إما تطابق تام لجميع الكلمات أو تطابق جزئي لأي كلمة رئيسية (يدعم البحث بكلمة واحدة أو متعددة وبأي ترتيب)
+                const isMatch = queryWords.some(qWord => normTarget.includes(qWord)) || 
+                                queryWords.every(qWord => normTarget.includes(qWord));
 
                 if (isMatch) {
                     const uniqueKey = item.name.trim().toLowerCase();
@@ -816,7 +815,7 @@
                 const itemTitle = document.createElement('div');
                 itemTitle.className = 'search-section-title';
                 itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = 'الموديلات المتطابقة (بحث دلالي مرن):';
+                itemTitle.innerText = 'الموديلات المتطابقة (بحث ذكي مرن):';
                 resultsContainer.appendChild(itemTitle);
 
                 const itemsWrapper = document.createElement('div');
