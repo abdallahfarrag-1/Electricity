@@ -1142,14 +1142,6 @@
                 return;
             }
 
-            // التحقق مما إذا كان رقم الهاتف مسجلاً مسبقاً بجهاز أو بصمة أخرى في التخزين المحلي
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            const existingForPhone = savedFps.find(fp => fp.merchantId === cleanPhone);
-            if (existingForPhone) {
-                alert("عذراً، هذا الرقم مرتبط مسبقاً ببصمة مسجلة ولا يمكن إعادة تسجيله أو ربطه بجهاز/بصمة أخرى.");
-                return;
-            }
-
             const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة " + cleanPhone);
             if (!fpName) return;
 
@@ -1176,21 +1168,17 @@
 
                 if (credential) {
                     const credentialIdEncoded = bufferEncode(credential.rawId);
+                    let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
                     
-                    // منع تكرار نفس معرف البصمة الفيزيائية الحيوية أيضاً (إذا حاول شخص تسجيل رقم آخر بنفس بصمة الجهاز)
-                    const existingCredential = savedFps.find(fp => fp.id === credentialIdEncoded);
-                    if (existingCredential) {
-                        alert("هذه البصمة مسجلة مسبقاً لرقم هاتف آخر على هذا الجهاز!");
-                        return;
-                    }
-
+                    // التعديل هنا: عند تسجيل نفس البصمة برقم جديد، لا نقوم بتعديل القديم أو حذفه تلقائياً، بل نضيفه كربط جديد لنفس البصمة المادية
                     savedFps.push({ 
                         id: credentialIdEncoded, 
                         name: fpName, 
                         merchantId: cleanPhone 
                     });
+
                     localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-                    alert(`تم تسجيل البصمة وربطها برقم الهاتف (${cleanPhone}) بنجاح وللأبد!`);
+                    alert(`تم حفظ البصمة وربطها برقم الهاتف بنجاح!`);
                     renderFingerprintsList();
                 }
             } catch (err) {
@@ -1216,14 +1204,37 @@
 
                 if (assertion) {
                     const credentialIdDecoded = bufferEncode(assertion.rawId);
-                    const matchedFp = savedFps.find(fp => fp.id === credentialIdDecoded);
                     
-                    if (!matchedFp) {
+                    // جلب كل الأرقام المرتبطة بهذه البصمة الفيزيائية
+                    const matchedEntries = savedFps.filter(fp => fp.id === credentialIdDecoded);
+                    
+                    if (matchedEntries.length === 0) {
                         alert("هذه البصمة غير مطابقة لأي رقم هاتف مسجل مسبقاً.");
                         return;
                     }
 
-                    const merchantId = matchedFp.merchantId;
+                    // استخراج الأرقام الفريدة المرتبطة بهذه البصمة
+                    const uniquePhones = [...new Set(matchedEntries.map(e => e.merchantId))];
+                    let merchantId = uniquePhones[0];
+
+                    // إذا كان مرتبطاً أكثر من رقم بهذه البصمة، عرض قائمة يختار منها المستخدم
+                    if (uniquePhones.length > 1) {
+                        let promptText = "هذه البصمة مرتبطة بأكثر من رقم، يختار المستخدم رقم الدخول:\n\n";
+                        uniquePhones.forEach((phone, idx) => {
+                            promptText += `${idx + 1} - ${phone}\n`;
+                        });
+                        promptText += "\nأدخل رقم الخيار (مثال: 1 أو 2):";
+
+                        const choiceIndexStr = prompt(promptText, "1");
+                        const choiceIndex = parseInt(choiceIndexStr) - 1;
+
+                        if (!isNaN(choiceIndex) && uniquePhones[choiceIndex]) {
+                            merchantId = uniquePhones[choiceIndex];
+                        } else {
+                            alert("اختيار غير صالح، تم الإلغاء.");
+                            return;
+                        }
+                    }
 
                     document.getElementById('error').style.display = "none";
                     document.getElementById('login-page').style.display = "none";
@@ -1397,7 +1408,7 @@
 
             if (searchResults.style.display === 'flex' || searchInput.value.trim() !== '') {
                 searchInput.value = '';
-                searchResults.style.display, searchResults.style.display = 'none';
+                searchResults.style.display = 'none';
                 restoreStateView();
                 return;
             }
