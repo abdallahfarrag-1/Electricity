@@ -378,11 +378,9 @@
             color: #1a252f;
             background-color: #ffffff;
             
-            /* إجبار الاتجاه والمحاذاة لليسار */
             direction: ltr !important;
             text-align: left !important;
             
-            /* الشريط الأزرق من جهة اليسار */
             border-left: 5px solid #007bff !important;
             border-right: none !important;
             border-radius: 6px;
@@ -525,7 +523,7 @@
 
             <div class="grid-container" id="brandsContainer" style="display: none;"></div>
 
-            <!-- حاوية الموديلات الـ 300 بشكل فردي -->
+            <!-- حاوية الموديلات الـ 400 بشكل فردي -->
             <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
 
             <div class="search-results-container" id="searchResultsContainer"></div>
@@ -549,18 +547,18 @@
             { id: 8, name: '', alt: '', img: '', isEmpty: true }
         ];
 
-        // قائمة الماركات
+        // قائمة الماركات المطلوبة مع أسمائها وصورها المحددة
         const brandsData = [
             { name: 'Apple', alt: 'ابل أبل ايفون iphone', img: 'apple.png' },
             { name: 'Samsung', alt: 'سامسونج جالكسي galaxy', img: 'samsung.png' },
             { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
-            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.png' },
-            { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.png' },
-            { name: 'Realme', alt: 'ريلمي realme', img: 'realme.png' },
-            { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.png' },
-            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.png' },
-            { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.png' },
-            { name: 'Honor', alt: 'هونر honor', img: 'honor.png' }
+            { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.jpg' },
+            { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.jpg' },
+            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.jpg' },
+            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
+            { name: 'Honor', alt: 'هونر honor', img: 'honor.jpg' },
+            { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.jpg' },
+            { name: 'HTC', alt: 'اتش تي سي htc', img: 'htc.jpg' }
         ];
 
         let brandModelsMap = {};
@@ -577,7 +575,7 @@
                 console.error("لم يتم العثور على ملف models.json، جارٍ استخدام الوضع الافتراضي:", err);
             });
 
-        // توليد الموديلات بدون اسم الشركة وبدون اسم القطعة
+        // توليد الموديلات الـ 400 لكل ماركة
         function generateItemsData() {
             itemsData.length = 0;
             let itemId = 1;
@@ -587,7 +585,7 @@
                     const models = brandModelsMap[brand.name] || [];
                     const baseCount = models.length > 0 ? models.length : 1;
 
-                    for (let i = 1; i <= 300; i++) {
+                    for (let i = 1; i <= 400; i++) {
                         let modelName = "";
                         if (i <= models.length) {
                             modelName = models[i - 1];
