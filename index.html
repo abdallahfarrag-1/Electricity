@@ -250,6 +250,32 @@
             gap: 10px;
         }
 
+        .api-key-box {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: right;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .api-key-input:focus {
+            border-color: #7b1fa2;
+        }
+
         .action-btn {
             width: 100%;
             max-width: 900px;
@@ -632,6 +658,12 @@
         </div>
 
         <div class="search-section">
+            <!-- خانة إدخال مفتاح الـ API داخل الموقع -->
+            <div class="api-key-box">
+                <label for="apiKeyInput">مفتاح Gemini API Key:</label>
+                <input type="text" id="apiKeyInput" class="api-key-input" placeholder="أدخل مفتاح الـ API الخاص بك هنا (يبدأ بـ AIza...)">
+            </div>
+
             <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
                 🤖 التعرف على الموديل باستخدام ذكاء Gemini AI
             </button>
@@ -673,8 +705,6 @@
     <script type="module">
         import { GoogleGenAI } from "@google/genai";
 
-        const GEMINI_API_KEY = "AQ.Ab8RN6JDY0nxYhdgKwqYUvwsT5fUFN49rg0ch3cOxobm_a1duw";
-
         let currentState = 'brands'; 
         let selectedBrand = null;
         let videoStream = null;
@@ -694,6 +724,14 @@
 
         let brandModelsMap = {};
         const itemsData = [];
+
+        // حفظ واسترجاع الـ API Key تلقائياً في المتصفح لكي لا تبحث عنه كل مرة
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('user_gemini_api_key');
+            if (savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
+            }
+        });
 
         fetch('models.json')
             .then(response => response.json())
@@ -869,6 +907,13 @@
         }
 
         window.triggerCameraSearch = async function() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                alert("الرجاء إدخال مفتاح الـ API الخاص بـ Gemini في الخانة المخصصة أعلى الشاشة أولاً.");
+                document.getElementById('apiKeyInput').focus();
+                return;
+            }
+
             const modal = document.getElementById('cameraModal');
             const video = document.getElementById('videoElement');
             const preview = document.getElementById('previewImage');
@@ -916,6 +961,13 @@
         }
 
         window.handleImageUpload = function(event) {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                alert("الرجاء إدخال مفتاح الـ API الخاص بـ Gemini في الخانة المخصصة أعلى الشاشة أولاً.");
+                document.getElementById('apiKeyInput').focus();
+                return;
+            }
+
             const file = event.target.files[0];
             if (!file) return;
 
@@ -958,12 +1010,15 @@
             reader.readAsDataURL(file);
         }
 
-        // تم تحديث النموذج هنا إلى gemini-1.5-flash الصحيح والمتوافق مع جميع المفاتيح
         async function processWithGeminiAPI(base64Image) {
             const status = document.getElementById('cameraStatus');
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            
+            // حفظ المفتاح مؤقتاً في المتصفح
+            localStorage.setItem('user_gemini_api_key', apiKey);
 
             try {
-                const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+                const ai = new GoogleGenAI({ apiKey: apiKey });
                 const base64DataClean = base64Image.split(',')[1];
 
                 const response = await ai.models.generateContent({
@@ -998,7 +1053,7 @@
 
             } catch (error) {
                 console.error("خطأ في الاتصال بـ Gemini API:", error);
-                status.innerText = 'حدث خطأ أثناء الاتصال بخدمة Gemini AI، تأكد من صحة الـ API Key.';
+                status.innerText = 'حدث خطأ أثناء الاتصال، تأكد من صحة مفتاح الـ API المدخل.';
             }
         }
 
