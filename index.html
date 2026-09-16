@@ -486,13 +486,13 @@
                     <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
                 </div>
 
-                <!-- البحث بالصوت (مفعل حقيقي) -->
+                <!-- البحث بالصوت -->
                 <div class="search-bar">
                     <i class="fa-solid fa-microphone" id="micIcon" onclick="startVoiceSearch()" title="اضغط للتحدث"></i>
                     <input type="text" id="voiceSearchInput" placeholder="البحث باستخدام الصوت (اضغط على الميكروفون)" oninput="filterBrands(this.value)">
                 </div>
 
-                <!-- البحث بالكتابة (مفعل فوري) -->
+                <!-- البحث بالكتابة -->
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="textSearchInput" placeholder="البحث بالكتابة..." oninput="filterBrands(this.value)">
@@ -501,16 +501,16 @@
 
             <div class="brands-title">الماركات</div>
             <div class="brands-grid" id="brandsGrid">
-                <div class="brand-card" data-name="Apple">Apple</div>
-                <div class="brand-card" data-name="Samsung">Samsung</div>
-                <div class="brand-card" data-name="Xiaomi">Xiaomi</div>
-                <div class="brand-card" data-name="Infinix">Infinix</div>
-                <div class="brand-card" data-name="Oppo">Oppo</div>
-                <div class="brand-card" data-name="Huawei">Huawei</div>
-                <div class="brand-card" data-name="Vivo">Vivo</div>
-                <div class="brand-card" data-name="Honor">Honor</div>
-                <div class="brand-card" data-name="htc">htc</div>
-                <div class="brand-card" data-name="Nokia">Nokia</div>
+                <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" data-name="Samsung" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" data-name="Xiaomi" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" data-name="Infinix" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" data-name="Oppo" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" data-name="Huawei" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" data-name="Vivo" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" data-name="Honor" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" data-name="htc" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" data-name="Nokia" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
     </div>
@@ -598,13 +598,11 @@
             closeAllMenus();
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
-            // إعادة ضبط البحث
             document.getElementById('textSearchInput').value = '';
             document.getElementById('voiceSearchInput').value = '';
             filterBrands('');
         }
 
-        /* --- تفعيل وظيفة البحث المباشر (كتابة أو صوت) --- */
         function filterBrands(query) {
             let filter = query.toLowerCase().trim();
             let cards = document.querySelectorAll('.brand-card');
@@ -619,7 +617,6 @@
             });
         }
 
-        /* --- تفعيل البحث الصوتي باستخدام متصفح الويب --- */
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -628,7 +625,7 @@
             }
 
             const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA'; // يدعم اللغة العربية (ويمكنه التعرف على الأسماء الإنجليزية كذلك)
+            recognition.lang = 'ar-SA';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
@@ -639,7 +636,6 @@
 
             recognition.onresult = function(event) {
                 let speechResult = event.results[0][0].transcript;
-                // تنظيف النتيجة من النقط أو الهمزات البسيطة لتطابق أفضل
                 speechResult = speechResult.replace(/[.,]/g, '').trim();
                 
                 document.getElementById('voiceSearchInput').value = speechResult;
