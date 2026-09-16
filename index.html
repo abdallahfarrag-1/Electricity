@@ -334,8 +334,14 @@
         .list-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             padding-bottom: 30px;
+        }
+
+        .model-item-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .horizontal-box {
@@ -360,31 +366,33 @@
             color: #0052D4;
         }
 
-
-        /* --- 4. صفحة الخانات الفرعية (10 خانات أفقية فرعية بالأسماء المطلوبة) --- */
-        #sub-models-page {
+        /* --- 4. الخانات الفرعية (تظهر في نفس الصفحة داخل الموديل) --- */
+        .sub-categories-container {
             display: none;
-            min-height: 100vh;
             flex-direction: column;
+            gap: 8px;
+            padding-right: 15px;
+            margin-top: 4px;
         }
 
         .sub-horizontal-box {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 14px 18px;
-            font-size: 15px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #0052D4;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.01);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
             transition: background 0.2s;
         }
 
         .sub-horizontal-box:hover {
-            background-color: #f8fafc;
+            background-color: #e2e8f0;
         }
     </style>
 </head>
@@ -478,7 +486,7 @@
     </div>
 
 
-    <!-- ================= صفحة الموديلات (100 خانة) ================= -->
+    <!-- ================= صفحة الموديلات (100 خانة أفقية مع الخانات الفرعية بداخلها) ================= -->
     <div id="models-page">
         <header class="navbar">
             <div class="nav-right">
@@ -499,34 +507,7 @@
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
             <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
             <div class="list-container" id="modelsListContainer">
-                <!-- 100 خانة أفقية -->
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية بالأسماء الدقيقة) ================= -->
-    <div id="sub-models-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnSub" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdSub">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuSub">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
-            <button class="back-btn" onclick="goBackToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title" id="selectedModelTitle">تفاصيل الموديل</div>
-            <div class="list-container" id="subModelsContainer">
-                <!-- الخانات الـ 10 الفرعية الدقيقة -->
+                <!-- 100 خانة أفقية يتم توليدها برمجياً -->
             </div>
         </div>
     </div>
@@ -563,9 +544,8 @@
         function updateUserInterface() {
             document.getElementById('userDisplayId').innerText = currentUserId;
             document.getElementById('userDisplayIdModels').innerText = currentUserId;
-            document.getElementById('userDisplayIdSub').innerText = currentUserId;
 
-            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels'), document.getElementById('menuBtnSub')];
+            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels')];
             menuButtons.forEach(btn => {
                 if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
             });
@@ -575,8 +555,7 @@
             if (isGuestUser) return;
             let menus = [
                 document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSub')
+                document.getElementById('dropdownMenuModels')
             ];
             menus.forEach(menu => {
                 if (menu) {
@@ -588,7 +567,6 @@
         function goToMain() {
             closeAllMenus();
             document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
 
@@ -596,26 +574,7 @@
             activeBrandName = brandName;
             document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
             
-            let container = document.getElementById('modelsListContainer');
-            container.innerHTML = '';
-            for (let i = 1; i <= 100; i++) {
-                let box = document.createElement('div');
-                box.className = 'horizontal-box';
-                box.innerHTML = `<span>موديل ${brandName} رقم (${i})</span> <i class="fa-solid fa-chevron-left" style="font-size: 12px; color: #0052D4;"></i>`;
-                box.onclick = function() { openSubModels(`موديل ${brandName} (${i})`); };
-                container.appendChild(box);
-            }
-
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
-
-        function openSubModels(modelName) {
-            document.getElementById('selectedModelTitle').innerText = modelName;
-
-            // القائمة الفرعية المكونة من 10 خانات أفقية بالأسماء المطلوبة بالتمام
-            let subCategories = [
+            let subCategoriesList = [
                 "شاشة",
                 "بطارية",
                 "ظهرية",
@@ -628,26 +587,53 @@
                 "سماعة خارجية"
             ];
 
-            let container = document.getElementById('subModelsContainer');
+            let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
-            
-            subCategories.forEach((catName, index) => {
-                let subBox = document.createElement('div');
-                subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${catName}</span> <span style="font-size: 12px; color: #666;">خانة فرعية (${index + 1})</span>`;
-                subBox.onclick = function() {
-                    alert(`تم اختيار قسم: ${catName} لـ ${modelName}`);
+
+            for (let i = 1; i <= 100; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.className = 'model-item-wrapper';
+
+                let box = document.createElement('div');
+                box.className = 'horizontal-box';
+                box.innerHTML = `<span>موديل ${brandName} رقم (${i})</span> <i class="fa-solid fa-chevron-down arrow-icon" style="font-size: 12px; color: #0052D4; transition: transform 0.2s;"></i>`;
+                
+                let subContainer = document.createElement('div');
+                subContainer.className = 'sub-categories-container';
+
+                // إضافة الـ 10 خانات الفرعية بداخل نفس الصفحة
+                subCategoriesList.forEach((catName, subIndex) => {
+                    let subBox = document.createElement('div');
+                    subBox.className = 'sub-horizontal-box';
+                    subBox.innerHTML = `<span>${catName}</span> <span style="font-size: 11px; color: #666;">فرعي (${subIndex + 1})</span>`;
+                    subBox.onclick = function(e) {
+                        e.stopPropagation();
+                        alert(`تم اختيار (${catName}) للموديل ${brandName} رقم (${i})`);
+                    };
+                    subContainer.appendChild(subBox);
+                });
+
+                // عند الضغط على الخانة الأفقية للموديل يتم إظهار أو إخفاء الخانات الـ 10 في نفس الصفحة
+                box.onclick = function() {
+                    let isVisible = subContainer.style.display === 'flex';
+                    // إغلاق أي خانات أخرى مفتوحة لتنظيم الواجهة
+                    let allSubContainers = document.querySelectorAll('.sub-categories-container');
+                    let allArrows = document.querySelectorAll('.arrow-icon');
+                    allSubContainers.forEach(sc => sc.style.display = 'none');
+                    allArrows.forEach(ar => ar.style.transform = 'rotate(0deg)');
+
+                    if (!isVisible) {
+                        subContainer.style.display = 'flex';
+                        box.querySelector('.arrow-icon').style.transform = 'rotate(180deg)';
+                    }
                 };
-                container.appendChild(subBox);
-            });
 
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
+                wrapper.appendChild(box);
+                wrapper.appendChild(subContainer);
+                container.appendChild(wrapper);
+            }
 
-        function goBackToModels() {
-            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'flex';
             window.scrollTo(0, 0);
         }
@@ -656,7 +642,6 @@
             closeAllMenus();
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'none';
             document.getElementById('login-page').style.display = 'flex';
             document.getElementById('loginForm').reset();
         }
@@ -664,8 +649,7 @@
         function closeAllMenus() {
             let menus = [
                 document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSub')
+                document.getElementById('dropdownMenuModels')
             ];
             menus.forEach(m => { if(m) m.style.display = 'none'; });
         }
