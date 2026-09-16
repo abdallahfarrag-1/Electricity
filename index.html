@@ -4,1450 +4,677 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity</title>
-    
+    <!-- خط كاييرو وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            background-color: #f4f6f8;
+            background-color: #f4f7fc;
             color: #333;
-            min-height: 100vh;
         }
 
+        /* --- 1. واجهة تسجيل الدخول --- */
         #login-page {
+            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: center;
         }
 
-        .header-title {
-            position: absolute;
-            top: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #007bff;
-            letter-spacing: 1px;
-        }
-
-        .login-box {
+        .login-container {
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             text-align: center;
         }
 
+        .logo-area h1 {
+            color: #0052D4;
+            font-size: 32px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo-area p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             text-align: right;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            color: #333;
             font-size: 14px;
-            color: #555;
+            font-weight: 600;
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            text-align: center;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.3s;
         }
 
         .input-group input:focus {
-            border-color: #007bff;
+            border-color: #0052D4;
+            box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 10px;
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
         }
 
-        .login-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .biometric-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
+        .options-row label {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 5px;
+            cursor: pointer;
         }
 
-        .biometric-btn.secondary {
-            background-color: #6c757d;
+        .btn-login {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .biometric-warning {
-            font-size: 12px;
-            color: #d9534f;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            font-weight: bold;
+        .btn-login:hover {
+            background-color: #003fa7;
         }
 
-        .fingerprint-list {
-            margin-top: 15px;
-            text-align: right;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #888;
             font-size: 13px;
         }
 
-        .fingerprint-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8f9fa;
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-top: 5px;
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
         }
+        .divider::before { margin-left: 10px; }
+        .divider::after { margin-right: 10px; }
 
-        .delete-fp {
-            color: #d9534f;
+        .btn-guest {
+            background-color: #f3f4f6;
+            color: #0052D4;
+            border: 1px solid #0052D4;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
         }
 
-        .error-message {
-            color: #d9534f;
-            font-size: 14px;
-            margin-top: 12px;
-            display: none;
+        .btn-guest:hover {
+            background-color: #ebf5ff;
         }
 
-        #main-page {
-            display: none;
-            padding-bottom: 40px;
+
+        /* --- الشريط العلوي المشترك (Navbar) --- */
+        .navbar {
+            background-color: #0052D4;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .nav-bar {
-            background-color: #1a252f;
-            color: #ffffff;
-            text-align: center;
-            padding: 18px;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .merchant-bar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
+        .nav-right, .nav-left {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .merchant-info {
-            margin: 0 auto;
-        }
-
-        .merchant-bar span {
-            color: #007bff;
-        }
-
-        .menu-wrapper {
-            position: absolute;
-            right: 20px;
-            display: none;
+            gap: 15px;
         }
 
         .menu-btn {
             background: none;
             border: none;
-            font-size: 22px;
+            color: white;
+            font-size: 20px;
             cursor: pointer;
-            padding: 4px 8px;
-            color: #1a252f;
-            border-radius: 4px;
-            transition: background-color 0.2s;
         }
 
-        .menu-btn:hover {
-            background-color: #f0f0f0;
+        .brand-title {
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 110%;
-            background-color: #ffffff;
-            min-width: 160px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
-            z-index: 100;
-            overflow: hidden;
-        }
-
-        .dropdown-menu a {
-            color: #333;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            font-weight: normal;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #f4f6f8;
-            color: #007bff;
-        }
-
-        .search-section {
-            background-color: #ffffff;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .api-key-box {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            text-align: right;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .api-key-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            direction: ltr;
-            text-align: left;
-        }
-
-        .api-key-input:focus {
-            border-color: #7b1fa2;
-        }
-
-        .action-btn {
-            width: 100%;
-            max-width: 900px;
-            padding: 11px;
-            border: none;
-            border-radius: 6px;
+        .user-id {
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* قائمة منسدلة لزر الـ 3 شرط */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: white;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            width: 160px;
+            z-index: 100;
+        }
+
+        .dropdown-menu button {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: none;
+            text-align: right;
+            font-size: 14px;
+            color: #d32f2f;
             cursor: pointer;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            transition: background-color 0.2s, transform 0.1s;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
 
-        .action-btn:active {
-            transform: scale(0.99);
+        .dropdown-menu button:hover {
+            background-color: #ffebee;
         }
 
-        .voice-search-btn {
-            background-color: #28a745;
-            color: white;
-        }
 
-        .voice-search-btn:hover {
-            background-color: #218838;
-        }
-
-        .voice-search-btn.listening {
-            background-color: #dc3545;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        .camera-search-btn {
-            background-color: #7b1fa2;
-            color: white;
-        }
-
-        .camera-search-btn:hover {
-            background-color: #6a1b9a;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 900px;
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            outline: none;
-            text-align: left;
-            direction: ltr;
-        }
-
-        .search-input:focus {
-            border-color: #007bff;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .back-btn {
+        /* --- 2. الصفحة الرئيسية (الماركات) --- */
+        #main-page {
             display: none;
-            margin-bottom: 15px;
-            padding: 8px 16px;
-            background-color: #1a252f;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
+            min-height: 100vh;
+            flex-direction: column;
         }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+        .content-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
         }
 
-        .items-single-container {
+        /* أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) */
+        .search-section {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 25px;
         }
 
-        .grid-box {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            height: 140px;
+        .search-bar {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 10px 15px;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .search-bar i {
+            color: #0052D4;
             font-size: 18px;
-            font-weight: bold;
-            color: #555;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            padding: 10px;
             cursor: pointer;
-            text-align: center;
         }
 
-        .item-card-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .item-box-single {
-            height: 60px;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
+        .brands-title {
             font-size: 18px;
-            font-weight: bold;
-            color: #1a252f;
-            background-color: #ffffff;
-            direction: ltr !important;
-            text-align: left !important;
-            border-left: 5px solid #007bff !important;
-            border-right: none !important;
-            border-radius: 6px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            cursor: pointer;
-        }
-
-        .eight-parts-panel {
-            display: none;
-            background-color: #f8f9fa;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 12px;
-            direction: rtl !important;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-        }
-
-        .eight-parts-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 6px;
-        }
-
-        .part-box {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            padding: 8px 4px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: #334155;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .part-box:hover {
-            background-color: #007bff;
-            color: #ffffff;
-            border-color: #007bff;
-        }
-
-        .grid-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .box-title {
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #1a252f;
-        }
-
-        .box-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-        }
-
-        .search-results-container {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .search-section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            font-weight: 700;
+            color: #0052D4;
+            margin-bottom: 15px;
             text-align: right;
         }
 
-        #cameraModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.92);
-            z-index: 1000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding-bottom: 30px;
+        }
+
+        .brand-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
             padding: 20px;
-        }
-
-        #videoElement {
-            width: 100%;
-            max-width: 380px;
-            max-height: 280px;
-            border-radius: 12px;
-            border: 3px solid #7b1fa2;
-            object-fit: cover;
-            background-color: #000;
-        }
-
-        #previewImage {
-            display: none;
-            width: 100%;
-            max-width: 380px;
-            max-height: 280px;
-            border-radius: 12px;
-            border: 3px solid #28a745;
-            object-fit: contain;
-        }
-
-        .camera-overlay {
-            color: white;
-            margin-top: 15px;
-            font-size: 15px;
             text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .camera-actions {
+        .brand-card:hover {
+            background-color: #0052D4;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 82, 212, 0.2);
+        }
+
+
+        /* --- 3. صفحة الموديلات (100 خانة أفقية) --- */
+        #models-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #0052D4;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 100%;
-            max-width: 380px;
-            margin-top: 15px;
+            padding-bottom: 30px;
         }
 
-        .snap-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
+        .horizontal-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 14px 18px;
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #333;
             cursor: pointer;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.2s;
         }
 
-        .upload-btn {
-            background-color: #ffc107;
-            color: #212529;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
+        .horizontal-box:hover {
+            background-color: #ebf5ff;
+            border-color: #0052D4;
+            color: #0052D4;
+        }
+
+
+        /* --- 4. صفحة الخانات الفرعية (10 خانات أفقية فرعية بالأسماء المطلوبة) --- */
+        #sub-models-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .sub-horizontal-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 14px 18px;
             font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
+            font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
         }
 
-        .close-camera-btn {
-            padding: 12px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .eight-parts-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 500px) {
-            .grid-container {
-                gap: 12px;
-            }
-            .grid-box {
-                height: 120px;
-                font-size: 15px;
-            }
-            .item-box-single {
-                height: 52px;
-                font-size: 16px;
-                padding: 0 15px;
-            }
-            .box-img {
-                width: 60px;
-                height: 60px;
-            }
-            .eight-parts-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .sub-horizontal-box:hover {
+            background-color: #f8fafc;
         }
     </style>
-
-    <!-- استيراد مكتبة Gemini AI -->
-    <script type="module">
-        import { GoogleGenAI } from "https://esm.run/@google/genai";
-
-        let currentState = 'brands'; 
-        let selectedBrand = null;
-        let videoStream = null;
-
-        // الأرقام وكلمات المرور المعتمدة في النظام
-        const validCredentials = {
-            "01155445544": "0022",
-            "01155445215": "0000",
-            "01119129158": "1100",
-            "01152791344": "1101"
-        };
-
-        const brandsData = [
-            { name: 'Apple', alt: 'ابل أبل ايفون iphone ايفون', img: 'apple.png' },
-            { name: 'Samsung', alt: 'سامسونج جالكسي جالاكسي galaxy', img: 'samsung.png' },
-            { name: 'Xiaomi', alt: 'شاومي ريدمي redmi mi', img: 'xiaomi.jpg' },
-            { name: 'Infinix', alt: 'انفينكس انفنكس infinix', img: 'infinix.jpg' },
-            { name: 'Oppo', alt: 'ابو أوبو oppo', img: 'oppo.jpg' },
-            { name: 'Huawei', alt: 'هواوي huawei honor', img: 'huawei.jpg' },
-            { name: 'Vivo', alt: 'فيفو vivo', img: 'vivo.jpg' },
-            { name: 'Honor', alt: 'هونر هونور honor', img: 'honor.jpg' },
-            { name: 'Nokia', alt: 'نوكيا nokia', img: 'nokia.jpg' },
-            { name: 'HTC', alt: 'اتش تي سي htc', img: 'htc.jpg' }
-        ];
-
-        let brandModelsMap = {};
-        const itemsData = [];
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('user_gemini_api_key');
-            if (savedKey) {
-                document.getElementById('apiKeyInput').value = savedKey;
-            }
-            renderFingerprintsList();
-            openBrandsPage();
-        });
-
-        fetch('models.json')
-            .then(response => response.json())
-            .then(data => {
-                brandModelsMap = data;
-                generateItemsData();
-            })
-            .catch(err => {
-                console.error("لم يتم العثور على ملف models.json:", err);
-            });
-
-        function generateItemsData() {
-            itemsData.length = 0;
-            let itemId = 1;
-
-            brandsData.forEach(brand => {
-                const models = brandModelsMap[brand.name] || [];
-
-                models.forEach((modelName, index) => {
-                    const cleanedModelName = modelName.replace(/\+/g, ' Plus ');
-
-                    itemsData.push({
-                        id: itemId++,
-                        itemNumber: index + 1,
-                        name: cleanedModelName,
-                        brand: brand.name,
-                        model: cleanedModelName,
-                        altKeywords: `${brand.name} ${brand.alt} ${cleanedModelName}`
-                    });
-                });
-            });
-        }
-
-        function convertArabicNumbers(str) {
-            const numbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
-            for (let i = 0; i < 10; i++) {
-                str = str.replace(new RegExp(numbers[i], 'g'), i);
-            }
-            return str;
-        }
-
-        // محرك تحويل النص الصوتي المكتوب بالعربي إلى صيغة إنجليزية دقيقة تلقائياً
-        function translateVoiceToEnglish(spokenText) {
-            if (!spokenText) return '';
-            let str = spokenText.toLowerCase();
-            str = convertArabicNumbers(str);
-            str = str.replace(/\+/g, ' plus ');
-            
-            str = str.replace(/[أإآء]/g, 'ا')
-                     .replace(/ى/g, 'ي')
-                     .replace(/ة/g, 'ه')
-                     .replace(/[\.\-\_\,\/\(\)]/g, ' ');
-
-            const phoneticMap = [
-                { ar: /\b(ايفون|أيفون|إيفون)\b/g, en: 'iphone' },
-                { ar: /\b(سامسونج|سامسونغ|سمسونج)\b/g, en: 'samsung' },
-                { ar: /\b(جالاكسي|جالكسي|جلكسي)\b/g, en: 'galaxy' },
-                { ar: /\b(برو)\b/g, en: 'pro' },
-                { ar: /\b(ماكس)\b/g, en: 'max' },
-                { ar: /\b(بلس|بلاص)\b/g, en: 'plus' },
-                { ar: /\b(الترا|ألترا)\b/g, en: 'ultra' },
-                { ar: /\b(شاومي|شومي)\b/g, en: 'xiaomi' },
-                { ar: /\b(ريدمي)\b/g, en: 'redmi' },
-                { ar: /\b(انفينكس|انفنكس)\b/g, en: 'infinix' },
-                { ar: /\b(اوبو|أوبو)\b/g, en: 'oppo' },
-                { ar: /\b(هواوي)\b/g, en: 'huawei' },
-                { ar: /\b(هونر|هونور)\b/g, en: 'honor' },
-                { ar: /\b(نوت)\b/g, en: 'note' },
-                { ar: /\b(ايه|إيه|أي|اي)\b/g, en: 'a' },
-                { ar: /\b(اس|إس|س)\b/g, en: 's' },
-                { ar: /\b(اتش|إتش)\b/g, en: 'h' },
-                { ar: /\b(بي|بيه)\b/g, en: 'b' },
-                { ar: /\b(سي)\b/g, en: 'c' },
-                { ar: /\b(دي)\b/g, en: 'd' },
-                { ar: /\b(جي)\b/g, en: 'g' },
-                { ar: /\b(كي)\b/g, en: 'k' },
-                { ar: /\b(ام|إم)\b/g, en: 'm' },
-                { ar: /\b(ان|إن)\b/g, en: 'n' },
-                { ar: /\b(ار|آر)\b/g, en: 'r' },
-                { ar: /\b(تي)\b/g, en: 't' },
-                { ar: /\b(اكس|إكس)\b/g, en: 'x' }
-            ];
-
-            phoneticMap.forEach(m => {
-                str = str.replace(m.ar, m.en);
-            });
-
-            // دمج الحروف المفصولة بالأرقام مثل s 23 أو a 15 لتصبح s23 و a15
-            str = str.replace(/\b([a-z])\s+(\d+)\b/g, '$1$2');
-            str = str.replace(/\b(\d+)\s+([a-z])\b/g, '$1$2');
-
-            return str.trim().replace(/\s+/g, ' ');
-        }
-
-        // حساب نسبة التشابه بين الكلمات (Fuzzy Matching) لضمان مطابقة أي تقارب في الحروف
-        function getSimilarityScore(str1, str2) {
-            let matches = 0;
-            let length = Math.max(str1.length, str2.length);
-            if (length === 0) return 1.0;
-            
-            // تحقق من الاحتواء المباشر أو التقارب
-            if (str1.includes(str2) || str2.includes(str1)) {
-                return 0.9;
-            }
-
-            for (let i = 0; i < str1.length; i++) {
-                if (str2.includes(str1[i])) {
-                    matches++;
-                }
-            }
-            return matches / length;
-        }
-
-        window.globalSearch = function() {
-            const rawQuery = document.getElementById('searchInput').value;
-            const resultsContainer = document.getElementById('searchResultsContainer');
-
-            if (!rawQuery || rawQuery.trim() === '') {
-                resultsContainer.style.display = 'none';
-                restoreStateView();
-                return;
-            }
-
-            hideAllContainers();
-            resultsContainer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            resultsContainer.innerHTML = '';
-
-            const normalizedQuery = translateVoiceToEnglish(rawQuery);
-            const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
-
-            if (queryWords.length === 0) {
-                resultsContainer.style.display = 'none';
-                restoreStateView();
-                return;
-            }
-
-            // البحث الشامل في الماركات
-            const matchedBrands = brandsData.filter(brand => {
-                const normBrand = translateVoiceToEnglish(brand.name + ' ' + brand.alt);
-                return queryWords.some(word => normBrand.includes(word));
-            });
-
-            // البحث الذكي الشامل في كل موديلات ملف models.json مقارنة بالكلمة المنطوقة أو المكتوبة
-            const matchedItems = [];
-            const seenKeys = new Set();
-
-            itemsData.forEach(item => {
-                const normTarget = translateVoiceToEnglish(item.name + ' ' + item.brand + ' ' + item.altKeywords);
-                
-                // تحقق هل الكلمات موجودة بالكامل أو بشكل جزئي أو بنسبة تشابه عالية في اسم أي تليفون بالملف
-                let isMatch = false;
-                
-                // مطابقة تامة أو احتواء للأجزاء
-                const exactMatch = queryWords.every(qWord => normTarget.includes(qWord));
-                const partialMatch = queryWords.some(qWord => normTarget.includes(qWord));
-
-                if (exactMatch || partialMatch) {
-                    isMatch = true;
-                } else {
-                    // مطابقة تقريبية بالحروف لكل كلمة بحث مع الكلمات الموجودة في الموديل
-                    const targetWords = normTarget.split(' ');
-                    for (let qW of queryWords) {
-                        for (let tW of targetWords) {
-                            if (getSimilarityScore(qW, tW) >= 0.75) {
-                                isMatch = true;
-                                break;
-                            }
-                        }
-                        if (isMatch) break;
-                    }
-                }
-
-                if (isMatch) {
-                    const uniqueKey = item.name.trim().toLowerCase();
-                    if (!seenKeys.has(uniqueKey)) {
-                        seenKeys.add(uniqueKey);
-                        matchedItems.push(item);
-                    }
-                }
-            });
-
-            if (matchedBrands.length === 0 && matchedItems.length === 0) {
-                resultsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #888;">لا توجد أي موديلات مطابقة لـ "${rawQuery}" في ملف الموديلات</div>`;
-                return;
-            }
-
-            if (matchedBrands.length > 0) {
-                const brandTitle = document.createElement('div');
-                brandTitle.className = 'search-section-title';
-                brandTitle.innerText = 'الماركات المتطابقة:';
-                resultsContainer.appendChild(brandTitle);
-
-                const brandsWrapper = document.createElement('div');
-                brandsWrapper.className = 'grid-container';
-                matchedBrands.forEach(brand => brandsWrapper.appendChild(createBrandBoxElement(brand)));
-                resultsContainer.appendChild(brandsWrapper);
-            }
-
-            if (matchedItems.length > 0) {
-                const itemTitle = document.createElement('div');
-                itemTitle.className = 'search-section-title';
-                itemTitle.style.marginTop = '15px';
-                itemTitle.innerText = `الموديلات المتطابقة من ملف الموديلات (${matchedItems.length} نتيجة):`;
-                resultsContainer.appendChild(itemTitle);
-
-                const itemsWrapper = document.createElement('div');
-                itemsWrapper.className = 'items-single-container';
-                matchedItems.forEach(item => itemsWrapper.appendChild(createItemCardElement(item)));
-                resultsContainer.appendChild(itemsWrapper);
-            }
-        }
-
-        window.triggerCameraSearch = async function() {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (!apiKey) {
-                alert("الرجاء إدخال مفتاح الـ API الخاص بـ Gemini في الخانة المخصصة أعلى الشاشة أولاً.");
-                document.getElementById('apiKeyInput').focus();
-                return;
-            }
-
-            const modal = document.getElementById('cameraModal');
-            const video = document.getElementById('videoElement');
-            const preview = document.getElementById('previewImage');
-            const status = document.getElementById('cameraStatus');
-            const snapBtn = document.getElementById('snapBtn');
-
-            preview.style.display = 'none';
-            video.style.display = 'block';
-            snapBtn.style.display = 'block';
-            modal.style.display = 'flex';
-            status.innerText = 'جاري فتح الكاميرا...';
-
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment" } 
-                });
-                video.srcObject = videoStream;
-                status.innerText = 'وجه الكاميرا نحو الهاتف ثم اضغط التقاط...';
-            } catch (err) {
-                status.innerText = 'تعذر فتح الكاميرا، يمكنك اختيار صورة من الجهاز أدناه.';
-            }
-        }
-
-        window.captureAndSendToGemini = function() {
-            const video = document.getElementById('videoElement');
-            const preview = document.getElementById('previewImage');
-            const snapBtn = document.getElementById('snapBtn');
-            const status = document.getElementById('cameraStatus');
-
-            const canvas = document.createElement('canvas');
-            canvas.width = 640;
-            canvas.height = (video.videoHeight / video.videoWidth) * 640 || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const base64Data = canvas.toDataURL('image/jpeg', 0.8);
-            preview.src = base64Data;
-            video.style.display = 'none';
-            preview.style.display = 'block';
-            snapBtn.style.display = 'none';
-
-            status.innerText = 'جاري إرسال الصورة وتحليلها عبر ذكاء Gemini AI...';
-
-            processWithGeminiAPI(base64Data);
-        }
-
-        window.handleImageUpload = function(event) {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (!apiKey) {
-                alert("الرجاء إدخال مفتاح الـ API الخاص بـ Gemini في الخانة المخصصة أعلى الشاشة أولاً.");
-                document.getElementById('apiKeyInput').focus();
-                return;
-            }
-
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const video = document.getElementById('videoElement');
-            const preview = document.getElementById('previewImage');
-            const snapBtn = document.getElementById('snapBtn');
-            const status = document.getElementById('cameraStatus');
-
-            status.innerText = 'جاري قراءة الصورة المرفوعة...';
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const MAX_WIDTH = 800;
-                    if (width > MAX_WIDTH) {
-                        height = Math.round((height *= MAX_WIDTH / width));
-                        width = MAX_WIDTH;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    preview.src = compressedBase64;
-                    video.style.display = 'none';
-                    preview.style.display = 'block';
-                    snapBtn.style.display = 'none';
-
-                    status.innerText = 'جاري تحليل الصورة عبر Gemini AI...';
-                    processWithGeminiAPI(compressedBase64);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function processWithGeminiAPI(base64Image) {
-            const status = document.getElementById('cameraStatus');
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            
-            localStorage.setItem('user_gemini_api_key', apiKey);
-
-            try {
-                const ai = new GoogleGenAI({ apiKey: apiKey });
-                const base64DataClean = base64Image.split(',')[1];
-
-                const response = await ai.models.generateContent({
-                    model: 'gemini-1.5-flash',
-                    contents: [
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: base64DataClean
-                            }
-                        },
-                        {
-                            text: "Identify the exact model name and brand of the mobile phone shown in this image. Return ONLY the brand and model name clearly and concisely (e.g., iPhone 13 Pro Max or Galaxy A50), with no extra conversational filler."
-                        }
-                    ]
-                });
-
-                const detectedTitle = response.text ? response.text.trim() : "";
-
-                if (detectedTitle) {
-                    status.innerText = `تم التعرف بنجاح: ${detectedTitle}`;
-                    
-                    setTimeout(() => {
-                        closeCamera();
-                        const searchInput = document.getElementById('searchInput');
-                        searchInput.value = detectedTitle;
-                        globalSearch();
-                    }, 1000);
-                } else {
-                    status.innerText = 'لم يستطع Gemini تحديد الموديل بدقة، حاول مرة أخرى.';
-                }
-
-            } catch (error) {
-                console.error("خطأ في الاتصال بـ Gemini API:", error);
-                status.innerText = 'حدث خطأ أثناء الاتصال، تأكد من صحة مفتاح الـ API المدخل.';
-            }
-        }
-
-        window.closeCamera = function() {
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('cameraModal').style.display = 'none';
-        }
-
-        // البحث الصوتي مع الترجمة التلقائية ثم البحث داخل كل ملف الموديلات
-        window.startVoiceSearch = function() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("المتصفح الخاص بك لا يدعم ميزة البحث بالصوت.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-EG'; 
-            recognition.interimResults = false;
-
-            const voiceBtn = document.getElementById('voiceBtn');
-            voiceBtn.classList.add('listening');
-            voiceBtn.innerHTML = '🎙️ جاري الاستماع، اتكلم الآن...';
-
-            recognition.start();
-
-            recognition.onresult = function(event) {
-                const spokenText = event.results[0][0].transcript;
-                const translatedText = translateVoiceToEnglish(spokenText);
-                
-                const searchInput = document.getElementById('searchInput');
-                searchInput.value = translatedText;
-                globalSearch();
-
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-
-            recognition.onerror = recognition.onend = function() {
-                voiceBtn.classList.remove('listening');
-                voiceBtn.innerHTML = '🎤 البحث بالصوت (تكلم بالميكروفون)';
-            };
-        }
-
-        function bufferDecode(value) {
-            return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
-        }
-
-        function bufferEncode(value) {
-            return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
-                .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-        }
-
-        function renderFingerprintsList() {
-            const listEl = document.getElementById('fingerprintsList');
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            
-            if (savedFps.length === 0) {
-                listEl.innerHTML = 'لا توجد بصمات مسجلة حالياً على هذا الجهاز';
-                return;
-            }
-
-            listEl.innerHTML = savedFps.map((fp, index) => `
-                <div class="fingerprint-item">
-                    <span>☝️ ${fp.name} (رقم الهاتف: ${fp.merchantId})</span>
-                    <span class="delete-fp" onclick="deleteFingerprint(${index})">حذف</span>
-                </div>
-            `).join('');
-        }
-
-        window.registerFingerprint = async function() {
-            if (!window.PublicKeyCredential) {
-                alert("جهازك لا يدعم خاصية البصمة.");
-                return;
-            }
-
-            const userPhone = prompt("أدخل رقم الهاتف المراد ربطه بالبصمة:");
-            if (!userPhone) return;
-            const cleanPhone = userPhone.trim();
-
-            if (!validCredentials.hasOwnProperty(cleanPhone)) {
-                alert("عذراً، رقم الهاتف المدخل غير مسجل في النظام!");
-                return;
-            }
-
-            const userPassword = prompt(`أدخل كلمة السر الخاصة برقم الهاتف (${cleanPhone}):`);
-            if (!userPassword) return;
-
-            if (validCredentials[cleanPhone] !== userPassword.trim()) {
-                alert("❌ كلمة السر غير صحيحة لهذا الرقم! لا يمكن تسجيل البصمة.");
-                return;
-            }
-
-            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            const existingForPhone = savedFps.find(fp => fp.merchantId === cleanPhone);
-            if (existingForPhone) {
-                alert(`⚠️ عذراً، رقم الهاتف (${cleanPhone}) مسجل له بصمة بالفعل على هذا الجهاز (${existingForPhone.name}).`);
-                return;
-            }
-
-            try {
-                const fpName = prompt("أدخل اسماً لهذه البصمة:", "بصمة التاجر " + cleanPhone);
-                if (!fpName) return;
-
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-                const userId = Uint8Array.from(cleanPhone, c => c.charCodeAt(0));
-
-                const credential = await navigator.credentials.create({
-                    publicKey: {
-                        challenge,
-                        rp: { name: "Electricity App" },
-                        user: { 
-                            id: userId, 
-                            name: cleanPhone, 
-                            displayName: `التاجر ${cleanPhone}` 
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        timeout: 60000
-                    }
-                });
-
-                if (credential) {
-                    const credentialIdEncoded = bufferEncode(credential.rawId);
-
-                    savedFps.push({ 
-                        id: credentialIdEncoded, 
-                        name: fpName, 
-                        merchantId: cleanPhone 
-                    });
-                    localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-
-                    alert(`✅ تم التحقق من كلمة السر وربط بصمتك برقم الهاتف (${cleanPhone}) بنجاح!`);
-                    renderFingerprintsList();
-                }
-            } catch (err) {
-                console.error(err);
-                alert("فشلت عملية التسجيل أو تم إلغاؤها من المستخدم.");
-            }
-        }
-
-        window.loginWithFingerprint = async function() {
-            const savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            if (savedFps.length === 0) {
-                alert("لم يتم تسجيل أي بصمة على هذا الجهاز بعد.");
-                return;
-            }
-
-            try {
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-                const allowCredentials = savedFps.map(fp => ({ id: bufferDecode(fp.id), type: 'public-key' }));
-
-                const assertion = await navigator.credentials.get({
-                    publicKey: { challenge, allowCredentials, userVerification: "required", timeout: 60000 }
-                });
-
-                if (assertion) {
-                    const credentialIdDecoded = bufferEncode(assertion.rawId);
-                    const matchedEntry = savedFps.find(fp => fp.id === credentialIdDecoded);
-                    
-                    if (!matchedEntry) {
-                        alert("هذه البصمة غير مطابقة لأي رقم هاتف مسجل مسبقاً.");
-                        return;
-                    }
-
-                    const merchantId = matchedEntry.merchantId;
-
-                    document.getElementById('error').style.display = "none";
-                    document.getElementById('login-page').style.display = "none";
-                    document.getElementById('main-page').style.display = "block";
-                    document.getElementById('display-merchant').innerText = merchantId;
-                    
-                    document.getElementById('specialMenuWrapper').style.display = (merchantId === "01155445215") ? "block" : "none";
-                    openBrandsPage();
-                }
-            } catch (err) {
-                alert("لم يتم التعرف على البصمة أو تم إلغاء العملية.");
-            }
-        }
-
-        window.deleteFingerprint = function(index) {
-            let savedFps = JSON.parse(localStorage.getItem('registered_fingerprints') || '[]');
-            const fp = savedFps[index];
-            
-            if (!confirm(`هل أنت متأكد من حذف البصمة الخاصة برقم الهاتف (${fp.merchantId})؟`)) {
-                return;
-            }
-
-            savedFps.splice(index, 1);
-            localStorage.setItem('registered_fingerprints', JSON.stringify(savedFps));
-            renderFingerprintsList();
-            alert("تم حذف البصمة بنجاح.");
-        }
-
-        window.validateAndNavigate = function() {
-            const val1 = document.getElementById('merchant-id').value.trim();
-            const val2 = document.getElementById('code-id').value.trim();
-            const errorMsg = document.getElementById('error');
-
-            if (validCredentials.hasOwnProperty(val1) && validCredentials[val1] === val2) {
-                errorMsg.style.display = "none";
-                document.getElementById('login-page').style.display = "none";
-                document.getElementById('main-page').style.display = "block";
-                document.getElementById('display-merchant').innerText = val1;
-
-                document.getElementById('specialMenuWrapper').style.display = (val1 === "01155445215") ? "block" : "none";
-                openBrandsPage();
-            } else {
-                errorMsg.style.display = "block";
-            }
-        }
-
-        window.toggleDropdown = function(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('dropdownMenu');
-            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-        }
-
-        window.onclick = function() {
-            const dropdown = document.getElementById('dropdownMenu');
-            if (dropdown) dropdown.style.display = 'none';
-        }
-
-        window.openSalesLog = function(event) {
-            event.preventDefault();
-            alert('تم فتح سجل المبيعات');
-            document.getElementById('dropdownMenu').style.display = 'none';
-        }
-
-        function createBrandBoxElement(brand) {
-            const box = document.createElement('div');
-            box.className = 'grid-box';
-            box.onclick = function() { 
-                document.getElementById('searchInput').value = '';
-                selectedBrand = brand;
-                openItemsPage(); 
-            };
-
-            box.innerHTML = brand.img ? 
-                `<span class="box-title">${brand.name}</span><img src="${brand.img}" alt="${brand.name}" class="box-img" onerror="this.style.display='none'">` : 
-                brand.name;
-            return box;
-        }
-
-        function createItemCardElement(item) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'item-card-wrapper';
-
-            const box = document.createElement('div');
-            box.className = 'grid-box item-box-single';
-            box.innerHTML = `<span>${item.name} (${item.brand})</span> <span style="font-size: 13px; color: #007bff;">▼</span>`;
-            
-            const panel = document.createElement('div');
-            panel.className = 'eight-parts-panel';
-            
-            const partsList = [
-                'شاشة', 'بطارية', 'فلاتة ربط', 'فلاتة باور', 
-                'فلاتة شحن', 'إطار', 'فريم', 'ميد'
-            ];
-
-            const grid = document.createElement('div');
-            grid.className = 'eight-parts-grid';
-
-            partsList.forEach(partName => {
-                const partBox = document.createElement('div');
-                partBox.className = 'part-box';
-                partBox.innerText = partName;
-                partBox.onclick = function(e) {
-                    e.stopPropagation();
-                    alert(`تم اختيار (${partName}) للموديل: ${item.name}`);
-                };
-                grid.appendChild(partBox);
-            });
-
-            panel.appendChild(grid);
-
-            box.onclick = function() {
-                if (panel.style.display === 'block') {
-                    panel.style.display = 'none';
-                } else {
-                    document.querySelectorAll('.eight-parts-panel').forEach(p => p.style.display = 'none');
-                    panel.style.display = 'block';
-                }
-            };
-
-            wrapper.appendChild(box);
-            wrapper.appendChild(panel);
-            return wrapper;
-        }
-
-        function openBrandsPage() {
-            hideAllContainers();
-            const brandsContainer = document.getElementById('brandsContainer');
-            brandsContainer.style.display = 'grid';
-            document.getElementById('backBtn').style.display = 'none';
-            currentState = 'brands';
-            document.getElementById('searchInput').value = '';
-
-            brandsContainer.innerHTML = '';
-            brandsData.forEach(brand => brandsContainer.appendChild(createBrandBoxElement(brand)));
-        }
-
-        function openItemsPage() {
-            hideAllContainers();
-            const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'block';
-            currentState = 'items';
-
-            itemsContainer.innerHTML = '';
-            const filteredItems = itemsData.filter(item => item.brand === selectedBrand.name);
-
-            if (filteredItems.length > 0) {
-                filteredItems.forEach(item => itemsContainer.appendChild(createItemCardElement(item)));
-            } else {
-                itemsContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#777;">لا توجد عناصر مضافة لهذة الماركة</div>`;
-            }
-        }
-
-        function hideAllContainers() {
-            document.getElementById('brandsContainer').style.display = 'none';
-            document.getElementById('itemsContainer').style.display = 'none';
-            document.getElementById('searchResultsContainer').style.display = 'none';
-        }
-
-        function restoreStateView() {
-            if (currentState === 'brands') {
-                openBrandsPage();
-            } else if (currentState === 'items' && selectedBrand) {
-                openItemsPage();
-            } else {
-                openBrandsPage();
-            }
-        }
-
-        window.goBack = function() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResultsContainer');
-
-            if (searchResults.style.display === 'flex' || searchInput.value.trim() !== '') {
-                searchInput.value = '';
-                searchResults.style.display = 'none';
-                restoreStateView();
-                return;
-            }
-
-            if (currentState === 'items') {
-                openBrandsPage();
-            } else {
-                openBrandsPage();
-            }
-        }
-    </script>
 </head>
 <body>
 
+    <!-- ================= واجهة تسجيل الدخول ================= -->
     <div id="login-page">
-        <div class="header-title">Electricity</div>
-        <div class="login-box">
-            <div class="input-group">
-                <label for="merchant-id">رقم الهاتف</label>
-                <input type="text" id="merchant-id" placeholder="أدخل رقم الهاتف">
-            </div>
-            <div class="input-group">
-                <label for="code-id">كلمة المرور</label>
-                <input type="text" id="code-id" placeholder="أدخل كلمة المرور">
-            </div>
-            <button class="login-btn" onclick="validateAndNavigate()">دخول</button>
-            
-            <button class="biometric-btn" onclick="loginWithFingerprint()">
-                <span>☝️ الدخول باستخدام البصمة</span>
-            </button>
-
-            <button class="biometric-btn secondary" onclick="registerFingerprint()">
-                <span>📝 تسجيل بصمة جديدة للرقم</span>
-            </button>
-
-            <div class="biometric-warning">(تنبيه: يلزم إدخال رقم الهاتف وكلمة السر الصحيحة لتسجيل بصمة جديدة).</div>
-
-            <div class="fingerprint-list" id="fingerprintListContainer">
-                <strong>البصمات المسجلة على هاتفك:</strong>
-                <div id="fingerprintsList">جاري جلب البصمات...</div>
+        <div class="login-container">
+            <div class="logo-area">
+                <h1>Electricity</h1>
+                <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
             </div>
 
-            <div id="error" class="error-message">البيانات المدخلة غير متطابقة، يرجى إدخال الرقم الصحيح ومفتاحه.</div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="tel" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">رمز المرور</label>
+                    <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
+                </div>
+
+                <div class="options-row">
+                    <label>
+                        <input type="checkbox" name="remember"> تذكرني
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">تسجيل الدخول</button>
+            </form>
+
+            <div class="divider">أو</div>
+
+            <button type="button" class="btn-guest" onclick="handleGuest()">الدخول كزائر</button>
         </div>
     </div>
 
-    <div id="main-page">
-        <div class="nav-bar">Electricity</div>
 
-        <div class="merchant-bar">
-            <div class="menu-wrapper" id="specialMenuWrapper">
-                <button class="menu-btn" onclick="toggleDropdown(event)">☰</button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="#" onclick="openSalesLog(event)">سجل المبيعات</a>
+    <!-- ================= الصفحة الرئيسية (الماركات) ================= -->
+    <div id="main-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayId">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <!-- أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) -->
+            <div class="search-section">
+                <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
+                    <i class="fa-solid fa-camera"></i>
+                    <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
+                </div>
+
+                <div class="search-bar" onclick="alert('جارِ الاستماع لصوتك...')">
+                    <i class="fa-solid fa-microphone"></i>
+                    <input type="text" placeholder="البحث باستخدام الصوت" readonly style="cursor: pointer;">
+                </div>
+
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="البحث بالكتابة...">
                 </div>
             </div>
 
-            <div class="merchant-info">
-                التاجر: <span id="display-merchant"></span>
+            <div class="brands-title">الماركات المتوفرة</div>
+            <div class="brands-grid">
+                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
+    </div>
 
-        <div class="search-section">
-            <div class="api-key-box">
-                <label for="apiKeyInput">مفتاح Gemini API Key:</label>
-                <input type="text" id="apiKeyInput" class="api-key-input" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ...)">
+
+    <!-- ================= صفحة الموديلات (100 خانة) ================= -->
+    <div id="models-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnModels" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
             </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdModels">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuModels">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
 
-            <button class="action-btn camera-search-btn" onclick="triggerCameraSearch()">
-                🤖 التعرف على الموديل باستخدام ذكاء Gemini AI
-            </button>
+        <div class="content-container">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
+            <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
+            <div class="list-container" id="modelsListContainer">
+                <!-- 100 خانة أفقية -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية بالأسماء الدقيقة) ================= -->
+    <div id="sub-models-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnSub" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdSub">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuSub">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <button class="back-btn" onclick="goBackToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <div class="brands-title" id="selectedModelTitle">تفاصيل الموديل</div>
+            <div class="list-container" id="subModelsContainer">
+                <!-- الخانات الـ 10 الفرعية الدقيقة -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
+    <script>
+        let currentUserId = "102938";
+        let isGuestUser = false;
+        let activeBrandName = "";
+
+        function handleLogin(event) {
+            event.preventDefault();
+            let phoneInput = document.getElementById('phone').value;
+            currentUserId = phoneInput;
+            isGuestUser = false;
             
-            <button id="voiceBtn" class="action-btn voice-search-btn" onclick="startVoiceSearch()">
-                🎤 البحث بالصوت (تكلم بالميكروفون)
-            </button>
+            updateUserInterface();
+            
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
 
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث الموديل (مثال: سامسونج A5, iPhone 16 Pro Max, Galaxy Ultra...)" oninput="globalSearch()">
-        </div>
+        function handleGuest() {
+            currentUserId = "زائر";
+            isGuestUser = true;
+            
+            updateUserInterface();
 
-        <div class="container">
-            <button id="backBtn" class="back-btn" onclick="goBack()">← عودة للصفحة السابقة</button>
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
 
-            <div class="grid-container" id="brandsContainer"></div>
+        function updateUserInterface() {
+            document.getElementById('userDisplayId').innerText = currentUserId;
+            document.getElementById('userDisplayIdModels').innerText = currentUserId;
+            document.getElementById('userDisplayIdSub').innerText = currentUserId;
 
-            <div class="items-single-container" id="itemsContainer" style="display: none;"></div>
+            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels'), document.getElementById('menuBtnSub')];
+            menuButtons.forEach(btn => {
+                if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
+            });
+        }
 
-            <div class="search-results-container" id="searchResultsContainer"></div>
-        </div>
-    </div>
+        function toggleMenu() {
+            if (isGuestUser) return;
+            let menus = [
+                document.getElementById('dropdownMenu'),
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSub')
+            ];
+            menus.forEach(menu => {
+                if (menu) {
+                    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+                }
+            });
+        }
 
-    <div id="cameraModal">
-        <video id="videoElement" autoplay playsinline></video>
-        <img id="previewImage" alt="الصورة المختارة">
-        <div class="camera-overlay" id="cameraStatus">وجه الكاميرا نحو الهاتف ثم اضغط التقاط</div>
+        function goToMain() {
+            closeAllMenus();
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
 
-        <div class="camera-actions">
-            <button id="snapBtn" class="snap-btn" onclick="captureAndSendToGemini()">📸 التقاط وإرسال إلى Gemini AI</button>
+        function openModels(brandName) {
+            activeBrandName = brandName;
+            document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
+            
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                let box = document.createElement('div');
+                box.className = 'horizontal-box';
+                box.innerHTML = `<span>موديل ${brandName} رقم (${i})</span> <i class="fa-solid fa-chevron-left" style="font-size: 12px; color: #0052D4;"></i>`;
+                box.onclick = function() { openSubModels(`موديل ${brandName} (${i})`); };
+                container.appendChild(box);
+            }
 
-            <label class="upload-btn">
-                📁 اختر صورة من المعرض/الجهاز
-                <input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            </label>
-            <button class="close-camera-btn" onclick="closeCamera()">إغلاق</button>
-        </div>
-    </div>
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function openSubModels(modelName) {
+            document.getElementById('selectedModelTitle').innerText = modelName;
+
+            // القائمة الفرعية المكونة من 10 خانات أفقية بالأسماء المطلوبة بالتمام
+            let subCategories = [
+                "شاشة",
+                "بطارية",
+                "ظهرية",
+                "فلاتة ربط",
+                "فلاتة باور",
+                "فلاتة شحن",
+                "مدل",
+                "فريم",
+                "سماعة داخلية مكالمات",
+                "سماعة خارجية"
+            ];
+
+            let container = document.getElementById('subModelsContainer');
+            container.innerHTML = '';
+            
+            subCategories.forEach((catName, index) => {
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span>${catName}</span> <span style="font-size: 12px; color: #666;">خانة فرعية (${index + 1})</span>`;
+                subBox.onclick = function() {
+                    alert(`تم اختيار قسم: ${catName} لـ ${modelName}`);
+                };
+                container.appendChild(subBox);
+            });
+
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function goBackToModels() {
+            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function logout() {
+            closeAllMenus();
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+        }
+
+        function closeAllMenus() {
+            let menus = [
+                document.getElementById('dropdownMenu'),
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSub')
+            ];
+            menus.forEach(m => { if(m) m.style.display = 'none'; });
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
+                closeAllMenus();
+            }
+        }
+    </script>
 </body>
 </html>
