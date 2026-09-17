@@ -929,8 +929,8 @@
 
                 let merchantsContainer = document.createElement('div');
                 merchantsContainer.className = 'merchants-container';
-                // جعل القائمة مغلقة افتراضياً
-                merchantsContainer.style.display = 'none';
+                // إرجاعها مفتوحة تلقائياً كما كانت (flex)
+                merchantsContainer.style.display = 'flex';
 
                 merchantsList.forEach(merchant => {
                     let merchantRow = document.createElement('div');
@@ -1139,7 +1139,7 @@
             let resultsContainer = document.getElementById('global-search-results');
             let listEl = document.getElementById('searchResultsList');
             let brandsGrid = document.getElementById('brandsGrid');
-            let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
+            let brandsHeaderTitle =NavLink = document.getElementById('brandsHeaderTitle');
 
             if (cleanRawQuery === "") {
                 resultsContainer.style.display = 'none';
