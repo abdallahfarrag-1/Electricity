@@ -1346,10 +1346,10 @@
                     orderBtn.className = 'merchant-order-btn';
                     orderBtn.innerText = 'طلب';
                     
-                    // زر الطلب برقم الواتساب الجديد ورسالة مدمجة تلقائياً وبدون شاشة سوداء
+                    // زر الطلب: رسالة مختصرة فقط (اسم القطعة - الموديل - التاجر والسعر) بدون كلمة أرغب في أو موديل
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
-                        let message = `أرغب في طلب (${catName}) للموديل (${modelName}) من (${merchant.name}) بسعر (${merchant.price})`;
+                        let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
                         let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
                         
                         let hiddenIframe = document.createElement('iframe');
