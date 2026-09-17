@@ -304,10 +304,10 @@
             cursor: pointer;
         }
 
-        /* --- تصميم خانات الاختصارات الأربعة مُصغرة --- */
+        /* --- تصميم خانات الاختصارات أصبحت خانتين (الماركات والتوافقات) --- */
         .quick-nav-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 6px;
         }
 
@@ -754,19 +754,11 @@
                         <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleGlobalSearch(this.value)">
                     </div>
 
-                    <!-- خانات الاختصارات الأربعة مُصغرة -->
+                    <!-- خانات الاختصارات أصبحت اثنتين (الماركات والتوافقات) -->
                     <div class="quick-nav-grid">
                         <div class="quick-nav-card" onclick="goToMain()">
                             <i class="fa-solid fa-mobile-screen"></i>
                             <span>الماركات</span>
-                        </div>
-                        <div class="quick-nav-card" onclick="openFirstBrandModels()">
-                            <i class="fa-solid fa-layer-group"></i>
-                            <span>الموديلات</span>
-                        </div>
-                        <div class="quick-nav-card" onclick="openFirstSpareParts()">
-                            <i class="fa-solid fa-gears"></i>
-                            <span>قطع الغيار</span>
                         </div>
                         <div class="quick-nav-card" onclick="goToCompatibility()">
                             <i class="fa-solid fa-shuffle"></i>
@@ -964,14 +956,6 @@
             hideAllPages();
             document.getElementById('compatibility-page').style.display = 'block';
             window.scrollTo(0, 0);
-        }
-
-        function openFirstBrandModels() {
-            openModels(allBrands[0]);
-        }
-
-        function openFirstSpareParts() {
-            openSpareParts(allBrands[0] + " (1)");
         }
 
         function openCameraSearch() {
@@ -1225,6 +1209,10 @@
                         let targetModel = modelName;
                         let targetCat = detectedCategory;
                         item.onclick = function() {
+                            document.getElementById('textSearchInput').value = '';
+                            resultsContainer.style.display = 'none';
+                            brandsGrid.style.display = 'grid';
+                            brandsHeaderTitle.style.display = 'block';
                             openSparePartsAndFocus(targetModel, targetCat);
                         };
                         listEl.appendChild(item);
@@ -1235,6 +1223,10 @@
                         item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
                         let targetModel = modelName;
                         item.onclick = function() {
+                            document.getElementById('textSearchInput').value = '';
+                            resultsContainer.style.display = 'none';
+                            brandsGrid.style.display = 'grid';
+                            brandsHeaderTitle.style.display = 'block';
                             openSpareParts(targetModel);
                         };
                         listEl.appendChild(item);
@@ -1258,6 +1250,10 @@
                                 let targetModel = modelName;
                                 let targetCat = catName;
                                 item.onclick = function() {
+                                    document.getElementById('textSearchInput').value = '';
+                                    resultsContainer.style.display = 'none';
+                                    brandsGrid.style.display = 'grid';
+                                    brandsHeaderTitle.style.display = 'block';
                                     openSparePartsAndFocus(targetModel, targetCat);
                                 };
                                 listEl.appendChild(item);
