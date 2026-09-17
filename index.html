@@ -841,7 +841,6 @@
             resultsContainer.style.display = 'flex';
             listEl.innerHTML = '';
 
-            // تحويل النص المدخل ليتم قراءة الأرقام العربية والإنجليزية بسلاسة
             let convertedQuery = convertNumbers(cleanRawQuery);
             let normalizedQuery = normalizeText(cleanRawQuery);
             let detectedBrand = null;
@@ -849,7 +848,7 @@
 
             for (let key in translationDictionary) {
                 let normKey = normalizeText(key);
-                if (normalizedQuery.includes(normKey)) {
+                if (normalizedQuery.includes(normKey) || normKey.includes(normalizedQuery)) {
                     let translated = translationDictionary[key];
                     if (allBrands.includes(translated)) {
                         detectedBrand = translated;
@@ -868,53 +867,72 @@
                 });
             }
 
-            // استخراج الأرقام سواء كانت 3 أو ٣ بشكل صحيح تماماً
             let numberMatch = convertedQuery.match(/\d+/);
             let detectedModelNum = numberMatch ? numberMatch[0] : null;
             let foundCount = 0;
 
-            if (detectedBrand || detectedCategory || detectedModelNum) {
-                allBrands.forEach(brand => {
-                    if (detectedBrand && brand !== detectedBrand) return;
+            allBrands.forEach(brand => {
+                if (detectedBrand && brand !== detectedBrand) return;
 
-                    let limit = 100;
+                let limit = 100;
+                for (let i = 1; i <= limit; i++) {
+                    let modelNumStr = i.toString();
+                    if (detectedModelNum && !modelNumStr.includes(detectedModelNum)) continue;
 
-                    for (let i = 1; i <= limit; i++) {
-                        let modelNumStr = i.toString();
-                        if (detectedModelNum && modelNumStr !== detectedModelNum) continue;
+                    let modelName = `${brand} (${i})`;
 
-                        let modelName = `${brand} (${i})`;
+                    if (detectedCategory) {
+                        let item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
+                        let targetModel = modelName;
+                        let targetCat = detectedCategory;
+                        item.onclick = function() {
+                            openSparePartsAndFocus(targetModel, targetCat);
+                        };
+                        listEl.appendChild(item);
+                        foundCount++;
+                    } else {
+                        let item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
+                        let targetModel = modelName;
+                        item.onclick = function() {
+                            openSpareParts(targetModel);
+                        };
+                        listEl.appendChild(item);
+                        foundCount++;
+                    }
 
-                        if (detectedCategory) {
-                            let item = document.createElement('div');
-                            item.className = 'search-result-item';
-                            item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
-                            let targetModel = modelName;
-                            let targetCat = detectedCategory;
-                            item.onclick = function() {
-                                openSparePartsAndFocus(targetModel, targetCat);
-                            };
-                            listEl.appendChild(item);
-                            foundCount++;
-                        } else if (detectedModelNum || detectedBrand) {
-                            let item = document.createElement('div');
-                            item.className = 'search-result-item';
-                            item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
-                            let targetModel = modelName;
-                            item.onclick = function() {
-                                openSpareParts(targetModel);
-                            };
-                            listEl.appendChild(item);
-                            foundCount++;
-                        }
+                    if (foundCount >= 30) break;
+                }
+            });
 
-                        if (foundCount >= 20) break;
+            if (foundCount === 0 && !detectedBrand && !detectedModelNum) {
+                subCategoriesList.forEach(catName => {
+                    let normCat = normalizeText(catName);
+                    if (normCat.includes(normalizedQuery) || normalizedQuery.split('').every(char => normCat.includes(char))) {
+                        allBrands.slice(0, 3).forEach(brand => {
+                            for (let i = 1; i <= 3; i++) {
+                                let modelName = `${brand} (${i})`;
+                                let item = document.createElement('div');
+                                item.className = 'search-result-item';
+                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
+                                let targetModel = modelName;
+                                let targetCat = catName;
+                                item.onclick = function() {
+                                    openSparePartsAndFocus(targetModel, targetCat);
+                                };
+                                listEl.appendChild(item);
+                                foundCount++;
+                            }
+                        });
                     }
                 });
             }
 
             if (foundCount === 0) {
-                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}" (يرجى كتابة اسم الماركة أو رقم الموديل)</div>`;
+                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}"</div>`;
             }
         }
 
