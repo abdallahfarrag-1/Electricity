@@ -457,7 +457,7 @@
         }
 
 
-        /* --- 4. صفحة قطع الغيار --- */
+        /* --- 4. صفحة الموديلات المشابهة (المستبدلة لقطع الغيار) --- */
         #spare-parts-page {
             display: none;
             min-height: 100vh;
@@ -768,7 +768,7 @@
     </div>
 
 
-    <!-- ================= صفحة قطع الغيار ================= -->
+    <!-- ================= صفحة الموديلات المشابهة ================= -->
     <div id="spare-parts-page">
         <header class="navbar">
             <div class="nav-right">
@@ -787,7 +787,7 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title">قطع الغيار</div>
+            <div class="brands-title">الموديلات المشابهة</div>
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
     </div>
@@ -798,9 +798,9 @@
         <div class="ai-modal-content">
             <h3>📱 التعرف على نوع الهاتف</h3>
             
+            <!-- حقل إدخال المفتاح برمجياً بدون ظهور عبارات توضيحية -->
             <div style="text-align: right; margin-bottom: 10px;">
-                <label for="aiApiKey" style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">مفتاح API (يبدأ بـ AQ أو AIza):</label>
-                <input type="text" id="aiApiKey" placeholder="ضع الـ API Key هنا" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: right;">
+                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: right;">
             </div>
 
             <div style="text-align: right; margin-bottom: 5px; font-size: 13px; font-weight: bold;">اختر الصورة:</div>
@@ -1027,7 +1027,7 @@
             const resultDiv = document.getElementById('aiResult');
 
             if (!apiKey) {
-                alert('يرجى إدخال API Key الخاص بك.');
+                alert('يرجى إدخال مفتاح الـ API الخاص بك.');
                 return;
             }
 
@@ -1037,12 +1037,11 @@
             }
 
             resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف ومطابقة قطع الغيار...';
+            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف ومطابقة الموديلات المشابهة...';
 
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
-                // البرومبت المحدث والمخصص لعرض الموديل الأساسي والشبيهة فقط
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
 المطلوب منك إرجاع الآتي فقط وبدون أي تفاصيل زائدة أو مواصفات تقنية طويلة:
 1. الموديل الأساسي بدقة (مثال: Samsung Galaxy M20).
@@ -1066,7 +1065,6 @@
                             ]
                         }
                     ],
-                    // ضبط المعامل لتقليل العشوائية وزيادة الدقة والصحة العلمية للقطع
                     generationConfig: {
                         temperature: 0.1
                     }
@@ -1177,7 +1175,7 @@
                     if (detectedCategory) {
                         let item = document.createElement('div');
                         item.className = 'search-result-item';
-                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
+                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">الموديلات المشابهة</span>`;
                         let targetModel = modelName;
                         let targetCat = detectedCategory;
                         item.onclick = function() {
@@ -1210,7 +1208,7 @@
                                 let modelName = `${brand} (${i})`;
                                 let item = document.createElement('div');
                                 item.className = 'search-result-item';
-                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
+                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">الموديلات المشابهة</span>`;
                                 let targetModel = modelName;
                                 let targetCat = catName;
                                 item.onclick = function() {
