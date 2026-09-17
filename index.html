@@ -619,6 +619,7 @@
             text-align: right;
             white-space: pre-line;
             font-size: 14px;
+            line-height: 1.6;
         }
         .close-modal-btn {
             background-color: #d32f2f;
@@ -1036,17 +1037,26 @@
             }
 
             resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف...';
+            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف ومطابقة قطع الغيار...';
 
             try {
-                // استخدام الإصدار 3.6 مع مفتاح الـ AQ أو الـ AIza المدعوم
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+
+                // البرومبت المحدث والمخصص لعرض الموديل الأساسي والشبيهة فقط
+                const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
+المطلوب منك إرجاع الآتي فقط وبدون أي تفاصيل زائدة أو مواصفات تقنية طويلة:
+1. الموديل الأساسي بدقة (مثال: Samsung Galaxy M20).
+2. قائمة بالموديلات الأخرى المتطابقة مع هذا الهاتف تماماً في قطع الغيار (مثل الشاشة، البوردا، الفلاتات، أو الهيكل).
+
+اكتب الإجابة باختصار شديد وباللغة العربية بهذا الشكل تماماً:
+- الموديل الأساسي: [الاسم]
+- موديلات شبيهة ومتطابقة في قطع الغيار: [موديل 1، موديل 2، ...]`;
 
                 const payload = {
                     contents: [
                         {
                             parts: [
-                                { text: 'تعرف على الهاتف الموجود في هذه الصورة. حدد الماركة (Brand) والموديل (Model) بدقة، واذكر أبرز مواصفاته إن أمكن باختصار باللغة العربية.' },
+                                { text: promptText },
                                 {
                                     inline_data: {
                                         mime_type: 'image/jpeg',
@@ -1055,7 +1065,11 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    // ضبط المعامل لتقليل العشوائية وزيادة الدقة والصحة العلمية للقطع
+                    generationConfig: {
+                        temperature: 0.1
+                    }
                 };
 
                 const response = await fetch(url, {
