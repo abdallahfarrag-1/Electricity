@@ -276,6 +276,44 @@
             cursor: pointer;
         }
 
+        /* --- تصميم خانات الاختصارات الجديدة --- */
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-nav-card {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .quick-nav-card:hover {
+            border-color: #0052D4;
+            background-color: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .quick-nav-card i {
+            font-size: 18px;
+            color: #0052D4;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .quick-nav-card span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
         .action-full-btn {
             width: 100%;
             background: linear-gradient(135deg, #0052D4, #4364F7);
@@ -543,6 +581,15 @@
             background-color: #003fa7;
         }
 
+
+        /* --- 5. صفحة التوافقات الجديدة --- */
+        #compatibility-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+
         /* --- نافذة بحث الكاميرا الذكية (Modal) --- */
         #aiCameraModal {
             position: fixed;
@@ -718,6 +765,26 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="textSearchInput" placeholder="ابحث" oninput="handleGlobalSearch(this.value)">
                 </div>
+
+                <!-- خانات الاختصارات الجديدة تحت شريط البحث بالكتابة -->
+                <div class="quick-nav-grid">
+                    <div class="quick-nav-card" onclick="goToMain()">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                        <span>الماركات</span>
+                    </div>
+                    <div class="quick-nav-card" onclick="openFirstBrandModels()">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>الموديلات</span>
+                    </div>
+                    <div class="quick-nav-card" onclick="openFirstSpareParts()">
+                        <i class="fa-solid fa-gears"></i>
+                        <span>قطع الغيار</span>
+                    </div>
+                    <div class="quick-nav-card" onclick="goToCompatibility()">
+                        <i class="fa-solid fa-shuffle"></i>
+                        <span>التوافقات</span>
+                    </div>
+                </div>
             </div>
 
             <!-- نتائج البحث الذكي المتقدم -->
@@ -789,6 +856,35 @@
             <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
             <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
             <div class="list-container" id="sparePartsListContainer"></div>
+        </div>
+    </div>
+
+
+    <!-- ================= صفحة التوافقات ================= -->
+    <div id="compatibility-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnCompat" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdCompat">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuCompat">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+            <div class="brands-title">التوافقات</div>
+            <div class="list-container">
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #d1d5db; color: #555;">
+                    قسم التوافقات قيد التجهيز لعرض قطع الغيار المتوافقة بين الموديلات المختلفة.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -887,11 +983,14 @@
             document.getElementById('userDisplayId').innerText = currentUserId;
             document.getElementById('userDisplayIdModels').innerText = currentUserId;
             document.getElementById('userDisplayIdSpare').innerText = currentUserId;
+            let compatId = document.getElementById('userDisplayIdCompat');
+            if(compatId) compatId.innerText = currentUserId;
 
             let menuButtons = [
                 document.getElementById('menuBtn'), 
                 document.getElementById('menuBtnModels'),
-                document.getElementById('menuBtnSpare')
+                document.getElementById('menuBtnSpare'),
+                document.getElementById('menuBtnCompat')
             ];
             menuButtons.forEach(btn => {
                 if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
@@ -903,7 +1002,8 @@
             let menus = [
                 document.getElementById('dropdownMenu'),
                 document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSpare')
+                document.getElementById('dropdownMenuSpare'),
+                document.getElementById('dropdownMenuCompat')
             ];
             menus.forEach(menu => {
                 if (menu) {
@@ -916,6 +1016,7 @@
             closeAllMenus();
             document.getElementById('spare-parts-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
             document.getElementById('textSearchInput').value = '';
             document.getElementById('global-search-results').style.display = 'none';
@@ -926,8 +1027,26 @@
         function goToModels() {
             closeAllMenus();
             document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'flex';
             window.scrollTo(0, 0);
+        }
+
+        function goToCompatibility() {
+            closeAllMenus();
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function openFirstBrandModels() {
+            openModels(allBrands[0]);
+        }
+
+        function openFirstSpareParts() {
+            openSpareParts(allBrands[0] + " (1)");
         }
 
         function openCameraSearch() {
@@ -1080,7 +1199,6 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let text = data.candidates[0].content.parts[0].text;
                     
-                    // تنظيف النص وترتيبه تحت بعضه تماماً لو رجع في سطر واحد
                     text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
                     text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
                     text = text.replace(/،/g, '\n');
@@ -1307,6 +1425,7 @@
 
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'flex';
             window.scrollTo(0, 0);
         }
@@ -1403,6 +1522,7 @@
 
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
             document.getElementById('spare-parts-page').style.display = 'flex';
             window.scrollTo(0, 0);
         }
@@ -1412,6 +1532,7 @@
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
             document.getElementById('login-page').style.display = 'flex';
             document.getElementById('loginForm').reset();
         }
@@ -1420,7 +1541,8 @@
             let menus = [
                 document.getElementById('dropdownMenu'),
                 document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSpare')
+                document.getElementById('dropdownMenuSpare'),
+                document.getElementById('dropdownMenuCompat')
             ];
             menus.forEach(m => { if(m) m.style.display = 'none'; });
         }
