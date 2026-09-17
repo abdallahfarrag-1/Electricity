@@ -947,8 +947,11 @@
         function goToModels() {
             closeAllMenus();
             hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            window.scrollTo(0, 0);
+            if (activeBrandName) {
+                openModels(activeBrandName);
+            } else {
+                goToMain();
+            }
         }
 
         function goToCompatibility() {
@@ -1347,11 +1350,22 @@
         }
 
         function openSpareParts(modelName) {
+            // استخراج اسم الماركة تلقائياً من اسم الموديل لضبط زر الرجوع للموديلات بنجاح
+            allBrands.forEach(brand => {
+                if (modelName.startsWith(brand)) {
+                    activeBrandName = brand;
+                }
+            });
             activeModelName = modelName;
             buildSparePartsList(modelName, null);
         }
 
         function openSparePartsAndFocus(modelName, targetCategory) {
+            allBrands.forEach(brand => {
+                if (modelName.startsWith(brand)) {
+                    activeBrandName = brand;
+                }
+            });
             activeModelName = modelName;
             buildSparePartsList(modelName, targetCategory);
         }
