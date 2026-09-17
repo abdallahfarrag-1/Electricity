@@ -160,7 +160,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            position: relative;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
@@ -202,7 +201,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: none;
             width: 160px;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .dropdown-menu button {
@@ -227,26 +226,28 @@
         }
 
 
-        /* --- 2. الصفحة الرئيسية (الماركات) --- */
-        #main-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
+        /* --- نظام الثبات العلوي العام (Sticky Header Wrapper) --- */
+        .sticky-header-container {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background-color: #f4f7fc;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .content-container {
             max-width: 600px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 20px;
             width: 100%;
-            flex: 1;
         }
 
         .search-section {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 25px;
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
 
         .search-bar {
@@ -281,7 +282,6 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
-            margin-top: 15px;
         }
 
         .quick-nav-card {
@@ -320,8 +320,8 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 14px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -338,7 +338,7 @@
         }
 
         .action-full-btn i {
-            font-size: 20px;
+            font-size: 18px;
             color: white;
         }
 
@@ -428,11 +428,12 @@
         }
 
 
-        /* --- 3. صفحة الموديلات --- */
-        #models-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
+        /* --- الصفحات الداخلية --- */
+        .page-body-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
         }
 
         .back-btn {
@@ -492,14 +493,6 @@
         .editable-model-text:focus {
             background-color: #f0f4ff;
             border: 1px dashed #0052D4;
-        }
-
-
-        /* --- 4. صفحة قطع الغيار --- */
-        #spare-parts-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
         }
 
         .sub-wrapper {
@@ -582,14 +575,6 @@
         }
 
 
-        /* --- 5. صفحة التوافقات الجديدة --- */
-        #compatibility-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-
-
         /* --- نافذة بحث الكاميرا الذكية (Modal) --- */
         #aiCameraModal {
             position: fixed;
@@ -598,7 +583,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
             padding: 15px;
         }
         .ai-modal-content {
@@ -729,70 +714,78 @@
     </div>
 
 
-    <!-- ================= الصفحة الرئيسية (الماركات) ================= -->
-    <div id="main-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayId">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
+    <!-- ================= الجزء العلوي الثابت العام (يشمل النافبار والبحث والاختصارات) ================= -->
+    <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
+        
+        <div class="sticky-header-container">
+            <header class="navbar">
+                <div class="nav-right">
+                    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <span class="brand-title" onclick="goToMain()">Electricity</span>
+                </div>
+                <div class="nav-left">
+                    <span class="user-id" id="userDisplayId">102938</span>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+                </div>
+            </header>
 
-        <div class="content-container">
-            <div class="search-section">
-                <!-- زر بحث بالكاميرا -->
-                <button class="action-full-btn" onclick="openCameraSearch()">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>بحث بالكاميرا</span>
-                </button>
+            <div class="content-container" style="padding-bottom: 10px;">
+                <div class="search-section">
+                    <!-- زر بحث بالكاميرا -->
+                    <button class="action-full-btn" onclick="openCameraSearch()">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>بحث بالكاميرا</span>
+                    </button>
 
-                <!-- زر بحث صوتي -->
-                <button class="action-full-btn" id="micBtn" onclick="startVoiceSearch()">
-                    <i class="fa-solid fa-microphone" id="micIcon"></i>
-                    <span id="micBtnText">بحث صوتي</span>
-                </button>
+                    <!-- زر بحث صوتي -->
+                    <button class="action-full-btn" id="micBtn" onclick="startVoiceSearch()">
+                        <i class="fa-solid fa-microphone" id="micIcon"></i>
+                        <span id="micBtnText">بحث صوتي</span>
+                    </button>
 
-                <!-- البحث بالكتابة -->
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="textSearchInput" placeholder="ابحث" oninput="handleGlobalSearch(this.value)">
+                    <!-- البحث بالكتابة -->
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="textSearchInput" placeholder="ابحث" oninput="handleGlobalSearch(this.value)">
+                    </div>
+
+                    <!-- خانات الاختصارات الجديدة تحت شريط البحث بالكتابة -->
+                    <div class="quick-nav-grid">
+                        <div class="quick-nav-card" onclick="goToMain()">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                            <span>الماركات</span>
+                        </div>
+                        <div class="quick-nav-card" onclick="openFirstBrandModels()">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>الموديلات</span>
+                        </div>
+                        <div class="quick-nav-card" onclick="openFirstSpareParts()">
+                            <i class="fa-solid fa-gears"></i>
+                            <span>قطع الغيار</span>
+                        </div>
+                        <div class="quick-nav-card" onclick="goToCompatibility()">
+                            <i class="fa-solid fa-shuffle"></i>
+                            <span>التوافقات</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- خانات الاختصارات الجديدة تحت شريط البحث بالكتابة -->
-                <div class="quick-nav-grid">
-                    <div class="quick-nav-card" onclick="goToMain()">
-                        <i class="fa-solid fa-mobile-screen"></i>
-                        <span>الماركات</span>
-                    </div>
-                    <div class="quick-nav-card" onclick="openFirstBrandModels()">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <span>الموديلات</span>
-                    </div>
-                    <div class="quick-nav-card" onclick="openFirstSpareParts()">
-                        <i class="fa-solid fa-gears"></i>
-                        <span>قطع الغيار</span>
-                    </div>
-                    <div class="quick-nav-card" onclick="goToCompatibility()">
-                        <i class="fa-solid fa-shuffle"></i>
-                        <span>التوافقات</span>
-                    </div>
+                <!-- نتائج البحث الذكي المتقدم -->
+                <div id="global-search-results">
+                    <div class="brands-title" style="margin-bottom: 8px;">نتائج البحث المتقدم</div>
+                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- نتائج البحث الذكي المتقدم -->
-            <div id="global-search-results">
-                <div class="brands-title">نتائج البحث المتقدم</div>
-                <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-            </div>
-
+        <!-- ================= محتوى الصفحات المتغيرة أسفل الجزء الثابت ================= -->
+        
+        <!-- 1. الصفحة الرئيسية (الماركات) -->
+        <div id="main-page" class="page-body-content">
             <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
             <div class="brands-grid" id="brandsGrid">
                 <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
@@ -807,77 +800,23 @@
                 <div class="brand-card" data-name="Nokia" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
-    </div>
 
-
-    <!-- ================= صفحة الموديلات ================= -->
-    <div id="models-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnModels" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdModels">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuModels">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
+        <!-- 2. صفحة الموديلات -->
+        <div id="models-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
             <div class="brands-title" id="modelsPageTitle">الموديلات</div>
             <div class="list-container" id="modelsListContainer"></div>
         </div>
-    </div>
 
-
-    <!-- ================= صفحة قطع الغيار ================= -->
-    <div id="spare-parts-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnSpare" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdSpare">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuSpare">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
+        <!-- 3. صفحة قطع الغيار -->
+        <div id="spare-parts-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
             <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
-    </div>
 
-
-    <!-- ================= صفحة التوافقات ================= -->
-    <div id="compatibility-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnCompat" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdCompat">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuCompat">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
+        <!-- 4. صفحة التوافقات -->
+        <div id="compatibility-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
             <div class="brands-title">التوافقات</div>
             <div class="list-container">
@@ -886,6 +825,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 
@@ -968,7 +908,7 @@
             isGuestUser = false;
             updateUserInterface();
             document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            document.getElementById('app-wrapper').style.display = 'flex';
         }
 
         function handleGuest() {
@@ -976,68 +916,52 @@
             isGuestUser = true;
             updateUserInterface();
             document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            document.getElementById('app-wrapper').style.display = 'flex';
         }
 
         function updateUserInterface() {
             document.getElementById('userDisplayId').innerText = currentUserId;
-            document.getElementById('userDisplayIdModels').innerText = currentUserId;
-            document.getElementById('userDisplayIdSpare').innerText = currentUserId;
-            let compatId = document.getElementById('userDisplayIdCompat');
-            if(compatId) compatId.innerText = currentUserId;
-
-            let menuButtons = [
-                document.getElementById('menuBtn'), 
-                document.getElementById('menuBtnModels'),
-                document.getElementById('menuBtnSpare'),
-                document.getElementById('menuBtnCompat')
-            ];
-            menuButtons.forEach(btn => {
-                if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
-            });
+            let menuBtn = document.getElementById('menuBtn');
+            if (menuBtn) menuBtn.style.display = isGuestUser ? 'none' : 'block';
         }
 
         function toggleMenu() {
             if (isGuestUser) return;
-            let menus = [
-                document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSpare'),
-                document.getElementById('dropdownMenuCompat')
-            ];
-            menus.forEach(menu => {
-                if (menu) {
-                    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-                }
-            });
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) {
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            }
+        }
+
+        function hideAllPages() {
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
         }
 
         function goToMain() {
             closeAllMenus();
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('main-page').style.display = 'block';
             document.getElementById('textSearchInput').value = '';
             document.getElementById('global-search-results').style.display = 'none';
             document.getElementById('brandsGrid').style.display = 'grid';
             document.getElementById('brandsHeaderTitle').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
         function goToModels() {
             closeAllMenus();
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
         function goToCompatibility() {
             closeAllMenus();
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('compatibility-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
@@ -1158,7 +1082,7 @@
             resultDiv.innerText = 'جاري المعالجة...';
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
 المطلوب إرجاع النتيجة بالتنسيق التالي حرفياً وتحت بعضها تماماً بدون أي تفاصيل أخرى:
@@ -1166,8 +1090,7 @@
 الموديلات المشابهة:
 [الموديل الأول]
 [الموديل الثاني]
-[الموديل الثالث]
-(كل موديل مشابه في سطر منفصل مستقل)`;
+[الموديل الثالث]`;
 
                 const payload = {
                     contents: [
@@ -1198,11 +1121,9 @@
 
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let text = data.candidates[0].content.parts[0].text;
-                    
                     text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
                     text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
                     text = text.replace(/،/g, '\n');
-                    
                     resultDiv.innerText = text;
                 } else if (data.error) {
                     resultDiv.innerText = 'حدث خطأ من الخادم:\n' + JSON.stringify(data.error.message || data.error, null, 2);
@@ -1423,10 +1344,8 @@
                 container.appendChild(wrapper);
             }
 
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
@@ -1520,31 +1439,21 @@
                 }
             });
 
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
         function logout() {
             closeAllMenus();
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
+            document.getElementById('app-wrapper').style.display = 'none';
             document.getElementById('login-page').style.display = 'flex';
             document.getElementById('loginForm').reset();
         }
 
         function closeAllMenus() {
-            let menus = [
-                document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSpare'),
-                document.getElementById('dropdownMenuCompat')
-            ];
-            menus.forEach(m => { if(m) m.style.display = 'none'; });
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = 'none';
         }
 
         window.onclick = function(event) {
