@@ -327,7 +327,7 @@
         }
 
 
-        /* --- نتائج البحث الذكي الشامل --- */
+        /* --- نتائج البحث الذكي المخصص للموديلات وقطع الغيار فقط --- */
         #global-search-results {
             display: none;
             flex-direction: column;
@@ -586,19 +586,19 @@
                 <!-- البحث بالصوت -->
                 <div class="search-bar">
                     <i class="fa-solid fa-microphone" id="micIcon" onclick="startVoiceSearch()" title="اضغط للتحدث"></i>
-                    <input type="text" id="voiceSearchInput" placeholder="البحث الذكي بالصوت (مثال: شاشة أبل 1)..." oninput="handleGlobalSearch(this.value)">
+                    <input type="text" id="voiceSearchInput" placeholder="البحث عن موديل أو قطعة غيار (عربي / إنجليزي)..." oninput="handleGlobalSearch(this.value)">
                 </div>
 
                 <!-- البحث بالكتابة -->
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="textSearchInput" placeholder="ابحث بالفهم العام (ماركة، موديل، أو قطعة)..." oninput="handleGlobalSearch(this.value)">
+                    <input type="text" id="textSearchInput" placeholder="ابحث مثلاً: Apple 1 أو شاشة سامسونج..." oninput="handleGlobalSearch(this.value)">
                 </div>
             </div>
 
-            <!-- نتائج البحث الذكي الشامل -->
+            <!-- نتائج البحث الذكي للموديلات وقطع الغيار فقط -->
             <div id="global-search-results">
-                <div class="brands-title">نتائج البحث الذكي</div>
+                <div class="brands-title">نتائج البحث (الموديلات وقطع الغيار)</div>
                 <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
@@ -681,7 +681,36 @@
         let activeModelName = "";
 
         const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
+        
+        // قاموس الترجمة المتبادلة والفهم الذكي بين العربية والإنجليزية
+        const translationDictionary = {
+            // الماركات
+            "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple",
+            "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung",
+            "xiaomi": "Xiaomi", "شاومي": "Xiaomi",
+            "infinix": "Infinix", "انفينكس": "Infinix",
+            "oppo": "Oppo", "اوبو": "Oppo",
+            "huawei": "Huawei", "هواوي": "Huawei",
+            "vivo": "Vivo", "فيفو": "Vivo",
+            "honor": "Honor", "هونر": "Honor",
+            "htc": "htc", "اتش تي سي": "htc",
+            "nokia": "Nokia", "نوكيا": "Nokia",
+
+            // قطع الغيار
+            "شاشة": "شاشة", "screen": "شاشة", "display": "شاشة", "lcd": "شاشة",
+            "بطارية": "بطارية", "battery": "بطارية",
+            "ظهرية": "ظهرية", "back cover": "ظهرية", "back": "ظهرية",
+            "فلاتة ربط": "فلاتة ربط", "flex ribbon": "فلاتة ربط",
+            "فلاتة باور": "فلاتة باور", "power flex": "فلاتة باور",
+            "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن", "charging port": "فلاتة شحن",
+            "مدل": "مدل",
+            "فريم": "فريم", "frame": "فريم",
+            "سماعة داخلية مكالمات": "سماعة داخلية مكالمات", "ear speaker": "سماعة داخلية مكالمات", "speaker": "سماعة داخلية مكالمات",
+            "سماعة خارجية": "سماعة خارجية", "buzzer": "سماعة خارجية", "loudspeaker": "سماعة خارجية"
+        };
+
         const subCategoriesList = ["شاشة", "بطارية", "ظهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
+        
         const merchantsList = [
             { name: "تاجر رقم 1", price: "250ج" },
             { name: "تاجر رقم 2", price: "270ج" },
@@ -758,7 +787,7 @@
             window.scrollTo(0, 0);
         }
 
-        /* --- محرك البحث الذكي المبني على الفهم العام --- */
+        /* --- محرك البحث الذكي (يظهر الموديلات وقطع الغيار فقط) --- */
         function handleGlobalSearch(query) {
             let rawQuery = query.toLowerCase().trim();
             let resultsContainer = document.getElementById('global-search-results');
@@ -766,7 +795,6 @@
             let brandsGrid = document.getElementById('brandsGrid');
             let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
 
-            // مزامنة حقلي البحث بالكتابة والصوت
             let textInput = document.getElementById('textSearchInput');
             let voiceInput = document.getElementById('voiceSearchInput');
             if (textInput.value !== query) textInput.value = query;
@@ -784,34 +812,41 @@
             resultsContainer.style.display = 'flex';
             listEl.innerHTML = '';
 
-            // تحويل الكلمات المفتاحية بالعامية والعربية (مثل آبل وأبل)
-            let normalizedQuery = rawQuery.replace(/أ|إ|آ/g, 'ا');
-
-            // استخراج الماركة المطلوبة من النص (إن وجدت)
+            // استخراج الكلمات المفتاحية وترجمتها بين العربي والإنجليزي
             let detectedBrand = null;
-            allBrands.forEach(brand => {
-                let normBrand = brand.toLowerCase().replace(/أ|إ|آ/g, 'ا');
-                if (normalizedQuery.includes(normBrand)) {
-                    detectedBrand = brand;
-                }
-            });
-
-            // استخراج قطعة الغيار المطلوبة من النص (إن وجدت)
             let detectedCategory = null;
-            subCategoriesList.forEach(cat => {
-                let normCat = cat.toLowerCase().replace(/أ|إ|آ/g, 'ا');
-                if (normalizedQuery.includes(normCat)) {
-                    detectedCategory = cat;
+
+            let words = rawQuery.replace(/أ|إ|آ/g, 'ا').split(/\s+/);
+
+            words.forEach(word => {
+                let cleanWord = word.replace(/[.,]/g, '');
+                if (translationDictionary[cleanWord]) {
+                    let translated = translationDictionary[cleanWord];
+                    if (allBrands.includes(translated)) {
+                        detectedBrand = translated;
+                    } else if (subCategoriesList.includes(translated)) {
+                        detectedCategory = translated;
+                    }
                 }
             });
 
-            // استخراج رقم الموديل إن وجد (مثل رقم 1 أو 5 أو مجرد رقم)
+            let normalizedFullQuery = rawQuery.replace(/أ|إ|آ/g, 'ا');
+            for (let key in translationDictionary) {
+                let normKey = key.replace(/أ|إ|آ/g, 'ا');
+                if (normalizedFullQuery.includes(normKey)) {
+                    let translated = translationDictionary[key];
+                    if (allBrands.includes(translated)) detectedBrand = translated;
+                    if (subCategoriesList.includes(translated)) detectedCategory = translated;
+                }
+            }
+
+            // استخراج رقم الموديل إن وجد
             let numberMatch = rawQuery.match(/\d+/);
             let detectedModelNum = numberMatch ? numberMatch[0] : null;
 
             let foundCount = 0;
 
-            // إذا فهم النظام أن هناك (ماركة + قطعة + موديل أو جزء منهم)
+            // إظهار الموديلات وقطع الغيار التابعة لها فقط بناءً على الفلترة
             if (detectedBrand || detectedCategory || detectedModelNum) {
                 allBrands.forEach(brand => {
                     if (detectedBrand && brand !== detectedBrand) return;
@@ -820,13 +855,13 @@
                         let modelNumStr = i.toString();
                         if (detectedModelNum && modelNumStr !== detectedModelNum) continue;
 
-                        let modelName = `موديل ${brand} رقم (${i})`;
+                        let modelName = `${brand} (${i})`;
 
                         if (detectedCategory) {
-                            // مطابقة ذكية: عرض قطعة الغيار المطلوبة داخل الموديل المستهدف
+                            // إظهار نتيجة قطعة الغيار مباشرة
                             let item = document.createElement('div');
                             item.className = 'search-result-item';
-                            item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطعة غيار (مطابقة ذكية)</span>`;
+                            item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
                             let targetModel = modelName;
                             let targetCat = detectedCategory;
                             item.onclick = function() {
@@ -835,7 +870,7 @@
                             listEl.appendChild(item);
                             foundCount++;
                         } else {
-                            // إذا لم يحدد قطعة غيار، نعرض الموديل نفسه
+                            // إظهار الموديل كخيار بحث
                             let item = document.createElement('div');
                             item.className = 'search-result-item';
                             item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
@@ -847,31 +882,29 @@
                             foundCount++;
                         }
 
-                        // لكي لا نعرض عدد هائل من النتائج لو كتب المستخدم اسم ماركة فقط بدون رقم موديل
                         if (!detectedModelNum && foundCount >= 15) break;
                     }
                 });
             }
 
-            // فحص إضافي كبحث نصي تقليدي شامل لضمان عدم ضياع أي نتيجة
-            if (foundCount === 0) {
-                allBrands.forEach(brand => {
-                    let normBrand = brand.toLowerCase().replace(/أ|إ|آ/g, 'ا');
-                    if (normBrand.includes(normalizedQuery)) {
-                        foundCount++;
-                        let item = document.createElement('div');
-                        item.className = 'search-result-item';
-                        item.innerHTML = `<span><i class="fa-solid fa-mobile-screen"></i> ${brand}</span> <span class="search-result-type">ماركة</span>`;
-                        item.onclick = function() {
-                            openModels(brand);
-                        };
-                        listEl.appendChild(item);
-                    }
-                });
+            // في حال تم كتابة اسم ماركة فقط بدون رقم موديل أو قطعة غيار، نقوم بعرض موديلات هذه الماركة مباشرة في نتائج البحث (موديلات وليست ماركات)
+            if (foundCount === 0 && detectedBrand) {
+                for (let i = 1; i <= 15; i++) {
+                    let modelName = `${detectedBrand} (${i})`;
+                    let item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
+                    let targetModel = modelName;
+                    item.onclick = function() {
+                        openSpareParts(targetModel);
+                    };
+                    listEl.appendChild(item);
+                    foundCount++;
+                }
             }
 
             if (foundCount === 0) {
-                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}". حاول كتابة مثلاً: شاشة أبل 1</div>`;
+                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على موديلات أو قطع غيار مطابقة لـ "${query}". جرب كتابة اسم الماركة ورقم الموديل مثل: Apple 1 أو شاشة سامسونج</div>`;
             }
         }
 
@@ -883,7 +916,7 @@
             }
 
             const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
+            recognition.lang = 'ar-SA'; 
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
@@ -926,7 +959,7 @@
                 let textSpan = document.createElement('span');
                 textSpan.className = 'editable-model-text';
                 textSpan.contentEditable = "true";
-                let modelNameText = `موديل ${brandName} رقم (${i})`;
+                let modelNameText = `${brandName} (${i})`;
                 textSpan.innerText = modelNameText;
                 
                 let chevronIcon = document.createElement('i');
@@ -1018,7 +1051,6 @@
                 subWrapper.appendChild(merchantsContainer);
                 container.appendChild(subWrapper);
 
-                // إذا كانت هذه القطعة مطابقة للبحث الذكي العام، نقوم بفتحها تلقائياً
                 if (targetCategory && catName === targetCategory) {
                     merchantsContainer.style.display = 'flex';
                     subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
