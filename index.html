@@ -1039,7 +1039,7 @@
             resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف والموديلات المشابهة...';
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
 المطلوب منك إرجاع الآتي فقط وبدون أي تفاصيل زائدة أو مواصفات تقنية طويلة:
@@ -1346,12 +1346,22 @@
                     orderBtn.className = 'merchant-order-btn';
                     orderBtn.innerText = 'طلب';
                     
-                    // التوجيه لرابط الواتساب المخصص عند الضغط على زر طلب
+                    // التوجيه السلس للواتساب بدون شاشة سوداء مع نقل رسالة الطلب تلقائياً
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
                         let message = encodeURIComponent(`أرغب في طلب (${catName}) للموديل (${modelName}) من (${merchant.name}) بسعر (${merchant.price})`);
                         let whatsappUrl = `https://wa.me/message/S7BWGFK5UYZXM1?text=${message}`;
-                        window.open(whatsappUrl, '_blank');
+                        
+                        // استخدام نافذة مخفية لفتح الرابط بسلاسة وبدون أي وميض أو شاشة سوداء
+                        let hiddenIframe = document.createElement('iframe');
+                        hiddenIframe.style.display = 'none';
+                        hiddenIframe.src = whatsappUrl;
+                        document.body.appendChild(hiddenIframe);
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(hiddenIframe);
+                            window.location.href = whatsappUrl;
+                        }, 200);
                     };
 
                     merchantRow.appendChild(infoDiv);
