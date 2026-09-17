@@ -622,7 +622,7 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title" id="selectedModelTitle">قطع الغيار</div>
+            <div class="brands-title">قطع الغيار</div>
             <div class="list-container" id="sparePartsListContainer">
                 <!-- الخانات الفرعية لقطع الغيار -->
             </div>
@@ -796,7 +796,6 @@
 
         function openSpareParts(modelName) {
             activeModelName = modelName;
-            document.getElementById('selectedModelTitle').innerText = `قطع غيار: ${modelName}`;
 
             let subCategoriesList = [
                 "شاشة",
@@ -828,7 +827,6 @@
                 subBox.className = 'sub-horizontal-box';
                 subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 12px; transition: transform 0.2s;"></i>`;
 
-                // حاوية خانات التجار الأفقية
                 let merchantsContainer = document.createElement('div');
                 merchantsContainer.className = 'merchants-container';
 
