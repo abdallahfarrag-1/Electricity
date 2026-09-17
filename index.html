@@ -372,6 +372,13 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .horizontal-box:hover {
+            border-color: #0052D4;
+            background-color: #f8fafc;
         }
 
         .editable-model-text {
@@ -386,20 +393,12 @@
             border: 1px dashed #0052D4;
         }
 
-        .box-action-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
 
-        /* --- 4. الخانات الفرعية --- */
-        .sub-categories-container {
+        /* --- 4. صفحة قطع الغيار --- */
+        #spare-parts-page {
             display: none;
+            min-height: 100vh;
             flex-direction: column;
-            gap: 8px;
-            padding-right: 15px;
-            margin-top: 4px;
         }
 
         .sub-wrapper {
@@ -409,14 +408,14 @@
         }
 
         .sub-horizontal-box {
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 10px 15px;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 15px;
             font-weight: 600;
             color: #0052D4;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -425,7 +424,8 @@
         }
 
         .sub-horizontal-box:hover {
-            background-color: #e2e8f0;
+            background-color: #f8fafc;
+            border-color: #0052D4;
         }
 
         /* تفاصيل الخانة الفرعية المقسمة عمودياً */
@@ -579,9 +579,36 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title" id="selectedBrandTitle">الموديلات</div>
+            <div class="brands-title">الموديلات</div>
             <div class="list-container" id="modelsListContainer">
-                <!-- 100 خانة أفقية -->
+                <!-- 100 خانة أفقية للموديلات -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= صفحة قطع الغيار ================= -->
+    <div id="spare-parts-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnSpare" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdSpare">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuSpare">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <div class="brands-title" id="selectedModelTitle">قطع الغيار</div>
+            <div class="list-container" id="sparePartsListContainer">
+                <!-- الخانات الفرعية لقطع الغيار -->
             </div>
         </div>
     </div>
@@ -592,6 +619,7 @@
         let currentUserId = "102938";
         let isGuestUser = false;
         let activeBrandName = "";
+        let activeModelName = "";
 
         function handleLogin(event) {
             event.preventDefault();
@@ -618,8 +646,13 @@
         function updateUserInterface() {
             document.getElementById('userDisplayId').innerText = currentUserId;
             document.getElementById('userDisplayIdModels').innerText = currentUserId;
+            document.getElementById('userDisplayIdSpare').innerText = currentUserId;
 
-            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels')];
+            let menuButtons = [
+                document.getElementById('menuBtn'), 
+                document.getElementById('menuBtnModels'),
+                document.getElementById('menuBtnSpare')
+            ];
             menuButtons.forEach(btn => {
                 if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
             });
@@ -629,7 +662,8 @@
             if (isGuestUser) return;
             let menus = [
                 document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels')
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSpare')
             ];
             menus.forEach(menu => {
                 if (menu) {
@@ -640,11 +674,19 @@
 
         function goToMain() {
             closeAllMenus();
+            document.getElementById('spare-parts-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
             document.getElementById('textSearchInput').value = '';
             document.getElementById('voiceSearchInput').value = '';
             filterBrands('');
+        }
+
+        function goToModels() {
+            closeAllMenus();
+            document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
         }
 
         function filterBrands(query) {
@@ -699,21 +741,6 @@
 
         function openModels(brandName) {
             activeBrandName = brandName;
-            document.getElementById('selectedBrandTitle').innerText = "الموديلات";
-            
-            let subCategoriesList = [
-                "شاشة",
-                "بطارية",
-                "ظهرية",
-                "فلاتة ربط",
-                "فلاتة باور",
-                "فلاتة شحن",
-                "مدل",
-                "فريم",
-                "سماعة داخلية مكالمات",
-                "سماعة خارجية"
-            ];
-
             let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
 
@@ -727,100 +754,110 @@
                 let textSpan = document.createElement('span');
                 textSpan.className = 'editable-model-text';
                 textSpan.contentEditable = "true";
-                textSpan.innerText = `موديل ${brandName} رقم (${i})`;
+                let modelNameText = `موديل ${brandName} رقم (${i})`;
+                textSpan.innerText = modelNameText;
                 
-                let actionArea = document.createElement('div');
-                actionArea.className = 'box-action-area';
-                actionArea.innerHTML = `<i class="fa-solid fa-chevron-down arrow-icon" style="font-size: 12px; color: #0052D4; transition: transform 0.2s;"></i>`;
+                let chevronIcon = document.createElement('i');
+                chevronIcon.className = "fa-solid fa-chevron-left";
+                chevronIcon.style.fontSize = "14px";
+                chevronIcon.style.color = "#0052D4";
 
-                box.appendChild(textSpan);
-                box.appendChild(actionArea);
-                
-                let subContainer = document.createElement('div');
-                subContainer.className = 'sub-categories-container';
-
-                subCategoriesList.forEach((catName) => {
-                    let subWrapper = document.createElement('div');
-                    subWrapper.className = 'sub-wrapper';
-
-                    let subBox = document.createElement('div');
-                    subBox.className = 'sub-horizontal-box';
-                    subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px; transition: transform 0.2s;"></i>`;
-
-                    // خانات التفاصيل العمودية الأربعة عند فتح البند
-                    let detailsContainer = document.createElement('div');
-                    detailsContainer.className = 'sub-details-container';
-
-                    // 1. الخانة الأولى: اسم البند
-                    let row1 = document.createElement('div');
-                    row1.className = 'detail-row-box';
-                    row1.innerHTML = `<span>${catName}</span>`;
-
-                    // 2. الخانة الثانية: Electricity
-                    let row2 = document.createElement('div');
-                    row2.className = 'detail-row-box';
-                    row2.innerHTML = `<span>Electricity</span>`;
-
-                    // 3. الخانة الثالثة: السعر (...ج)
-                    let row3 = document.createElement('div');
-                    row3.className = 'detail-row-box';
-                    row3.innerHTML = `<span>السعر: ...ج</span>`;
-
-                    // 4. الخانة الرابعة: طلب
-                    let row4 = document.createElement('button');
-                    row4.className = 'order-btn-box';
-                    row4.innerText = 'طلب';
-                    row4.onclick = function(e) {
-                        e.stopPropagation();
-                        alert(`تم تقديم الطلب لـ (${catName}) بنجاح`);
-                    };
-
-                    detailsContainer.appendChild(row1);
-                    detailsContainer.appendChild(row2);
-                    detailsContainer.appendChild(row3);
-                    detailsContainer.appendChild(row4);
-
-                    subBox.onclick = function(e) {
-                        e.stopPropagation();
-                        let isVisible = detailsContainer.style.display === 'flex';
-                        
-                        // إغلاق باقي بنود التفاصيل المفتوحة في نفس القائمة
-                        let allDetails = subContainer.querySelectorAll('.sub-details-container');
-                        let allSubArrows = subContainer.querySelectorAll('.sub-arrow-icon');
-                        allDetails.forEach(d => d.style.display = 'none');
-                        allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
-
-                        if (!isVisible) {
-                            detailsContainer.style.display = 'flex';
-                            subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
-                        }
-                    };
-
-                    subWrapper.appendChild(subBox);
-                    subWrapper.appendChild(detailsContainer);
-                    subContainer.appendChild(subWrapper);
-                });
-
-                actionArea.onclick = function() {
-                    let isVisible = subContainer.style.display === 'flex';
-                    let allSubContainers = document.querySelectorAll('.sub-categories-container');
-                    let allArrows = document.querySelectorAll('.arrow-icon');
-                    allSubContainers.forEach(sc => sc.style.display = 'none');
-                    allArrows.forEach(ar => ar.style.transform = 'rotate(0deg)');
-
-                    if (!isVisible) {
-                        subContainer.style.display = 'flex';
-                        actionArea.querySelector('.arrow-icon').style.transform = 'rotate(180deg)';
-                    }
+                // الضغط على الموديل ينقل لصفحة قطع الغيار
+                box.onclick = function() {
+                    openSpareParts(textSpan.innerText);
                 };
 
+                box.appendChild(textSpan);
+                box.appendChild(chevronIcon);
                 wrapper.appendChild(box);
-                wrapper.appendChild(subContainer);
                 container.appendChild(wrapper);
             }
 
             document.getElementById('main-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function openSpareParts(modelName) {
+            activeModelName = modelName;
+            document.getElementById('selectedModelTitle').innerText = `قطع غيار: ${modelName}`;
+
+            let subCategoriesList = [
+                "شاشة",
+                "بطارية",
+                "ظهرية",
+                "فلاتة ربط",
+                "فلاتة باور",
+                "فلاتة شحن",
+                "مدل",
+                "فريم",
+                "سماعة داخلية مكالمات",
+                "سماعة خارجية"
+            ];
+
+            let container = document.getElementById('sparePartsListContainer');
+            container.innerHTML = '';
+
+            subCategoriesList.forEach((catName) => {
+                let subWrapper = document.createElement('div');
+                subWrapper.className = 'sub-wrapper';
+
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 12px; transition: transform 0.2s;"></i>`;
+
+                // تفاصيل البند الأربعة بشكل عمودي
+                let detailsContainer = document.createElement('div');
+                detailsContainer.className = 'sub-details-container';
+
+                let row1 = document.createElement('div');
+                row1.className = 'detail-row-box';
+                row1.innerHTML = `<span>${catName}</span>`;
+
+                let row2 = document.createElement('div');
+                row2.className = 'detail-row-box';
+                row2.innerHTML = `<span>Electricity</span>`;
+
+                let row3 = document.createElement('div');
+                row3.className = 'detail-row-box';
+                row3.innerHTML = `<span>السعر: ...ج</span>`;
+
+                let row4 = document.createElement('button');
+                row4.className = 'order-btn-box';
+                row4.innerText = 'طلب';
+                row4.onclick = function(e) {
+                    e.stopPropagation();
+                    alert(`تم تقديم الطلب لـ (${catName}) بنجاح`);
+                };
+
+                detailsContainer.appendChild(row1);
+                detailsContainer.appendChild(row2);
+                detailsContainer.appendChild(row3);
+                detailsContainer.appendChild(row4);
+
+                subBox.onclick = function(e) {
+                    e.stopPropagation();
+                    let isVisible = detailsContainer.style.display === 'flex';
+                    
+                    let allDetails = container.querySelectorAll('.sub-details-container');
+                    let allSubArrows = container.querySelectorAll('.sub-arrow-icon');
+                    allDetails.forEach(d => d.style.display = 'none');
+                    allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
+
+                    if (!isVisible) {
+                        detailsContainer.style.display = 'flex';
+                        subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
+                    }
+                };
+
+                subWrapper.appendChild(subBox);
+                subWrapper.appendChild(detailsContainer);
+                container.appendChild(subWrapper);
+            });
+
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'flex';
             window.scrollTo(0, 0);
         }
 
@@ -828,6 +865,7 @@
             closeAllMenus();
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
             document.getElementById('login-page').style.display = 'flex';
             document.getElementById('loginForm').reset();
         }
@@ -835,7 +873,8 @@
         function closeAllMenus() {
             let menus = [
                 document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels')
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSpare')
             ];
             menus.forEach(m => { if(m) m.style.display = 'none'; });
         }
