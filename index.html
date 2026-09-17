@@ -327,6 +327,43 @@
         }
 
 
+        /* --- نتائج البحث العامة الشاملة --- */
+        #global-search-results {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .search-result-item {
+            background: #ffffff;
+            border: 1px solid #0052D4;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0052D4;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,82,212,0.05);
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #f0f4ff;
+        }
+
+        .search-result-type {
+            font-size: 12px;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+
         /* --- 3. صفحة الموديلات --- */
         #models-page {
             display: none;
@@ -549,17 +586,23 @@
                 <!-- البحث بالصوت -->
                 <div class="search-bar">
                     <i class="fa-solid fa-microphone" id="micIcon" onclick="startVoiceSearch()" title="اضغط للتحدث"></i>
-                    <input type="text" id="voiceSearchInput" placeholder="البحث باستخدام الصوت (اضغط على الميكروفون)" oninput="filterBrands(this.value)">
+                    <input type="text" id="voiceSearchInput" placeholder="البحث الشامل بالصوت..." oninput="handleGlobalSearch(this.value)">
                 </div>
 
                 <!-- البحث بالكتابة -->
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="textSearchInput" placeholder="البحث بالكتابة..." oninput="filterBrands(this.value)">
+                    <input type="text" id="textSearchInput" placeholder="البحث الشامل (ماركات، موديلات، قطع غيار)..." oninput="handleGlobalSearch(this.value)">
                 </div>
             </div>
 
-            <div class="brands-title">الماركات</div>
+            <!-- نتائج البحث الشامل -->
+            <div id="global-search-results">
+                <div class="brands-title">نتائج البحث الشامل</div>
+                <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
             <div class="brands-grid" id="brandsGrid">
                 <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
                 <div class="brand-card" data-name="Samsung" onclick="openModels('Samsung')">Samsung</div>
@@ -595,7 +638,7 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title">الموديلات</div>
+            <div class="brands-title" id="modelsPageTitle">الموديلات</div>
             <div class="list-container" id="modelsListContainer">
                 <!-- 100 خانة أفقية للموديلات -->
             </div>
@@ -636,6 +679,14 @@
         let isGuestUser = false;
         let activeBrandName = "";
         let activeModelName = "";
+
+        const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
+        const subCategoriesList = ["شاشة", "بطارية", "ظهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
+        const merchantsList = [
+            { name: "تاجر رقم 1", price: "250ج" },
+            { name: "تاجر رقم 2", price: "270ج" },
+            { name: "تاجر رقم 3", price: "240ج" }
+        ];
 
         function handleLogin(event) {
             event.preventDefault();
@@ -695,7 +746,9 @@
             document.getElementById('main-page').style.display = 'flex';
             document.getElementById('textSearchInput').value = '';
             document.getElementById('voiceSearchInput').value = '';
-            filterBrands('');
+            document.getElementById('global-search-results').style.display = 'none';
+            document.getElementById('brandsGrid').style.display = 'grid';
+            document.getElementById('brandsHeaderTitle').style.display = 'block';
         }
 
         function goToModels() {
@@ -705,18 +758,88 @@
             window.scrollTo(0, 0);
         }
 
-        function filterBrands(query) {
+        /* --- محرك البحث الشامل --- */
+        function handleGlobalSearch(query) {
             let filter = query.toLowerCase().trim();
-            let cards = document.querySelectorAll('.brand-card');
-            
-            cards.forEach(card => {
-                let brandName = card.getAttribute('data-name').toLowerCase();
-                if (brandName.includes(filter)) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
+            let resultsContainer = document.getElementById('global-search-results');
+            let listEl = document.getElementById('searchResultsList');
+            let brandsGrid = document.getElementById('brandsGrid');
+            let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
+
+            // مزامنة حقلي البحث بالكتابة والصوت
+            let textInput = document.getElementById('textSearchInput');
+            let voiceInput = document.getElementById('voiceSearchInput');
+            if (textInput.value !== query) textInput.value = query;
+            if (voiceInput.value !== query) voiceInput.value = query;
+
+            if (filter === "") {
+                resultsContainer.style.display = 'none';
+                brandsGrid.style.display = 'grid';
+                brandsHeaderTitle.style.display = 'block';
+                return;
+            }
+
+            brandsGrid.style.display = 'none';
+            brandsHeaderTitle.style.display = 'none';
+            resultsContainer.style.display = 'flex';
+            listEl.innerHTML = '';
+
+            let foundCount = 0;
+
+            // 1. البحث في الماركات
+            allBrands.forEach(brand => {
+                if (brand.toLowerCase().includes(filter)) {
+                    foundCount++;
+                    let item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `<span><i class="fa-solid fa-mobile-screen"></i> ${brand}</span> <span class="search-result-type">ماركة</span>`;
+                    item.onclick = function() {
+                        openModels(brand);
+                    };
+                    listEl.appendChild(item);
                 }
             });
+
+            // 2. البحث في الموديلات وقطع الغيار لكل ماركة
+            allBrands.forEach(brand => {
+                for (let i = 1; i <= 100; i++) {
+                    let modelName = `موديل ${brand} رقم (${i})`;
+                    
+                    // هل الموديل مطابق؟
+                    if (modelName.toLowerCase().includes(filter)) {
+                        foundCount++;
+                        let item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
+                        let matchedModel = modelName;
+                        item.onclick = function() {
+                            openSpareParts(matchedModel);
+                        };
+                        listEl.appendChild(item);
+                    }
+
+                    // البحث في قطع الغيار داخل هذا الموديل
+                    subCategoriesList.forEach(cat => {
+                        let fullSpareQuery = `${cat} ${modelName}`.toLowerCase();
+                        if (cat.toLowerCase().includes(filter) || fullSpareQuery.includes(filter)) {
+                            foundCount++;
+                            let item = document.createElement('div');
+                            item.className = 'search-result-item';
+                            item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${cat} - ${modelName}</span> <span class="search-result-type">قطعة غيار</span>`;
+                            let targetModel = modelName;
+                            let targetCat = cat;
+                            item.onclick = function() {
+                                openSparePartsAndFocus(targetModel, targetCat);
+                            };
+                            listEl.appendChild(item);
+                        }
+                    });
+                }
+            });
+
+            if (foundCount === 0) {
+                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لا توجد نتائج مطابقة لـ "${query}"</div>`;
+            }
         }
 
         function startVoiceSearch() {
@@ -740,8 +863,7 @@
                 let speechResult = event.results[0][0].transcript;
                 speechResult = speechResult.replace(/[.,]/g, '').trim();
                 
-                document.getElementById('voiceSearchInput').value = speechResult;
-                filterBrands(speechResult);
+                handleGlobalSearch(speechResult);
                 micIcon.classList.remove('listening-active');
             };
 
@@ -759,6 +881,7 @@
             activeBrandName = brandName;
             let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
+            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
 
             for (let i = 1; i <= 100; i++) {
                 let wrapper = document.createElement('div');
@@ -796,26 +919,15 @@
 
         function openSpareParts(modelName) {
             activeModelName = modelName;
+            buildSparePartsList(modelName, null);
+        }
 
-            let subCategoriesList = [
-                "شاشة",
-                "بطارية",
-                "ظهرية",
-                "فلاتة ربط",
-                "فلاتة باور",
-                "فلاتة شحن",
-                "مدل",
-                "فريم",
-                "سماعة داخلية مكالمات",
-                "سماعة خارجية"
-            ];
+        function openSparePartsAndFocus(modelName, targetCategory) {
+            activeModelName = modelName;
+            buildSparePartsList(modelName, targetCategory);
+        }
 
-            let merchantsList = [
-                { name: "تاجر رقم 1", price: "250ج" },
-                { name: "تاجر رقم 2", price: "270ج" },
-                { name: "تاجر رقم 3", price: "240ج" }
-            ];
-
+        function buildSparePartsList(modelName, targetCategory) {
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
@@ -872,8 +984,15 @@
                 subWrapper.appendChild(subBox);
                 subWrapper.appendChild(merchantsContainer);
                 container.appendChild(subWrapper);
+
+                // إذا كانت هذه القطعة مطابقة للبحث الشامل، نقوم بفتحها تلقائياً
+                if (targetCategory && catName === targetCategory) {
+                    merchantsContainer.style.display = 'flex';
+                    subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
+                }
             });
 
+            document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('spare-parts-page').style.display = 'flex';
             window.scrollTo(0, 0);
