@@ -535,7 +535,7 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
+            <div class="brands-title" id="selectedBrandTitle">الموديلات</div>
             <div class="list-container" id="modelsListContainer">
                 <!-- 100 خانة أفقية -->
             </div>
@@ -655,7 +655,8 @@
 
         function openModels(brandName) {
             activeBrandName = brandName;
-            document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
+            // تم تثبيت العنوان ليكون كلمة "الموديلات" فقط لكل الماركات
+            document.getElementById('selectedBrandTitle').innerText = "الموديلات";
             
             let subCategoriesList = [
                 "شاشة",
