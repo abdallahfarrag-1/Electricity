@@ -1346,20 +1346,21 @@
                     orderBtn.className = 'merchant-order-btn';
                     orderBtn.innerText = 'طلب';
                     
-                    // التوجيه السلس للواتساب بدون شاشة سوداء مع نقل رسالة الطلب تلقائياً
+                    // زر الطلب برقم الواتساب الجديد ورسالة مدمجة تلقائياً وبدون شاشة سوداء
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
-                        let message = encodeURIComponent(`أرغب في طلب (${catName}) للموديل (${modelName}) من (${merchant.name}) بسعر (${merchant.price})`);
-                        let whatsappUrl = `https://wa.me/message/S7BWGFK5UYZXM1?text=${message}`;
+                        let message = `أرغب في طلب (${catName}) للموديل (${modelName}) من (${merchant.name}) بسعر (${merchant.price})`;
+                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
                         
-                        // استخدام نافذة مخفية لفتح الرابط بسلاسة وبدون أي وميض أو شاشة سوداء
                         let hiddenIframe = document.createElement('iframe');
                         hiddenIframe.style.display = 'none';
                         hiddenIframe.src = whatsappUrl;
                         document.body.appendChild(hiddenIframe);
                         
                         setTimeout(() => {
-                            document.body.removeChild(hiddenIframe);
+                            if (document.body.contains(hiddenIframe)) {
+                                document.body.removeChild(hiddenIframe);
+                            }
                             window.location.href = whatsappUrl;
                         }, 200);
                     };
