@@ -243,7 +243,7 @@
             flex: 1;
         }
 
-        /* أشرطة البحث */
+        /* أشرطة البحث والزرار */
         .search-section {
             display: flex;
             flex-direction: column;
@@ -278,8 +278,8 @@
             cursor: pointer;
         }
 
-        /* زر الميكروفون الممتلئ ليملأ خانة البحث بالكامل */
-        .mic-full-btn {
+        /* أزرار البحث البارزة (الكاميرا والصوت) ليملأ كل زر الخانة بالكامل */
+        .action-full-btn {
             width: 100%;
             background: linear-gradient(135deg, #0052D4, #4364F7);
             color: white;
@@ -297,12 +297,12 @@
             transition: all 0.3s;
         }
 
-        .mic-full-btn:hover {
+        .action-full-btn:hover {
             background: linear-gradient(135deg, #003fa7, #2c4ec9);
             transform: translateY(-2px);
         }
 
-        .mic-full-btn i {
+        .action-full-btn i {
             font-size: 20px;
             color: white;
         }
@@ -604,16 +604,16 @@
         </header>
 
         <div class="content-container">
-            <!-- أشرطة البحث -->
+            <!-- أشرطة البحث والأزرار البارزة -->
             <div class="search-section">
-                <!-- البحث بالكاميرا -->
-                <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
+                <!-- زر البحث بالكاميرا (ممتلئ وكبير) -->
+                <button class="action-full-btn" onclick="openCameraSearch()">
                     <i class="fa-solid fa-camera"></i>
-                    <input type="text" placeholder="ابحث" readonly style="cursor: pointer;">
-                </div>
+                    <span>بحث بالكاميرا</span>
+                </button>
 
-                <!-- زر البحث الصوتي الممتلئ (يملأ الخانة بالكامل) -->
-                <button class="mic-full-btn" id="micBtn" onclick="startVoiceSearch()">
+                <!-- زر البحث الصوتي الممتلئ (ممتلئ وكبير) -->
+                <button class="action-full-btn" id="micBtn" onclick="startVoiceSearch()">
                     <i class="fa-solid fa-microphone" id="micIcon"></i>
                     <span id="micBtnText">بحث صوتي</span>
                 </button>
@@ -823,17 +823,20 @@
             window.scrollTo(0, 0);
         }
 
+        // دالة فتح الكاميرا للبحث
+        function openCameraSearch() {
+            alert("جارِ فتح الكاميرا للبحث...");
+        }
+
         // دالة تحويل الأرقام المشرقية (العربية) إلى إنجليزية والعكس لتوافق البحث
         function convertNumbers(inputStr) {
             if (!inputStr) return "";
             const arabicNumbers = /[\u0660-\u0669]/g;
-            const englishNumbers = /[0-9]/g;
             
             let converted = inputStr.replace(arabicNumbers, function(d) {
                 return String.fromCharCode(d.charCodeAt(0) - 1632);
             });
             
-            // إضافة النص كما هو مع دعم الفهم العكسي أيضاً
             return converted;
         }
 
