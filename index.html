@@ -1318,7 +1318,6 @@
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
-            // تحديث عنوان صفحة قطع الغيار ليعرض اسم الموديل أو كلمة قطع الغيار
             document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
 
             subCategoriesList.forEach((catName) => {
@@ -1346,9 +1345,13 @@
                     let orderBtn = document.createElement('button');
                     orderBtn.className = 'merchant-order-btn';
                     orderBtn.innerText = 'طلب';
+                    
+                    // التوجيه لرابط الواتساب المخصص عند الضغط على زر طلب
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
-                        alert(`تم طلب (${catName}) لـ (${modelName}) من (${merchant.name}) بسعر (${merchant.price}) بنجاح`);
+                        let message = encodeURIComponent(`أرغب في طلب (${catName}) للموديل (${modelName}) من (${merchant.name}) بسعر (${merchant.price})`);
+                        let whatsappUrl = `https://wa.me/message/S7BWGFK5UYZXM1?text=${message}`;
+                        window.open(whatsappUrl, '_blank');
                     };
 
                     merchantRow.appendChild(infoDiv);
