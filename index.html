@@ -700,10 +700,10 @@
 
         <div class="content-container">
             <div class="search-section">
-                <!-- زر بحث بالكاميرا المربوط بـ Gemini API -->
+                <!-- زر بحث بالكاميرا -->
                 <button class="action-full-btn" onclick="openCameraSearch()">
                     <i class="fa-solid fa-camera"></i>
-                    <span>بحث بالكاميرا (Gemini AI)</span>
+                    <span>بحث بالكاميرا</span>
                 </button>
 
                 <!-- زر بحث صوتي -->
@@ -792,13 +792,13 @@
     </div>
 
 
-    <!-- ================= نافذة بحث الكاميرا الذكية (Modal) ================= -->
+    <!-- ================= نافذة بحث الكاميرا (Modal) ================= -->
     <div id="aiCameraModal">
         <div class="ai-modal-content">
-            <h3>📱 التعرف على نوع الهاتف بالذكاء الاصطناعي</h3>
+            <h3>📱 التعرف على نوع الهاتف</h3>
             
             <div style="text-align: right; margin-bottom: 10px;">
-                <label for="aiApiKey" style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">مفتاح Gemini API:</label>
+                <label for="aiApiKey" style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">مفتاح API:</label>
                 <input type="text" id="aiApiKey" placeholder="ضع الـ API Key هنا" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: right;">
             </div>
 
@@ -829,7 +829,6 @@
         let activeBrandName = "";
         let activeModelName = "";
 
-        // متغيرات الكاميرا والذكاء الاصطناعي
         let selectedFile = null;
         let processedBase64 = null;
 
@@ -931,7 +930,6 @@
             window.scrollTo(0, 0);
         }
 
-        // --- وظائف بحث الكاميرا والذكاء الاصطناعي ---
         function openCameraSearch() {
             document.getElementById('aiCameraModal').style.display = 'flex';
         }
@@ -1080,7 +1078,6 @@
                 resultDiv.innerText = 'حدث خطأ أثناء الاتصال بالخادم:\n' + error.message;
             }
         }
-        // ----------------------------------------------------
 
         function convertNumbers(inputStr) {
             if (!inputStr) return "";
