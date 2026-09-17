@@ -402,6 +402,12 @@
             margin-top: 4px;
         }
 
+        .sub-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .sub-horizontal-box {
             background: #f8fafc;
             border: 1px solid #cbd5e1;
@@ -420,6 +426,44 @@
 
         .sub-horizontal-box:hover {
             background-color: #e2e8f0;
+        }
+
+        /* تفاصيل الخانة الفرعية المقسمة عمودياً */
+        .sub-details-container {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 15px;
+            margin-top: 4px;
+        }
+
+        .detail-row-box {
+            background: #ffffff;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-btn-box {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .order-btn-box:hover {
+            background-color: #003fa7;
         }
     </style>
 </head>
@@ -655,7 +699,6 @@
 
         function openModels(brandName) {
             activeBrandName = brandName;
-            // تم تثبيت العنوان ليكون كلمة "الموديلات" فقط لكل الماركات
             document.getElementById('selectedBrandTitle').innerText = "الموديلات";
             
             let subCategoriesList = [
@@ -697,14 +740,65 @@
                 subContainer.className = 'sub-categories-container';
 
                 subCategoriesList.forEach((catName) => {
+                    let subWrapper = document.createElement('div');
+                    subWrapper.className = 'sub-wrapper';
+
                     let subBox = document.createElement('div');
                     subBox.className = 'sub-horizontal-box';
-                    subBox.innerHTML = `<span>${catName}</span>`;
+                    subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px; transition: transform 0.2s;"></i>`;
+
+                    // خانات التفاصيل العمودية الأربعة عند فتح البند
+                    let detailsContainer = document.createElement('div');
+                    detailsContainer.className = 'sub-details-container';
+
+                    // 1. الخانة الأولى: اسم البند
+                    let row1 = document.createElement('div');
+                    row1.className = 'detail-row-box';
+                    row1.innerHTML = `<span>${catName}</span>`;
+
+                    // 2. الخانة الثانية: Electricity
+                    let row2 = document.createElement('div');
+                    row2.className = 'detail-row-box';
+                    row2.innerHTML = `<span>Electricity</span>`;
+
+                    // 3. الخانة الثالثة: السعر (...ج)
+                    let row3 = document.createElement('div');
+                    row3.className = 'detail-row-box';
+                    row3.innerHTML = `<span>السعر: ...ج</span>`;
+
+                    // 4. الخانة الرابعة: طلب
+                    let row4 = document.createElement('button');
+                    row4.className = 'order-btn-box';
+                    row4.innerText = 'طلب';
+                    row4.onclick = function(e) {
+                        e.stopPropagation();
+                        alert(`تم تقديم الطلب لـ (${catName}) بنجاح`);
+                    };
+
+                    detailsContainer.appendChild(row1);
+                    detailsContainer.appendChild(row2);
+                    detailsContainer.appendChild(row3);
+                    detailsContainer.appendChild(row4);
+
                     subBox.onclick = function(e) {
                         e.stopPropagation();
-                        alert(`تم اختيار (${catName})`);
+                        let isVisible = detailsContainer.style.display === 'flex';
+                        
+                        // إغلاق باقي بنود التفاصيل المفتوحة في نفس القائمة
+                        let allDetails = subContainer.querySelectorAll('.sub-details-container');
+                        let allSubArrows = subContainer.querySelectorAll('.sub-arrow-icon');
+                        allDetails.forEach(d => d.style.display = 'none');
+                        allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
+
+                        if (!isVisible) {
+                            detailsContainer.style.display = 'flex';
+                            subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
+                        }
                     };
-                    subContainer.appendChild(subBox);
+
+                    subWrapper.appendChild(subBox);
+                    subWrapper.appendChild(detailsContainer);
+                    subContainer.appendChild(subWrapper);
                 });
 
                 actionArea.onclick = function() {
