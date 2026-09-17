@@ -457,7 +457,7 @@
         }
 
 
-        /* --- 4. صفحة الموديلات المشابهة --- */
+        /* --- 4. صفحة قطع الغيار --- */
         #spare-parts-page {
             display: none;
             min-height: 100vh;
@@ -768,7 +768,7 @@
     </div>
 
 
-    <!-- ================= صفحة الموديلات المشابهة ================= -->
+    <!-- ================= صفحة قطع الغيار ================= -->
     <div id="spare-parts-page">
         <header class="navbar">
             <div class="nav-right">
@@ -787,7 +787,7 @@
 
         <div class="content-container">
             <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title">الموديلات المشابهة</div>
+            <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
     </div>
@@ -1036,15 +1036,15 @@
             }
 
             resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف ومطابقة الموديلات المشابهة...';
+            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف والموديلات المشابهة...';
 
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
 المطلوب منك إرجاع الآتي فقط وبدون أي تفاصيل زائدة أو مواصفات تقنية طويلة:
-1. الموديل الأساسي بدقة (مثال: Samsung Galaxy M20).
-2. قائمة بالموديلات المشابهة لهذا الهاتف.
+1. الموديل الأساسي بدقة (مثال: Xiaomi Redmi 10).
+2. الموديلات المشابهة فقط.
 
 اكتب الإجابة باختصار شديد وباللغة العربية بهذا الشكل تماماً:
 - الموديل الأساسي: [الاسم]
@@ -1174,7 +1174,7 @@
                     if (detectedCategory) {
                         let item = document.createElement('div');
                         item.className = 'search-result-item';
-                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">الموديلات المشابهة</span>`;
+                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
                         let targetModel = modelName;
                         let targetCat = detectedCategory;
                         item.onclick = function() {
@@ -1207,7 +1207,7 @@
                                 let modelName = `${brand} (${i})`;
                                 let item = document.createElement('div');
                                 item.className = 'search-result-item';
-                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">الموديلات المشابهة</span>`;
+                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
                                 let targetModel = modelName;
                                 let targetCat = catName;
                                 item.onclick = function() {
@@ -1318,6 +1318,9 @@
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
+            // تحديث عنوان صفحة قطع الغيار ليعرض اسم الموديل أو كلمة قطع الغيار
+            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
+
             subCategoriesList.forEach((catName) => {
                 let subWrapper = document.createElement('div');
                 subWrapper.className = 'sub-wrapper';
@@ -1345,7 +1348,7 @@
                     orderBtn.innerText = 'طلب';
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
-                        alert(`تم طلب (${catName}) من (${merchant.name}) بسعر (${merchant.price}) بنجاح`);
+                        alert(`تم طلب (${catName}) لـ (${modelName}) من (${merchant.name}) بسعر (${merchant.price}) بنجاح`);
                     };
 
                     merchantRow.appendChild(infoDiv);
