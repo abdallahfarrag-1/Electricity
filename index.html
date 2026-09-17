@@ -428,41 +428,57 @@
             border-color: #0052D4;
         }
 
-        /* تفاصيل الخانة الفرعية المقسمة عمودياً */
-        .sub-details-container {
+        /* حاوية قائمة التجار للقطعة الواحدة */
+        .merchants-container {
             display: none;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             padding-right: 15px;
             margin-top: 4px;
         }
 
-        .detail-row-box {
+        /* خانة التاجر الأفقية */
+        .merchant-row-box {
             background: #ffffff;
             border: 1px solid #94a3b8;
-            border-radius: 6px;
-            padding: 10px 15px;
-            font-size: 13px;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
 
-        .order-btn-box {
+        .merchant-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .merchant-name {
+            color: #0052D4;
+        }
+
+        .merchant-price {
+            color: #16a34a;
+        }
+
+        .merchant-order-btn {
             background-color: #0052D4;
             color: white;
             border: none;
             border-radius: 6px;
-            padding: 10px 15px;
+            padding: 8px 16px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            text-align: center;
             transition: background 0.2s;
         }
-        .order-btn-box:hover {
+
+        .merchant-order-btn:hover {
             background-color: #003fa7;
         }
     </style>
@@ -762,7 +778,6 @@
                 chevronIcon.style.fontSize = "14px";
                 chevronIcon.style.color = "#0052D4";
 
-                // الضغط على الموديل ينقل لصفحة قطع الغيار
                 box.onclick = function() {
                     openSpareParts(textSpan.innerText);
                 };
@@ -796,6 +811,12 @@
                 "سماعة خارجية"
             ];
 
+            let merchantsList = [
+                { name: "تاجر رقم 1", price: "250ج" },
+                { name: "تاجر رقم 2", price: "270ج" },
+                { name: "تاجر رقم 3", price: "240ج" }
+            ];
+
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
@@ -807,52 +828,51 @@
                 subBox.className = 'sub-horizontal-box';
                 subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 12px; transition: transform 0.2s;"></i>`;
 
-                // تفاصيل البند الأربعة بشكل عمودي
-                let detailsContainer = document.createElement('div');
-                detailsContainer.className = 'sub-details-container';
+                // حاوية خانات التجار الأفقية
+                let merchantsContainer = document.createElement('div');
+                merchantsContainer.className = 'merchants-container';
 
-                let row1 = document.createElement('div');
-                row1.className = 'detail-row-box';
-                row1.innerHTML = `<span>${catName}</span>`;
+                merchantsList.forEach((merchant) => {
+                    let merchantRow = document.createElement('div');
+                    merchantRow.className = 'merchant-row-box';
 
-                let row2 = document.createElement('div');
-                row2.className = 'detail-row-box';
-                row2.innerHTML = `<span>Electricity</span>`;
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'merchant-info';
+                    infoDiv.innerHTML = `
+                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
+                        <span class="merchant-price">${merchant.price}</span>
+                    `;
 
-                let row3 = document.createElement('div');
-                row3.className = 'detail-row-box';
-                row3.innerHTML = `<span>السعر: ...ج</span>`;
+                    let orderBtn = document.createElement('button');
+                    orderBtn.className = 'merchant-order-btn';
+                    orderBtn.innerText = 'طلب';
+                    orderBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        alert(`تم طلب (${catName}) من (${merchant.name}) بسعر (${merchant.price}) بنجاح`);
+                    };
 
-                let row4 = document.createElement('button');
-                row4.className = 'order-btn-box';
-                row4.innerText = 'طلب';
-                row4.onclick = function(e) {
-                    e.stopPropagation();
-                    alert(`تم تقديم الطلب لـ (${catName}) بنجاح`);
-                };
-
-                detailsContainer.appendChild(row1);
-                detailsContainer.appendChild(row2);
-                detailsContainer.appendChild(row3);
-                detailsContainer.appendChild(row4);
+                    merchantRow.appendChild(infoDiv);
+                    merchantRow.appendChild(orderBtn);
+                    merchantsContainer.appendChild(merchantRow);
+                });
 
                 subBox.onclick = function(e) {
                     e.stopPropagation();
-                    let isVisible = detailsContainer.style.display === 'flex';
+                    let isVisible = merchantsContainer.style.display === 'flex';
                     
-                    let allDetails = container.querySelectorAll('.sub-details-container');
+                    let allMerchants = container.querySelectorAll('.merchants-container');
                     let allSubArrows = container.querySelectorAll('.sub-arrow-icon');
-                    allDetails.forEach(d => d.style.display = 'none');
+                    allMerchants.forEach(m => m.style.display = 'none');
                     allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
 
                     if (!isVisible) {
-                        detailsContainer.style.display = 'flex';
+                        merchantsContainer.style.display = 'flex';
                         subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
                     }
                 };
 
                 subWrapper.appendChild(subBox);
-                subWrapper.appendChild(detailsContainer);
+                subWrapper.appendChild(merchantsContainer);
                 container.appendChild(subWrapper);
             });
 
