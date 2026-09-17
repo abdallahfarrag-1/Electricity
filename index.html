@@ -304,7 +304,7 @@
             cursor: pointer;
         }
 
-        /* --- تصميم خانات الاختصارات المُصغرة (تم تعديلها لتصبح خانتين فقط) --- */
+        /* --- تصميم خانات الاختصارات المُصغرة (خاننتين فقط) --- */
         .quick-nav-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -929,7 +929,8 @@
 
                 let merchantsContainer = document.createElement('div');
                 merchantsContainer.className = 'merchants-container';
-                merchantsContainer.style.display = 'flex';
+                // جعل القائمة مغلقة افتراضياً
+                merchantsContainer.style.display = 'none';
 
                 merchantsList.forEach(merchant => {
                     let merchantRow = document.createElement('div');
