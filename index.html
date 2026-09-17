@@ -304,7 +304,7 @@
             cursor: pointer;
         }
 
-        /* --- تصميم خانات الاختصارات المُصغرة --- */
+        /* --- تصميم خانات الاختصارات الأربعة المُصغرة --- */
         .quick-nav-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -521,7 +521,7 @@
         }
 
         .merchants-container {
-            display: none;
+            display: flex;
             flex-direction: column;
             gap: 6px;
             padding-right: 12px;
@@ -736,7 +736,7 @@
 
             <div class="content-container">
                 <div class="search-section">
-                    <!-- صف أزرار البحث بالصورة والصوت بجانب بعضهما لتوفير مساحة رأسية -->
+                    <!-- صف أزرار البحث بالصورة والصوت -->
                     <div class="search-actions-row">
                         <button class="action-compact-btn" onclick="openCameraSearch()">
                             <i class="fa-solid fa-camera"></i>
@@ -754,17 +754,17 @@
                         <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleGlobalSearch(this.value)">
                     </div>
 
-                    <!-- خانات الاختصارات الأربعة مُصغرة -->
+                    <!-- خانات الاختصارات الأربعة المُصغرة -->
                     <div class="quick-nav-grid">
                         <div class="quick-nav-card" onclick="goToMain()">
                             <i class="fa-solid fa-mobile-screen"></i>
                             <span>الماركات</span>
                         </div>
-                        <div class="quick-nav-card" onclick="openFirstBrandModels()">
+                        <div class="quick-nav-card" onclick="openAllModelsList()">
                             <i class="fa-solid fa-layer-group"></i>
                             <span>الموديلات</span>
                         </div>
-                        <div class="quick-nav-card" onclick="openFirstSpareParts()">
+                        <div class="quick-nav-card" onclick="openAllSparePartsOverview()">
                             <i class="fa-solid fa-gears"></i>
                             <span>قطع الغيار</span>
                         </div>
@@ -804,14 +804,14 @@
 
         <!-- 2. صفحة الموديلات -->
         <div id="models-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
             <div class="brands-title" id="modelsPageTitle">الموديلات</div>
             <div class="list-container" id="modelsListContainer"></div>
         </div>
 
         <!-- 3. صفحة قطع الغيار -->
         <div id="spare-parts-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
             <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
@@ -863,37 +863,10 @@
     <script>
         let currentUserId = "102938";
         let isGuestUser = false;
-        let activeBrandName = "";
-        let activeModelName = "";
-
         let selectedFile = null;
         let processedBase64 = null;
 
         const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
-        
-        const translationDictionary = {
-            "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple",
-            "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung", "سامسونك": "Samsung",
-            "xiaomi": "Xiaomi", "شاومي": "Xiaomi", "شومي": "Xiaomi",
-            "infinix": "Infinix", "انفينكس": "Infinix", "انفنكس": "Infinix",
-            "oppo": "Oppo", "اوبو": "Oppo", "أوبو": "Oppo",
-            "huawei": "Huawei", "هواوي": "Huawei", "هواى": "Huawei",
-            "vivo": "Vivo", "فيفو": "Vivo",
-            "honor": "Honor", "هونر": "Honor",
-            "htc": "htc", "اتش تي سي": "htc",
-            "nokia": "Nokia", "نوكيا": "Nokia",
-
-            "شاشة": "شاشة", "screen": "شاشة", "display": "شاشة", "lcd": "شاشة",
-            "بطارية": "بطارية", "battery": "بطارية", "بطاريه": "بطارية",
-            "ضهرية": "ضهرية", "ظهرية": "ضهرية", "back cover": "ضهرية", "back": "ضهرية", "ظهر": "ضهرية", "ضهر": "ضهرية",
-            "فلاتة ربط": "فلاتة ربط", "flex ribbon": "فلاتة ربط",
-            "فلاتة باور": "فلاتة باور", "power flex": "فلاتة باور",
-            "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن",
-            "مدل": "مدل", "فريم": "فريم", "frame": "فريم",
-            "سماعة داخلية مكالمات": "سماعة داخلية مكالمات", "ear speaker": "سماعة داخلية مكالمات",
-            "سماعة خارجية": "سماعة خارجية", "buzzer": "سماعة خارجية"
-        };
-
         const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
         const merchantsList = [
@@ -952,13 +925,6 @@
             window.scrollTo(0, 0);
         }
 
-        function goToModels() {
-            closeAllMenus();
-            hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
         function goToCompatibility() {
             closeAllMenus();
             hideAllPages();
@@ -966,12 +932,168 @@
             window.scrollTo(0, 0);
         }
 
-        function openFirstBrandModels() {
-            openModels(allBrands[0]);
+        // --- عند الضغط على خانة "الموديلات" تحت شريط البحث: تظهر كل الموديلات لكل الماركات ---
+        function openAllModelsList() {
+            closeAllMenus();
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '';
+            document.getElementById('modelsPageTitle').innerText = `كافة الموديلات لكل الماركات`;
+
+            allBrands.forEach(brandName => {
+                for (let i = 1; i <= 5; i++) { // عرض عينة من الموديلات لكل ماركة (يمكن زيادتها حسب الحاجة)
+                    let wrapper = document.createElement('div');
+                    wrapper.className = 'model-item-wrapper';
+
+                    let box = document.createElement('div');
+                    box.className = 'horizontal-box';
+                    
+                    let textSpan = document.createElement('span');
+                    textSpan.className = 'editable-model-text';
+                    textSpan.contentEditable = "true";
+                    textSpan.innerText = `${brandName} - موديل (${i})`;
+                    
+                    let chevronIcon = document.createElement('i');
+                    chevronIcon.className = "fa-solid fa-chevron-left";
+                    chevronIcon.style.fontSize = "13px";
+                    chevronIcon.style.color = "#0052D4";
+
+                    box.onclick = function() {
+                        openSparePartsForModel(textSpan.innerText);
+                    };
+
+                    box.appendChild(textSpan);
+                    box.appendChild(chevronIcon);
+                    wrapper.appendChild(box);
+                    container.appendChild(wrapper);
+                }
+            });
+
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
-        function openFirstSpareParts() {
-            openSpareParts(allBrands[0] + " (1)");
+        // --- عند الضغط على خانة "قطع الغيار" تحت شريط البحث: تظهر كل قطع الغيار لكل الموديلات ---
+        function openAllSparePartsOverview() {
+            closeAllMenus();
+            let container = document.getElementById('sparePartsListContainer');
+            container.innerHTML = '';
+            document.getElementById('sparePartsPageTitle').innerText = `كافة قطع الغيار لكل الموديلات`;
+
+            subCategoriesList.forEach(catName => {
+                let subWrapper = document.createElement('div');
+                subWrapper.className = 'sub-wrapper';
+
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} (متوفر لكل الموديلات)</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px;"></i>`;
+
+                let merchantsContainer = document.createElement('div');
+                merchantsContainer.className = 'merchants-container';
+                merchantsContainer.style.display = 'flex';
+
+                merchantsList.forEach(merchant => {
+                    let merchantRow = document.createElement('div');
+                    merchantRow.className = 'merchant-row-box';
+
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'merchant-info';
+                    infoDiv.innerHTML = `
+                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
+                        <span class="merchant-price">${merchant.price}</span>
+                    `;
+
+                    let orderBtn = document.createElement('button');
+                    orderBtn.className = 'merchant-order-btn';
+                    orderBtn.innerText = 'طلب';
+                    
+                    orderBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        let message = `طلب قطعة غيار: ${catName} - ${merchant.name} (${merchant.price})`;
+                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
+                        window.location.href = whatsappUrl;
+                    };
+
+                    merchantRow.appendChild(infoDiv);
+                    merchantRow.appendChild(orderBtn);
+                    merchantsContainer.appendChild(merchantRow);
+                });
+
+                subBox.onclick = function(e) {
+                    e.stopPropagation();
+                    let isVisible = merchantsContainer.style.display === 'flex';
+                    merchantsContainer.style.display = isVisible ? 'none' : 'flex';
+                };
+
+                subWrapper.appendChild(subBox);
+                subWrapper.appendChild(merchantsContainer);
+                container.appendChild(subWrapper);
+            });
+
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // عند النقر على موديل معين لعرض قطع غياره الخاصة
+        function openSparePartsForModel(modelName) {
+            let container = document.getElementById('sparePartsListContainer');
+            container.innerHTML = '';
+            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
+
+            subCategoriesList.forEach(catName => {
+                let subWrapper = document.createElement('div');
+                subWrapper.className = 'sub-wrapper';
+
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px;"></i>`;
+
+                let merchantsContainer = document.createElement('div');
+                merchantsContainer.className = 'merchants-container';
+                merchantsContainer.style.display = 'flex';
+
+                merchantsList.forEach(merchant => {
+                    let merchantRow = document.createElement('div');
+                    merchantRow.className = 'merchant-row-box';
+
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'merchant-info';
+                    infoDiv.innerHTML = `
+                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
+                        <span class="merchant-price">${merchant.price}</span>
+                    `;
+
+                    let orderBtn = document.createElement('button');
+                    orderBtn.className = 'merchant-order-btn';
+                    orderBtn.innerText = 'طلب';
+                    
+                    orderBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
+                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
+                        window.location.href = whatsappUrl;
+                    };
+
+                    merchantRow.appendChild(infoDiv);
+                    merchantRow.appendChild(orderBtn);
+                    merchantsContainer.appendChild(merchantRow);
+                });
+
+                subBox.onclick = function(e) {
+                    e.stopPropagation();
+                    let isVisible = merchantsContainer.style.display === 'flex';
+                    merchantsContainer.style.display = isVisible ? 'none' : 'flex';
+                };
+
+                subWrapper.appendChild(subBox);
+                subWrapper.appendChild(merchantsContainer);
+                container.appendChild(subWrapper);
+            });
+
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
         function openCameraSearch() {
@@ -1122,12 +1244,7 @@
 
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     let text = data.candidates[0].content.parts[0].text;
-                    text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
-                    text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
-                    text = text.replace(/،/g, '\n');
                     resultDiv.innerText = text;
-                } else if (data.error) {
-                    resultDiv.innerText = 'حدث خطأ من الخادم:\n' + JSON.stringify(data.error.message || data.error, null, 2);
                 } else {
                     resultDiv.innerText = 'تعذر التعرف على الهاتف، يرجى المحاولة مرة أخرى.';
                 }
@@ -1138,33 +1255,12 @@
             }
         }
 
-        function convertNumbers(inputStr) {
-            if (!inputStr) return "";
-            const arabicNumbers = /[\u0660-\u0669]/g;
-            return inputStr.replace(arabicNumbers, function(d) {
-                return String.fromCharCode(d.charCodeAt(0) - 1632);
-            });
-        }
-
-        function normalizeText(text) {
-            if (!text) return "";
-            let cleaned = convertNumbers(text);
-            return cleaned.toLowerCase()
-                          .replace(/\s+/g, '') 
-                          .replace(/أ|إ|آ/g, 'ا')
-                          .replace(/ة/g, 'ه')
-                          .replace(/ى/g, 'ي');
-        }
-
         function handleGlobalSearch(query) {
             let cleanRawQuery = query.trim();
             let resultsContainer = document.getElementById('global-search-results');
             let listEl = document.getElementById('searchResultsList');
             let brandsGrid = document.getElementById('brandsGrid');
             let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
-
-            let textInput = document.getElementById('textSearchInput');
-            if (textInput.value !== query) textInput.value = query;
 
             if (cleanRawQuery === "") {
                 resultsContainer.style.display = 'none';
@@ -1178,99 +1274,20 @@
             resultsContainer.style.display = 'flex';
             listEl.innerHTML = '';
 
-            let convertedQuery = convertNumbers(cleanRawQuery);
-            let normalizedQuery = normalizeText(cleanRawQuery);
-            let detectedBrand = null;
-            let detectedCategory = null;
-
-            for (let key in translationDictionary) {
-                let normKey = normalizeText(key);
-                if (normalizedQuery.includes(normKey) || normKey.includes(normalizedQuery)) {
-                    let translated = translationDictionary[key];
-                    if (allBrands.includes(translated)) {
-                        detectedBrand = translated;
-                    } else if (subCategoriesList.includes(translated)) {
-                        detectedCategory = translated;
-                    }
-                }
-            }
-
-            if (!detectedBrand) {
-                allBrands.forEach(brand => {
-                    let normBrand = normalizeText(brand);
-                    if (normalizedQuery.includes(normBrand) || normBrand.includes(normalizedQuery)) {
-                        detectedBrand = brand;
-                    }
-                });
-            }
-
-            let numberMatch = convertedQuery.match(/\d+/);
-            let detectedModelNum = numberMatch ? numberMatch[0] : null;
             let foundCount = 0;
-
             allBrands.forEach(brand => {
-                if (detectedBrand && brand !== detectedBrand) return;
-
-                let limit = 100;
-                for (let i = 1; i <= limit; i++) {
-                    let modelNumStr = i.toString();
-                    if (detectedModelNum && !modelNumStr.includes(detectedModelNum)) continue;
-
-                    let modelName = `${brand} (${i})`;
-
-                    if (detectedCategory) {
-                        let item = document.createElement('div');
-                        item.className = 'search-result-item';
-                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
-                        let targetModel = modelName;
-                        let targetCat = detectedCategory;
-                        item.onclick = function() {
-                            openSparePartsAndFocus(targetModel, targetCat);
-                        };
-                        listEl.appendChild(item);
-                        foundCount++;
-                    } else {
-                        let item = document.createElement('div');
-                        item.className = 'search-result-item';
-                        item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
-                        let targetModel = modelName;
-                        item.onclick = function() {
-                            openSpareParts(targetModel);
-                        };
-                        listEl.appendChild(item);
-                        foundCount++;
-                    }
-
-                    if (foundCount >= 30) break;
+                for (let i = 1; i <= 3; i++) {
+                    let modelName = `${brand} - موديل (${i})`;
+                    let item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
+                    item.onclick = function() {
+                        openSparePartsForModel(modelName);
+                    };
+                    listEl.appendChild(item);
+                    foundCount++;
                 }
             });
-
-            if (foundCount === 0 && !detectedBrand && !detectedModelNum) {
-                subCategoriesList.forEach(catName => {
-                    let normCat = normalizeText(catName);
-                    if (normCat.includes(normalizedQuery) || normalizedQuery.split('').every(char => normCat.includes(char))) {
-                        allBrands.slice(0, 3).forEach(brand => {
-                            for (let i = 1; i <= 3; i++) {
-                                let modelName = `${brand} (${i})`;
-                                let item = document.createElement('div');
-                                item.className = 'search-result-item';
-                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
-                                let targetModel = modelName;
-                                let targetCat = catName;
-                                item.onclick = function() {
-                                    openSparePartsAndFocus(targetModel, targetCat);
-                                };
-                                listEl.appendChild(item);
-                                foundCount++;
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (foundCount === 0) {
-                listEl.innerHTML = `<div style="padding: 10px; text-align: center; color: #666; font-size: 13px;">لم يتم العثور على نتائج مطابقة لـ "${query}"</div>`;
-            }
         }
 
         function startVoiceSearch() {
@@ -1282,43 +1299,21 @@
 
             const recognition = new SpeechRecognition();
             recognition.lang = 'ar-SA'; 
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            let micBtn = document.getElementById('micBtn');
-            let micBtnText = document.getElementById('micBtnText');
-
-            micBtn.classList.add('listening-active');
-            micBtnText.innerText = "جاري الاستماع...";
             recognition.start();
 
             recognition.onresult = function(event) {
                 let speechResult = event.results[0][0].transcript;
                 document.getElementById('textSearchInput').value = speechResult;
                 handleGlobalSearch(speechResult);
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
-            };
-
-            recognition.onerror = function() {
-                alert("لم يتم التعرف على الصوت بشكل واضح، حاول مرة أخرى.");
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
-            };
-
-            recognition.onend = function() {
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
             };
         }
 
         function openModels(brandName) {
-            activeBrandName = brandName;
             let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
             document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
 
-            for (let i = 1; i <= 100; i++) {
+            for (let i = 1; i <= 10; i++) {
                 let wrapper = document.createElement('div');
                 wrapper.className = 'model-item-wrapper';
 
@@ -1328,7 +1323,7 @@
                 let textSpan = document.createElement('span');
                 textSpan.className = 'editable-model-text';
                 textSpan.contentEditable = "true";
-                textSpan.innerText = `${brandName} (${i})`;
+                textSpan.innerText = `${brandName} - موديل (${i})`;
                 
                 let chevronIcon = document.createElement('i');
                 chevronIcon.className = "fa-solid fa-chevron-left";
@@ -1336,7 +1331,7 @@
                 chevronIcon.style.color = "#0052D4";
 
                 box.onclick = function() {
-                    openSpareParts(textSpan.innerText);
+                    openSparePartsForModel(textSpan.innerText);
                 };
 
                 box.appendChild(textSpan);
@@ -1347,101 +1342,6 @@
 
             hideAllPages();
             document.getElementById('models-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function openSpareParts(modelName) {
-            activeModelName = modelName;
-            buildSparePartsList(modelName, null);
-        }
-
-        function openSparePartsAndFocus(modelName, targetCategory) {
-            activeModelName = modelName;
-            buildSparePartsList(modelName, targetCategory);
-        }
-
-        function buildSparePartsList(modelName, targetCategory) {
-            let container = document.getElementById('sparePartsListContainer');
-            container.innerHTML = '';
-
-            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
-
-            subCategoriesList.forEach((catName) => {
-                let subWrapper = document.createElement('div');
-                subWrapper.className = 'sub-wrapper';
-
-                let subBox = document.createElement('div');
-                subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px; transition: transform 0.2s;"></i>`;
-
-                let merchantsContainer = document.createElement('div');
-                merchantsContainer.className = 'merchants-container';
-
-                merchantsList.forEach((merchant) => {
-                    let merchantRow = document.createElement('div');
-                    merchantRow.className = 'merchant-row-box';
-
-                    let infoDiv = document.createElement('div');
-                    infoDiv.className = 'merchant-info';
-                    infoDiv.innerHTML = `
-                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
-                        <span class="merchant-price">${merchant.price}</span>
-                    `;
-
-                    let orderBtn = document.createElement('button');
-                    orderBtn.className = 'merchant-order-btn';
-                    orderBtn.innerText = 'طلب';
-                    
-                    orderBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
-                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
-                        
-                        let hiddenIframe = document.createElement('iframe');
-                        hiddenIframe.style.display = 'none';
-                        hiddenIframe.src = whatsappUrl;
-                        document.body.appendChild(hiddenIframe);
-                        
-                        setTimeout(() => {
-                            if (document.body.contains(hiddenIframe)) {
-                                document.body.removeChild(hiddenIframe);
-                            }
-                            window.location.href = whatsappUrl;
-                        }, 200);
-                    };
-
-                    merchantRow.appendChild(infoDiv);
-                    merchantRow.appendChild(orderBtn);
-                    merchantsContainer.appendChild(merchantRow);
-                });
-
-                subBox.onclick = function(e) {
-                    e.stopPropagation();
-                    let isVisible = merchantsContainer.style.display === 'flex';
-                    
-                    let allMerchants = container.querySelectorAll('.merchants-container');
-                    let allSubArrows = container.querySelectorAll('.sub-arrow-icon');
-                    allMerchants.forEach(m => m.style.display = 'none');
-                    allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
-
-                    if (!isVisible) {
-                        merchantsContainer.style.display = 'flex';
-                        subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
-                    }
-                };
-
-                subWrapper.appendChild(subBox);
-                subWrapper.appendChild(merchantsContainer);
-                container.appendChild(subWrapper);
-
-                if (targetCategory && catName === targetCategory) {
-                    merchantsContainer.style.display = 'flex';
-                    subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
-                }
-            });
-
-            hideAllPages();
-            document.getElementById('spare-parts-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
