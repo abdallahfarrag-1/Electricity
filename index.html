@@ -619,7 +619,7 @@
             text-align: right;
             white-space: pre-line;
             font-size: 14px;
-            line-height: 1.6;
+            line-height: 1.8;
         }
         .close-modal-btn {
             background-color: #d32f2f;
@@ -1036,20 +1036,19 @@
             }
 
             resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري تحليل الصورة باستخدام نموذج gemini-3.6-flash...';
+            resultDiv.innerText = 'جاري المعالجة...';
 
             try {
-                // تم تعديل مسار النموذج هنا ليعمل بنموذج gemini-3.6-flash
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
-المطلوب منك إرجاع الآتي فقط وبدون أي تفاصيل زائدة أو مواصفات تقنية طويلة:
-1. الموديل الأساسي بدقة (مثال: Xiaomi Redmi 10).
-2. الموديلات المشابهة فقط.
-
-اكتب الإجابة باختصار شديد وباللغة العربية بهذا الشكل تماماً:
-- الموديل الأساسي: [الاسم]
-- الموديلات المشابهة: [موديل 1، موديل 2، ...]`;
+المطلوب إرجاع النتيجة بالتنسيق التالي حرفياً وتحت بعضها تماماً بدون أي تفاصيل أخرى:
+الموديل الأساسي: [اسم الموديل الأساسي]
+الموديلات المشابهة:
+[الموديل الأول]
+[الموديل الثاني]
+[الموديل الثالث]
+(كل موديل مشابه في سطر منفصل مستقل)`;
 
                 const payload = {
                     contents: [
@@ -1079,11 +1078,18 @@
                 const data = await response.json();
 
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    resultDiv.innerText = data.candidates[0].content.parts[0].text;
+                    let text = data.candidates[0].content.parts[0].text;
+                    
+                    // تنظيف النص وترتيبه تحت بعضه تماماً لو رجع في سطر واحد
+                    text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
+                    text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
+                    text = text.replace(/،/g, '\n');
+                    
+                    resultDiv.innerText = text;
                 } else if (data.error) {
-                    resultDiv.innerText = 'حدث خطأ من API:\n' + JSON.stringify(data.error, null, 2);
+                    resultDiv.innerText = 'حدث خطأ من الخادم:\n' + JSON.stringify(data.error.message || data.error, null, 2);
                 } else {
-                    resultDiv.innerText = 'لم يستطع النموذج معالجة الصورة، يرجى التأكد من صحة مفتاح API والمحاولة مرة أخرى.';
+                    resultDiv.innerText = 'تعذر التعرف على الهاتف، يرجى المحاولة مرة أخرى.';
                 }
 
             } catch (error) {
@@ -1347,7 +1353,6 @@
                     orderBtn.className = 'merchant-order-btn';
                     orderBtn.innerText = 'طلب';
                     
-                    // زر الطلب: رسالة مختصرة (اسم القطعة - الموديل - التاجر والسعر) بدون أي إضافات
                     orderBtn.onclick = function(e) {
                         e.stopPropagation();
                         let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
