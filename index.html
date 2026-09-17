@@ -192,7 +192,6 @@
             border-radius: 6px;
         }
 
-        /* قائمة منسدلة لزر الـ 3 شرط */
         .dropdown-menu {
             position: absolute;
             top: 60px;
@@ -243,7 +242,6 @@
             flex: 1;
         }
 
-        /* أشرطة البحث والزرار */
         .search-section {
             display: flex;
             flex-direction: column;
@@ -278,7 +276,6 @@
             cursor: pointer;
         }
 
-        /* أزرار البحث البارزة (الكاميرا والصوت) */
         .action-full-btn {
             width: 100%;
             background: linear-gradient(135deg, #0052D4, #4364F7);
@@ -307,7 +304,6 @@
             color: white;
         }
 
-        /* مؤشر الاستماع للصوت */
         .listening-active {
             background: linear-gradient(135deg, #d32f2f, #e53935) !important;
             animation: pulse 1.5s infinite;
@@ -332,7 +328,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             padding-bottom: 30px;
-            direction: ltr; /* تم ضبط الاتجاه لضمان ترتيب الماركات بشكل صحيح */
+            direction: ltr;
         }
 
         .brand-card {
@@ -719,7 +715,7 @@
 
             "شاشة": "شاشة", "screen": "شاشة", "display": "شاشة", "lcd": "شاشة",
             "بطارية": "بطارية", "battery": "بطارية", "بطاريه": "بطارية",
-            "ظهرية": "ظهرية", "back cover": "ظهرية", "back": "ظهرية",
+            "ضهرية": "ضهرية", "ظهرية": "ضهرية", "back cover": "ضهرية", "back": "ضهرية", "ظهر": "ضهرية", "ضهر": "ضهرية",
             "فلاتة ربط": "فلاتة ربط", "flex ribbon": "فلاتة ربط",
             "فلاتة باور": "فلاتة باور", "power flex": "فلاتة باور",
             "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن",
@@ -728,7 +724,7 @@
             "سماعة خارجية": "سماعة خارجية", "buzzer": "سماعة خارجية"
         };
 
-        const subCategoriesList = ["شاشة", "بطارية", "ظهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
+        const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
         const merchantsList = [
             { name: "تاجر رقم 1", price: "250ج" },
@@ -874,12 +870,11 @@
             let detectedModelNum = numberMatch ? convertNumbers(numberMatch[0]) : null;
             let foundCount = 0;
 
-            if (detectedBrand || detectedCategory || detectedModelNum || normalizedQuery.length > 0) {
+            if (detectedBrand || detectedCategory || detectedModelNum) {
                 allBrands.forEach(brand => {
                     if (detectedBrand && brand !== detectedBrand) return;
 
-                    let isBrandOnlyMatch = (normalizeText(brand).includes(normalizedQuery) || (detectedBrand && brand === detectedBrand)) && !detectedModelNum && !detectedCategory;
-                    let limit = isBrandOnlyMatch ? 10 : 100;
+                    let limit = 100;
 
                     for (let i = 1; i <= limit; i++) {
                         let modelNumStr = i.toString();
@@ -898,7 +893,7 @@
                             };
                             listEl.appendChild(item);
                             foundCount++;
-                        } else {
+                        } else if (detectedModelNum || detectedBrand) {
                             let item = document.createElement('div');
                             item.className = 'search-result-item';
                             item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
@@ -910,13 +905,13 @@
                             foundCount++;
                         }
 
-                        if (!detectedModelNum && foundCount >= 15) break;
+                        if (foundCount >= 20) break;
                     }
                 });
             }
 
             if (foundCount === 0) {
-                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}"</div>`;
+                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}" (يرجى كتابة اسم الماركة أو رقم الموديل)</div>`;
             }
         }
 
