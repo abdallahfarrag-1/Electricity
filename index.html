@@ -278,16 +278,45 @@
             cursor: pointer;
         }
 
+        /* زر الميكروفون الممتلئ ليملأ خانة البحث بالكامل */
+        .mic-full-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0052D4, #4364F7);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 82, 212, 0.25);
+            transition: all 0.3s;
+        }
+
+        .mic-full-btn:hover {
+            background: linear-gradient(135deg, #003fa7, #2c4ec9);
+            transform: translateY(-2px);
+        }
+
+        .mic-full-btn i {
+            font-size: 20px;
+            color: white;
+        }
+
         /* مؤشر الاستماع للصوت */
         .listening-active {
-            color: #d32f2f !important;
+            background: linear-gradient(135deg, #d32f2f, #e53935) !important;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.99); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .brands-title {
@@ -580,19 +609,19 @@
                 <!-- البحث بالكاميرا -->
                 <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
                     <i class="fa-solid fa-camera"></i>
-                    <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
+                    <input type="text" placeholder="ابحث" readonly style="cursor: pointer;">
                 </div>
 
-                <!-- البحث بالصوت -->
-                <div class="search-bar">
-                    <i class="fa-solid fa-microphone" id="micIcon" onclick="startVoiceSearch()" title="اضغط للتحدث"></i>
-                    <input type="text" id="voiceSearchInput" placeholder="البحث الذكي (تجاهل الفراغات والأخطاء)..." oninput="handleGlobalSearch(this.value)">
-                </div>
+                <!-- زر البحث الصوتي الممتلئ (يملأ الخانة بالكامل) -->
+                <button class="mic-full-btn" id="micBtn" onclick="startVoiceSearch()">
+                    <i class="fa-solid fa-microphone" id="micIcon"></i>
+                    <span id="micBtnText">بحث صوتي</span>
+                </button>
 
-                <!-- البحث بالكتابة -->
+                <!-- البحث بالكتابة العادية -->
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="textSearchInput" placeholder="ابحث تقريبياً (مثال: ايف 1 أو شاش سام)..." oninput="handleGlobalSearch(this.value)">
+                    <input type="text" id="textSearchInput" placeholder="ابحث" oninput="handleGlobalSearch(this.value)">
                 </div>
             </div>
 
@@ -682,10 +711,9 @@
 
         const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
         
-        // قاموس الترجمة المتقدم (يشمل الأخطاء الإملائية الشائعة والمعالجة التقريبية)
         const translationDictionary = {
             // Apple
-            "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple", "ايف": "Apple", "اوبل": "Apple",
+            "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple", "ايف": "Apple",
             // Samsung
             "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung", "سامسونك": "Samsung", "سام": "Samsung",
             // Xiaomi
@@ -705,16 +733,16 @@
             // Nokia
             "nokia": "Nokia", "نوكيا": "Nokia", "نوكي": "Nokia",
 
-            // قطع الغيار (مع دعم الأخطاء الإملائية والتقريب مثل شاش، بطار، إلخ)
+            // قطع الغيار
             "شاشة": "شاشة", "screen": "شاشة", "display": "شاشة", "lcd": "شاشة", "شاش": "شاشة",
             "بطارية": "بطارية", "battery": "بطارية", "بطاريه": "بطارية", "بطار": "بطارية",
             "ظهرية": "ظهرية", "back cover": "ظهرية", "back": "ظهرية", "ظهر": "ظهرية",
             "فلاتة ربط": "فلاتة ربط", "flex ribbon": "فلاتة ربط", "فلاته ربط": "فلاتة ربط",
             "فلاتة باور": "فلاتة باور", "power flex": "فلاتة باور", "فلاته باور": "فلاتة باور",
-            "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن", "charging port": "فلاتة شحن", "فلاته شحن": "فلاتة شحن",
+            "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن", "فلاته شحن": "فلاتة شحن",
             "مدل": "مدل",
             "فريم": "فريم", "frame": "فريم",
-            "سماعة داخلية مكالمات": "سماعة داخلية مكالمات", "ear speaker": "سماعة داخلية مكالمات", "speaker": "سماعة داخلية مكالمات", "سماعه": "سماعة داخلية مكالمات",
+            "سماعة داخلية مكالمات": "سماعة داخلية مكالمات", "ear speaker": "سماعة داخلية مكالمات", "سماعه": "سماعة داخلية مكالمات",
             "سماعة خارجية": "سماعة خارجية", "buzzer": "سماعة خارجية", "loudspeaker": "سماعة خارجية"
         };
 
@@ -783,7 +811,6 @@
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
             document.getElementById('textSearchInput').value = '';
-            document.getElementById('voiceSearchInput').value = '';
             document.getElementById('global-search-results').style.display = 'none';
             document.getElementById('brandsGrid').style.display = 'grid';
             document.getElementById('brandsHeaderTitle').style.display = 'block';
@@ -796,17 +823,32 @@
             window.scrollTo(0, 0);
         }
 
-        // دالة تنظيف النص: إزالة الفراغات الزائدة، توحيد الهمزات (أ، إ، آ -> ا)، وتاء التأنيث (هـ -> ت)
-        function normalizeText(text) {
-            if (!text) return "";
-            return text.toLowerCase()
-                       .replace(/\s+/g, '') // تجاهل الفراغات تماماً
-                       .replace(/أ|إ|آ/g, 'ا')
-                       .replace(/ة/g, 'ه')
-                       .replace(/ى/g, 'ي');
+        // دالة تحويل الأرقام المشرقية (العربية) إلى إنجليزية والعكس لتوافق البحث
+        function convertNumbers(inputStr) {
+            if (!inputStr) return "";
+            const arabicNumbers = /[\u0660-\u0669]/g;
+            const englishNumbers = /[0-9]/g;
+            
+            let converted = inputStr.replace(arabicNumbers, function(d) {
+                return String.fromCharCode(d.charCodeAt(0) - 1632);
+            });
+            
+            // إضافة النص كما هو مع دعم الفهم العكسي أيضاً
+            return converted;
         }
 
-        /* --- محرك البحث التقريبي المتقدم (تجاهل الفراغات والأخطاء والبحث الجزئي) --- */
+        // دالة تنظيف النص وتجاهل الفراغات والأخطاء
+        function normalizeText(text) {
+            if (!text) return "";
+            let cleaned = convertNumbers(text);
+            return cleaned.toLowerCase()
+                          .replace(/\s+/g, '') 
+                          .replace(/أ|إ|آ/g, 'ا')
+                          .replace(/ة/g, 'ه')
+                          .replace(/ى/g, 'ي');
+        }
+
+        // محرك البحث التقريبي المتقدم
         function handleGlobalSearch(query) {
             let cleanRawQuery = query.trim();
             let resultsContainer = document.getElementById('global-search-results');
@@ -815,9 +857,7 @@
             let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
 
             let textInput = document.getElementById('textSearchInput');
-            let voiceInput = document.getElementById('voiceSearchInput');
             if (textInput.value !== query) textInput.value = query;
-            if (voiceInput.value !== query) voiceInput.value = query;
 
             if (cleanRawQuery === "") {
                 resultsContainer.style.display = 'none';
@@ -836,7 +876,6 @@
             let detectedBrand = null;
             let detectedCategory = null;
 
-            // 1. البحث بالقاموس مع دعم التطبيع والتقريب والتصحيح الإملائي
             for (let key in translationDictionary) {
                 let normKey = normalizeText(key);
                 if (normalizedQuery.includes(normKey)) {
@@ -849,7 +888,6 @@
                 }
             }
 
-            // 2. فحص تقريبي للماركات في حال لم تطابق القاموس حرفياً ولكن تحتوي على حروف قريبة
             if (!detectedBrand) {
                 allBrands.forEach(brand => {
                     let normBrand = normalizeText(brand);
@@ -859,20 +897,16 @@
                 });
             }
 
-            // 3. استخراج رقم الموديل حتى لو كان ملاصقاً للكلام بدون فراغات (مثل: apple5 أو ايفون12)
-            let numberMatch = cleanRawQuery.match(/\d+/);
-            let detectedModelNum = numberMatch ? numberMatch[0] : null;
+            let numberMatch = cleanRawQuery.match(/[\d\u0660-\u0669]+/);
+            let detectedModelNum = numberMatch ? convertNumbers(numberMatch[0]) : null;
 
             let foundCount = 0;
 
-            // بناء النتائج
             if (detectedBrand || detectedCategory || detectedModelNum || normalizedQuery.length > 0) {
                 allBrands.forEach(brand => {
                     if (detectedBrand && brand !== detectedBrand) return;
 
-                    // لو المستخدم كتب اسم ماركة فقط بدون رقم موديل وبدون قطعة غيار، نعرض أول موديلات لها تقريبياً
                     let isBrandOnlyMatch = (normalizeText(brand).includes(normalizedQuery) || (detectedBrand && brand === detectedBrand)) && !detectedModelNum && !detectedCategory;
-
                     let limit = isBrandOnlyMatch ? 10 : 100;
 
                     for (let i = 1; i <= limit; i++) {
@@ -910,10 +944,11 @@
             }
 
             if (foundCount === 0) {
-                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}". جرب الكتابة بشكل تقريبي مثل: ايف 1 أو شاش سام</div>`;
+                listEl.innerHTML = `<div style="padding: 15px; text-align: center; color: #666; font-size: 14px;">لم يتم العثور على نتائج مطابقة لـ "${query}"</div>`;
             }
         }
 
+        // البحث الصوتي الذكي ونزول الكلام مباشرة في خانة الكتابة
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -926,24 +961,35 @@
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
+            let micBtn = document.getElementById('micBtn');
             let micIcon = document.getElementById('micIcon');
-            micIcon.classList.add('listening-active');
+            let micBtnText = document.getElementById('micBtnText');
+
+            micBtn.classList.add('listening-active');
+            micBtnText.innerText = "جاري الاستماع... تحدث الآن";
 
             recognition.start();
 
             recognition.onresult = function(event) {
                 let speechResult = event.results[0][0].transcript;
+                
+                // نزول الكلام المنطوق مباشرة فى خانة الكتابة
+                document.getElementById('textSearchInput').value = speechResult;
                 handleGlobalSearch(speechResult);
-                micIcon.classList.remove('listening-active');
+
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
             };
 
             recognition.onerror = function(event) {
                 alert("لم يتم التعرف على الصوت بشكل واضح، حاول مرة أخرى.");
-                micIcon.classList.remove('listening-active');
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
             };
 
             recognition.onend = function() {
-                micIcon.classList.remove('listening-active');
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
             };
         }
 
