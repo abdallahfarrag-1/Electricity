@@ -11,9 +11,11 @@
     <!-- مكتبة Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // الطريقة الصحيحة لتعريف عميل Supabase للإصدار الثاني
+        const { createClient } = window.supabase;
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </script>
 
     <style>
@@ -407,25 +409,6 @@
             margin-bottom: 15px;
         }
 
-        .search-result-item {
-            background: #ffffff;
-            border: 1px solid #0052D4;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #0052D4;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,82,212,0.05);
-        }
-
-        .search-result-item:hover {
-            background-color: #f0f4ff;
-        }
-
         .page-body-content {
             max-width: 600px;
             margin: 0 auto;
@@ -616,13 +599,11 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <label for="phone">رقم الهاتف</label>
-                    <!-- تم تعديل النوع إلى text بناءً على طلبك -->
                     <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
                 </div>
 
                 <div class="input-group">
                     <label for="password">رمز المرور</label>
-                    <!-- تم تعديل النوع إلى text بناءً على طلبك -->
                     <input type="text" id="password" name="password" placeholder="أدخل رمز المرور" required>
                 </div>
 
@@ -633,7 +614,6 @@
                 </div>
 
                 <button type="submit" class="btn-login">تسجيل الدخول</button>
-                <!-- زر إنشاء حساب جديد تحت زر تسجيل الدخول -->
                 <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
             </form>
 
@@ -644,7 +624,7 @@
     </div>
 
 
-    <!-- ================= الجزء العلوي الثابت المُصغر العام ================= -->
+    <!-- ================= التطبيق الأساسي ================= -->
     <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
         
         <div class="sticky-header-container">
@@ -678,7 +658,7 @@
 
                     <div class="search-bar">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleGlobalSearch(this.value)">
+                        <input type="text" id="textSearchInput" placeholder="ابحث...">
                     </div>
 
                     <div class="quick-nav-grid">
@@ -692,27 +672,22 @@
                         </div>
                     </div>
                 </div>
-
-                <div id="global-search-results">
-                    <div class="brands-title" style="margin-bottom: 4px; font-size: 14px;">نتائج البحث المتقدم</div>
-                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
-                </div>
             </div>
         </div>
 
         <div id="main-page" class="page-body-content">
             <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
             <div class="brands-grid" id="brandsGrid">
-                <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
-                <div class="brand-card" data-name="Samsung" onclick="openModels('Samsung')">Samsung</div>
-                <div class="brand-card" data-name="Xiaomi" onclick="openModels('Xiaomi')">Xiaomi</div>
-                <div class="brand-card" data-name="Infinix" onclick="openModels('Infinix')">Infinix</div>
-                <div class="brand-card" data-name="Oppo" onclick="openModels('Oppo')">Oppo</div>
-                <div class="brand-card" data-name="Huawei" onclick="openModels('Huawei')">Huawei</div>
-                <div class="brand-card" data-name="Vivo" onclick="openModels('Vivo')">Vivo</div>
-                <div class="brand-card" data-name="Honor" onclick="openModels('Honor')">Honor</div>
-                <div class="brand-card" data-name="htc" onclick="openModels('htc')">htc</div>
-                <div class="brand-card" data-name="Nokia" onclick="openModels('Nokia')">Nokia</div>
+                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
 
@@ -743,26 +718,7 @@
     <div id="aiCameraModal">
         <div class="ai-modal-content">
             <h3>📱 التعرف على نوع الهاتف</h3>
-            
-            <div style="text-align: right; margin-bottom: 8px;">
-                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
-            </div>
-
-            <div style="text-align: right; margin-bottom: 4px; font-size: 12px; font-weight: bold;">اختر الصورة:</div>
-            <div class="ai-buttons-group">
-                <button class="ai-btn-action" onclick="document.getElementById('aiCameraInput').click()">📸 التقاط صورة</button>
-                <button class="ai-btn-action gallery" onclick="document.getElementById('aiGalleryInput').click()">📁 المعرض</button>
-            </div>
-
-            <input type="file" id="aiCameraInput" accept="image/*" capture="environment" style="display: none;">
-            <input type="file" id="aiGalleryInput" accept="image/*" style="display: none;">
-            
-            <img id="aiPreview" alt="معاينة الصورة">
-            <div id="aiImageInfo"></div>
-
-            <button class="analyze-ai-btn" onclick="analyzePhone()">التعرف على الهاتف</button>
-            <div id="aiResult"></div>
-
+            <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px; margin-bottom: 8px;">
             <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
         </div>
     </div>
@@ -775,7 +731,7 @@
 
         const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
-        // --- دالة تسجيل الدخول المربوطة بـ Supabase ---
+        // --- تسجيل الدخول عبر Supabase ---
         async function handleLogin(event) {
             event.preventDefault();
             let phoneInput = document.getElementById('phone').value.trim();
@@ -790,7 +746,7 @@
                     .maybeSingle();
 
                 if (error) {
-                    alert('خطأ في الاتصال بقاعدة البيانات: ' + error.message);
+                    alert('خطأ في قاعدة البيانات: ' + error.message);
                     return;
                 }
 
@@ -808,18 +764,17 @@
             }
         }
 
-        // --- دالة إنشاء حساب جديد المربوطة بـ Supabase مع رسائل توضيحية كاملة ---
+        // --- إنشاء حساب جديد عبر Supabase ---
         async function handleRegister() {
             let phoneInput = document.getElementById('phone').value.trim();
             let passwordInput = document.getElementById('password').value.trim();
 
             if (!phoneInput || !passwordInput) {
-                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً لإنشاء الحساب.');
+                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً.');
                 return;
             }
 
             try {
-                // التحقق مما إذا كان المستخدم موجود مسبقاً
                 let { data: existingUser, error: searchError } = await supabase
                     .from('users')
                     .select('*')
@@ -827,7 +782,7 @@
                     .maybeSingle();
 
                 if (searchError) {
-                    alert('خطأ أثناء البحث عن الحساب: ' + searchError.message);
+                    alert('خطأ أثناء البحث: ' + searchError.message);
                     return;
                 }
 
@@ -836,18 +791,17 @@
                     return;
                 }
 
-                // إدخال الحساب الجديد في جدول users
                 let { error: insertError } = await supabase
                     .from('users')
                     .insert([{ phone: phoneInput, password: passwordInput }]);
 
                 if (insertError) {
-                    alert('خطأ أثناء إنشاء الحساب (تأكد من إعدادات الحماية RLS): ' + insertError.message);
+                    alert('خطأ أثناء إنشاء الحساب (تأكد من إعدادات RLS): ' + insertError.message);
                 } else {
                     alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
                 }
             } catch (err) {
-                alert('حدث خطأ غير متوقع أثناء الاتصال: ' + err.message);
+                alert('حدث خطأ غير متوقع: ' + err.message);
             }
         }
 
@@ -875,9 +829,7 @@
         function toggleMenu() {
             if (isGuestUser) return;
             let menu = document.getElementById('dropdownMenu');
-            if (menu) {
-                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-            }
+            if (menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
         function closeAllMenus() {
@@ -896,10 +848,6 @@
             closeAllMenus();
             hideAllPages();
             document.getElementById('main-page').style.display = 'block';
-            document.getElementById('textSearchInput').value = '';
-            document.getElementById('global-search-results').style.display = 'none';
-            document.getElementById('brandsGrid').style.display = 'grid';
-            document.getElementById('brandsHeaderTitle').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
@@ -907,7 +855,6 @@
             activeBrandName = brandName;
             closeAllMenus();
             hideAllPages();
-            
             document.getElementById('models-page').style.display = 'block';
             document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
             
@@ -915,27 +862,13 @@
             container.innerHTML = '';
 
             let sampleModels = [`${brandName} Pro 1`, `${brandName} Pro 2`, `${brandName} Ultra`];
-            
             sampleModels.forEach(model => {
-                let itemWrapper = document.createElement('div');
-                itemWrapper.className = 'model-item-wrapper';
-                
-                let box = document.createElement('div');
+                let box = document.div = document.createElement('div');
                 box.className = 'horizontal-box';
-                box.innerHTML = `
-                    <span class="editable-model-text">${model}</span>
-                    <i class="fa-solid fa-chevron-left"></i>
-                `;
-                box.onclick = (e) => {
-                    if (!e.target.classList.contains('editable-model-text')) {
-                        openSpareParts(brandName, model);
-                    }
-                };
-                
-                itemWrapper.appendChild(box);
-                container.appendChild(itemWrapper);
+                box.innerHTML = `<span>${model}</span><i class="fa-solid fa-chevron-left"></i>`;
+                box.onclick = () => openSpareParts(brandName, model);
+                container.appendChild(box);
             });
-            
             window.scrollTo(0, 0);
         }
 
@@ -951,13 +884,9 @@
             subCategoriesList.forEach(part => {
                 let subBox = document.createElement('div');
                 subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `
-                    <span>${part}</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                `;
+                subBox.innerHTML = `<span>${part}</span><i class="fa-solid fa-chevron-down"></i>`;
                 container.appendChild(subBox);
             });
-            
             window.scrollTo(0, 0);
         }
 
@@ -978,16 +907,6 @@
 
         function startVoiceSearch() {
             alert('خاصية البحث الصوتي قيد التفعيل...');
-        }
-
-        function analyzePhone() {
-            let apiKey = document.getElementById('aiApiKey').value.trim();
-            if (!apiKey) {
-                alert('يرجى إدخال مفتاح الـ API أولاً.');
-                return;
-            }
-            document.getElementById('aiResult').style.display = 'block';
-            document.getElementById('aiResult').innerText = 'جاري تحليل الصورة والتعرف على الهاتف...';
         }
     </script>
 </body>
