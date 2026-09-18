@@ -251,7 +251,6 @@
             background-color: #ffebee;
         }
 
-        /* --- نظام الثبات العلوي المُصغر (Sticky Header Wrapper) --- */
         .sticky-header-container {
             position: sticky;
             top: 0;
@@ -425,14 +424,6 @@
 
         .search-result-item:hover {
             background-color: #f0f4ff;
-        }
-
-        .search-result-type {
-            font-size: 11px;
-            background: #e2e8f0;
-            color: #475569;
-            padding: 2px 6px;
-            border-radius: 4px;
         }
 
         .page-body-content {
@@ -625,11 +616,13 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <label for="phone">رقم الهاتف</label>
+                    <!-- تم تعديل النوع إلى text بناءً على طلبك -->
                     <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
                 </div>
 
                 <div class="input-group">
                     <label for="password">رمز المرور</label>
+                    <!-- تم تعديل النوع إلى text بناءً على طلبك -->
                     <input type="text" id="password" name="password" placeholder="أدخل رمز المرور" required>
                 </div>
 
@@ -640,6 +633,7 @@
                 </div>
 
                 <button type="submit" class="btn-login">تسجيل الدخول</button>
+                <!-- زر إنشاء حساب جديد تحت زر تسجيل الدخول -->
                 <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
             </form>
 
@@ -787,25 +781,34 @@
             let phoneInput = document.getElementById('phone').value.trim();
             let passwordInput = document.getElementById('password').value.trim();
 
-            let { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('phone', phoneInput)
-                .eq('password', passwordInput)
-                .single();
+            try {
+                let { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', phoneInput)
+                    .eq('password', passwordInput)
+                    .maybeSingle();
 
-            if (data) {
-                currentUserId = data.phone;
-                isGuestUser = false;
-                updateUserInterface();
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('app-wrapper').style.display = 'flex';
-            } else {
-                alert('رقم الهاتف أو رمز المرور غير صحيح أو غير مسجل في قاعدة البيانات!');
+                if (error) {
+                    alert('خطأ في الاتصال بقاعدة البيانات: ' + error.message);
+                    return;
+                }
+
+                if (data) {
+                    currentUserId = data.phone;
+                    isGuestUser = false;
+                    updateUserInterface();
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('app-wrapper').style.display = 'flex';
+                } else {
+                    alert('رقم الهاتف أو رمز المرور غير صحيح أو غير مسجل!');
+                }
+            } catch (err) {
+                alert('حدث خطأ غير متوقع: ' + err.message);
             }
         }
 
-        // --- دالة إنشاء حساب جديد المربوطة بـ Supabase ---
+        // --- دالة إنشاء حساب جديد المربوطة بـ Supabase مع رسائل توضيحية كاملة ---
         async function handleRegister() {
             let phoneInput = document.getElementById('phone').value.trim();
             let passwordInput = document.getElementById('password').value.trim();
@@ -815,27 +818,36 @@
                 return;
             }
 
-            // التحقق مما إذا كان المستخدم موجود مسبقاً
-            let { data: existingUser } = await supabase
-                .from('users')
-                .select('*')
-                .eq('phone', phoneInput)
-                .single();
+            try {
+                // التحقق مما إذا كان المستخدم موجود مسبقاً
+                let { data: existingUser, error: searchError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', phoneInput)
+                    .maybeSingle();
 
-            if (existingUser) {
-                alert('رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول مباشرة.');
-                return;
-            }
+                if (searchError) {
+                    alert('خطأ أثناء البحث عن الحساب: ' + searchError.message);
+                    return;
+                }
 
-            // إدخال الحساب الجديد في جدول users
-            let { error } = await supabase
-                .from('users')
-                .insert([{ phone: phoneInput, password: passwordInput }]);
+                if (existingUser) {
+                    alert('رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول مباشرة.');
+                    return;
+                }
 
-            if (error) {
-                alert('حدث خطأ أثناء إنشاء الحساب: ' + error.message);
-            } else {
-                alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
+                // إدخال الحساب الجديد في جدول users
+                let { error: insertError } = await supabase
+                    .from('users')
+                    .insert([{ phone: phoneInput, password: passwordInput }]);
+
+                if (insertError) {
+                    alert('خطأ أثناء إنشاء الحساب (تأكد من إعدادات الحماية RLS): ' + insertError.message);
+                } else {
+                    alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
+                }
+            } catch (err) {
+                alert('حدث خطأ غير متوقع أثناء الاتصال: ' + err.message);
             }
         }
 
