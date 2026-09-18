@@ -821,7 +821,7 @@
             <h3>📱 التعرف على نوع الهاتف</h3>
             
             <div style="text-align: right; margin-bottom: 8px;">
-                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AIza)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
+                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
             </div>
 
             <div style="text-align: right; margin-bottom: 4px; font-size: 12px; font-weight: bold;">اختر الصورة:</div>
@@ -1101,6 +1101,12 @@
                 return;
             }
 
+            // التحقق من أن المفتاح يبدأ بالبادئة الصحيحة AQ
+            if (!apiKey.startsWith('AQ')) {
+                alert('تنبيه: مفاتيح الـ API الجديدة يجب أن تبدأ بالبادئة AQ.');
+                return;
+            }
+
             if (!selectedFile || !processedBase64) {
                 alert('يرجى التقاط صورة أو اختيار صورة من المعرض أولاً.');
                 return;
@@ -1110,7 +1116,8 @@
             resultDiv.innerText = 'جاري المعالجة...';
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                // تحديث النموذج إلى gemini-3.6-flash بناءً على طلبك
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
 المطلوب إرجاع النتيجة بالتنسيق التالي حرفياً وتحت بعضها تماماً بدون أي تفاصيل أخرى:
