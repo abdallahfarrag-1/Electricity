@@ -3,145 +3,1513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول وانشاء حساب</title>
+    <title>Electricity</title>
+    <!-- خط كاييرو وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { 
-            font-family: Tahoma, sans-serif; 
-            background: #f4f4f9; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
         }
-        .card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            width: 300px; 
-            text-align: center; 
+
+        body {
+            background-color: #f4f7fc;
+            color: #333;
         }
-        input { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 10px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            box-sizing: border-box; 
+
+        /* --- 1. واجهة تسجيل الدخول --- */
+        #login-page {
+            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        button { 
-            width: 100%; 
-            padding: 10px; 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            margin-top: 5px; 
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
         }
-        button:hover { 
-            background: #0056b3; 
+
+        .logo-area h1 {
+            color: #0052D4;
+            font-size: 32px;
+            margin-bottom: 5px;
+            font-weight: 700;
         }
-        .login-btn { 
-            background: #28a745; 
+
+        .logo-area p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
         }
-        .login-btn:hover { 
-            background: #218838; 
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
         }
-        .guest-btn { 
-            background: #6c757d; 
-            margin-top: 10px; 
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
         }
-        .guest-btn:hover { 
-            background: #5a6268; 
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            text-align: right;
+            direction: rtl;
+            transition: border-color 0.3s;
         }
-        .error { 
-            color: red; 
-            font-size: 14px; 
-            margin-top: 10px; 
+
+        .input-group input:focus {
+            border-color: #0052D4;
+            box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .btn-login {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: #003fa7;
+        }
+
+        .btn-register {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btn-register:hover {
+            background-color: #059669;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 15px 0;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .divider::before { margin-left: 10px; }
+        .divider::after { margin-right: 10px; }
+
+        .btn-guest {
+            background-color: #f3f4f6;
+            color: #0052D4;
+            border: 1px solid #0052D4;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-guest:hover {
+            background-color: #ebf5ff;
+        }
+
+
+        /* --- الشريط العلوي المشترك (Navbar) --- */
+        .navbar {
+            background-color: #0052D4;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-right, .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .user-id {
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            background-color: white;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            width: 160px;
+            z-index: 1000;
+        }
+
+        .dropdown-menu button {
+            width: 100%;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            text-align: right;
+            font-size: 13px;
+            color: #d32f2f;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu button:hover {
+            background-color: #ffebee;
+        }
+
+
+        /* --- نظام الثبات العلوي المُصغر (Sticky Header Wrapper) --- */
+        .sticky-header-container {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background-color: #f4f7fc;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 8px 12px;
+            width: 100%;
+        }
+
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .search-actions-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-compact-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #0052D4, #4364F7);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 82, 212, 0.2);
+            transition: all 0.3s;
+        }
+
+        .action-compact-btn:hover {
+            background: linear-gradient(135deg, #003fa7, #2c4ec9);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 12px;
+            gap: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            background: transparent;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .search-bar i {
+            color: #0052D4;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .quick-nav-card {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-nav-card:hover {
+            border-color: #0052D4;
+            background-color: #f0f4ff;
+        }
+
+        .quick-nav-card i {
+            font-size: 14px;
+            color: #0052D4;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .quick-nav-card span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+        }
+
+        .listening-active {
+            background: linear-gradient(135deg, #d32f2f, #e53935) !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.99); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .brands-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0052D4;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding-bottom: 30px;
+            direction: ltr;
+        }
+
+        .brand-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .brand-card:hover {
+            background-color: #0052D4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 82, 212, 0.2);
+        }
+
+        #global-search-results {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .search-result-item {
+            background: #ffffff;
+            border: 1px solid #0052D4;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0052D4;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,82,212,0.05);
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #f0f4ff;
+        }
+
+        .search-result-type {
+            font-size: 11px;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .page-body-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #0052D4;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 30px;
+        }
+
+        .model-item-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .horizontal-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .horizontal-box:hover {
+            border-color: #0052D4;
+            background-color: #f8fafc;
+        }
+
+        .editable-model-text {
+            outline: none;
+            flex: 1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: text;
+        }
+        .editable-model-text:focus {
+            background-color: #f0f4ff;
+            border: 1px dashed #0052D4;
+        }
+
+        .sub-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sub-horizontal-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sub-horizontal-box:hover {
+            background-color: #f8fafc;
+            border-color: #0052D4;
+        }
+
+        .merchants-container {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 12px;
+            margin-top: 2px;
+        }
+
+        .merchant-row-box {
+            background: #ffffff;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .merchant-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .merchant-name {
+            color: #0052D4;
+        }
+
+        .merchant-price {
+            color: #16a34a;
+        }
+
+        .merchant-order-btn {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .merchant-order-btn:hover {
+            background-color: #003fa7;
+        }
+
+        /* --- نافذة بحث الكاميرا الذكية (Modal) --- */
+        #aiCameraModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+        .ai-modal-content {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .ai-modal-content h3 {
+            color: #0052D4;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .ai-buttons-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .ai-btn-action {
+            flex: 1;
+            background-color: #34a853;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .ai-btn-action.gallery {
+            background-color: #fbbc05;
+            color: #202124;
+        }
+        #aiPreview {
+            max-width: 100%;
+            max-height: 160px;
+            margin-top: 12px;
+            border-radius: 6px;
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #aiImageInfo {
+            margin-top: 8px;
+            padding: 6px;
+            background: #f1f3f4;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #3c4043;
+            text-align: right;
+            display: none;
+        }
+        #aiResult {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            background: #e8f0fe;
+            color: #1967d2;
+            font-weight: bold;
+            display: none;
+            text-align: right;
+            white-space: pre-line;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .close-modal-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .analyze-ai-btn {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>حسابي</h2>
-        
-        <!-- حقول الإدخال -->
-        <input type="text" id="phone" placeholder="رقم الهاتف">
-        <input type="password" id="password" placeholder="كلمة السر">
-        
-        <!-- الأزرار -->
-        <button onclick="signUp()">إنشاء حساب</button>
-        <button class="login-btn" onclick="login()">تسجيل الدخول</button>
-        <button class="guest-btn" onclick="loginAsGuest()">دخول كزائر</button>
-        
-        <div id="msg" class="error"></div>
+    <!-- ================= واجهة تسجيل الدخول ================= -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="logo-area">
+                <h1>Electricity</h1>
+                <p>مرحباً بك، يرجى تسجيل الدخول أو إنشاء حساب</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">رمز المرور</label>
+                    <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
+                </div>
+
+                <button type="submit" class="btn-login">تسجيل الدخول</button>
+                <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
+            </form>
+
+            <div class="divider">أو</div>
+
+            <button type="button" class="btn-guest" onclick="handleGuest()">الدخول كزائر</button>
+        </div>
     </div>
 
-    <!-- كود الجافاسكريبت وربط Supabase -->
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // تم وضع بيانات مشروعك هنا بشكل مباشر
-        const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co'       
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWF5b210Y3dxbGdya252Z2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MjIyODIsImV4cCI6MjEwNTI5ODI4Mn0.pBgmAUQ4K9xCXludssLVIk5enj67QvLG7AcLbd0BZlo'   
-        const supabase = createClient(supabaseUrl, supabaseKey)
+    <!-- ================= الجزء العلوي الثابت المُصغر العام ================= -->
+    <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
+        
+        <div class="sticky-header-container">
+            <header class="navbar">
+                <div class="nav-right">
+                    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <span class="brand-title" onclick="goToMain()">Electricity</span>
+                </div>
+                <div class="nav-left">
+                    <span class="user-id" id="userDisplayId">102938</span>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+                </div>
+            </header>
 
-        // دالة إنشاء الحساب وحفظ البيانات في جدول users
-        window.signUp = async function() {
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const msg = document.getElementById('msg');
-            msg.innerText = "";
+            <div class="content-container">
+                <div class="search-section">
+                    <div class="search-actions-row">
+                        <button class="action-compact-btn" onclick="openCameraSearch()">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>بحث كاميرا</span>
+                        </button>
+                        <button class="action-compact-btn" id="micBtn" onclick="startVoiceSearch()">
+                            <i class="fa-solid fa-microphone" id="micIcon"></i>
+                            <span id="micBtnText">بحث صوتي</span>
+                        </button>
+                    </div>
 
-            if(!phone || !password) {
-                msg.innerText = "برجاء إدخال رقم الهاتف وكلمة السر!";
-                return;
-            }
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleGlobalSearch(this.value)">
+                    </div>
 
-            const { data, error } = await supabase
-                .from('users')
-                .insert([{ phone: phone, password: password }]);
+                    <div class="quick-nav-grid">
+                        <div class="quick-nav-card" onclick="goToMain()">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                            <span>الماركات</span>
+                        </div>
+                        <div class="quick-nav-card" onclick="goToCompatibility()">
+                            <i class="fa-solid fa-shuffle"></i>
+                            <span>التوافقات</span>
+                        </div>
+                    </div>
+                </div>
 
-            if (error) {
-                msg.innerText = "خطأ: " + error.message;
-            } else {
-                alert("تم إنشاء الحساب بنجاح!");
-                window.location.href = 'welcome.html';
-            }
-        }
+                <div id="global-search-results">
+                    <div class="brands-title" style="margin-bottom: 4px; font-size: 14px;">نتائج البحث المتقدم</div>
+                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
+            </div>
+        </div>
 
-        // دالة تسجيل الدخول والتحقق من البيانات
-        window.login = async function() {
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const msg = document.getElementById('msg');
-            msg.innerText = "";
+        <!-- ================= محتوى الصفحات المتغيرة ================= -->
+        <div id="main-page" class="page-body-content">
+            <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
+            <div class="brands-grid" id="brandsGrid">
+                <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" data-name="Samsung" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" data-name="Xiaomi" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" data-name="Infinix" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" data-name="Oppo" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" data-name="Huawei" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" data-name="Vivo" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" data-name="Honor" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" data-name="htc" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" data-name="Nokia" onclick="openModels('Nokia')">Nokia</div>
+            </div>
+        </div>
 
-            if(!phone || !password) {
-                msg.innerText = "برجاء إدخال رقم الهاتف وكلمة السر!";
-                return;
-            }
+        <div id="models-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
+            <div class="brands-title" id="modelsPageTitle">الموديلات</div>
+            <div class="list-container" id="modelsListContainer"></div>
+        </div>
 
-            const { data, error } = await supabase
+        <div id="spare-parts-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
+            <div class="list-container" id="sparePartsListContainer"></div>
+        </div>
+
+        <div id="compatibility-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+            <div class="brands-title">التوافقات</div>
+            <div class="list-container">
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #d1d5db; color: #555; font-size: 14px;">
+                    قسم التوافقات قيد التجهيز لعرض قطع الغيار المتوافقة بين الموديلات المختلفة.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= نافذة بحث الكاميرا ================= -->
+    <div id="aiCameraModal">
+        <div class="ai-modal-content">
+            <h3>📱 التعرف على نوع الهاتف</h3>
+            
+            <div style="text-align: right; margin-bottom: 8px;">
+                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AIza)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
+            </div>
+
+            <div style="text-align: right; margin-bottom: 4px; font-size: 12px; font-weight: bold;">اختر الصورة:</div>
+            <div class="ai-buttons-group">
+                <button class="ai-btn-action" onclick="document.getElementById('aiCameraInput').click()">📸 التقاط صورة</button>
+                <button class="ai-btn-action gallery" onclick="document.getElementById('aiGalleryInput').click()">📁 المعرض</button>
+            </div>
+
+            <input type="file" id="aiCameraInput" accept="image/*" capture="environment" style="display: none;">
+            <input type="file" id="aiGalleryInput" accept="image/*" style="display: none;">
+            
+            <img id="aiPreview" alt="معاينة الصورة">
+            <div id="aiImageInfo"></div>
+
+            <button class="analyze-ai-btn" onclick="analyzePhone()">التعرف على الهاتف</button>
+            <div id="aiResult"></div>
+
+            <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
+        </div>
+    </div>
+
+
+    <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
+    <script>
+        // إعدادات اتصال Supabase بالمفتاح الجديد
+        const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const supabaseKey = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
+        
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUserId = "102938";
+        let isGuestUser = false;
+        let activeBrandName = "";
+        let activeModelName = "";
+
+        let selectedFile = null;
+        let processedBase64 = null;
+
+        const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
+        
+        const translationDictionary = {
+            "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple",
+            "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung", "سامسونك": "Samsung",
+            "xiaomi": "Xiaomi", "شاومي": "Xiaomi", "شومي": "Xiaomi",
+            "infinix": "Infinix", "انفينكس": "Infinix", "انفنكس": "Infinix",
+            "oppo": "Oppo", "اوبو": "Oppo", "أوبو": "Oppo",
+            "huawei": "Huawei", "هواوي": "Huawei", "هواى": "Huawei",
+            "vivo": "Vivo", "فيفو": "Vivo",
+            "honor": "Honor", "هونر": "Honor",
+            "htc": "htc", "اتش تي سي": "htc",
+            "nokia": "Nokia", "نوكيا": "Nokia",
+
+            "شاشة": "شاشة", "screen": "شاشة", "display": "شاشة", "lcd": "شاشة",
+            "بطارية": "بطارية", "battery": "بطارية", "بطاريه": "بطارية",
+            "ضهرية": "ضهرية", "ظهرية": "ضهرية", "back cover": "ضهرية", "back": "ضهرية", "ظهر": "ضهرية", "ضهر": "ضهرية",
+            "فلاتة ربط": "فلاتة ربط", "flex ribbon": "فلاتة ربط",
+            "فلاتة باور": "فلاتة باور", "power flex": "فلاتة باور",
+            "فلاتة شحن": "فلاتة شحن", "charging flex": "فلاتة شحن",
+            "مدل": "مدل", "فريم": "فريم", "frame": "فريم",
+            "سماعة داخلية مكالمات": "سماعة داخلية مكالمات", "ear speaker": "سماعة داخلية مكالمات",
+            "سماعة خارجية": "سماعة خارجية", "buzzer": "سماعة خارجية"
+        };
+
+        const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
+        
+        const merchantsList = [
+            { name: "تاجر رقم 1", price: "250ج" },
+            { name: "تاجر رقم 2", price: "270ج" },
+            { name: "تاجر رقم 3", price: "240ج" }
+        ];
+
+        // 1. دالة تسجيل الدخول متصلة بجدول users في سوبابيز
+        async function handleLogin(event) {
+            event.preventDefault();
+            let phoneInput = document.getElementById('phone').value.trim();
+            let passwordInput = document.getElementById('password').value.trim();
+
+            let { data, error } = await supabaseClient
                 .from('users')
                 .select('*')
-                .eq('phone', phone)
-                .eq('password', password)
+                .eq('phone', phoneInput)
                 .single();
 
             if (error || !data) {
-                msg.innerText = "رقم الهاتف أو كلمة السر غير صحيحة!";
-            } else {
-                window.location.href = 'welcome.html';
+                alert('رقم الهاتف غير مسجل مسبقاً.');
+                return;
+            }
+
+            if (data.password !== passwordInput) {
+                alert('رمز المرور غير صحيح.');
+                return;
+            }
+
+            currentUserId = phoneInput;
+            isGuestUser = false;
+            updateUserInterface();
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app-wrapper').style.display = 'flex';
+        }
+
+        // 2. دالة إنشاء حساب جديد وحفظه في جدول users
+        async function handleRegister() {
+            let phoneInput = document.getElementById('phone').value.trim();
+            let passwordInput = document.getElementById('password').value.trim();
+
+            if (!phoneInput || !passwordInput) {
+                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً لإنشاء الحساب.');
+                return;
+            }
+
+            let { data, error } = await supabaseClient
+                .from('users')
+                .insert([{ phone: phoneInput, password: passwordInput }]);
+
+            if (error) {
+                alert('خطأ: قد يكون رقم الهاتف مسجلاً مسبقاً.');
+                return;
+            }
+
+            alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
+        }
+
+        function handleGuest() {
+            currentUserId = "زائر";
+            isGuestUser = true;
+            updateUserInterface();
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app-wrapper').style.display = 'flex';
+        }
+
+        function updateUserInterface() {
+            document.getElementById('userDisplayId').innerText = currentUserId;
+            let menuBtn = document.getElementById('menuBtn');
+            if (menuBtn) menuBtn.style.display = isGuestUser ? 'none' : 'block';
+        }
+
+        function toggleMenu() {
+            if (isGuestUser) return;
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) {
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
             }
         }
 
-        // دالة الدخول كزائر
-        window.loginAsGuest = function() {
-            window.location.href = 'welcome.html';
+        function hideAllPages() {
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
+        }
+
+        function goToMain() {
+            closeAllMenus();
+            hideAllPages();
+            document.getElementById('main-page').style.display = 'block';
+            document.getElementById('textSearchInput').value = '';
+            document.getElementById('global-search-results').style.display = 'none';
+            document.getElementById('brandsGrid').style.display = 'grid';
+            document.getElementById('brandsHeaderTitle').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function goToModels() {
+            closeAllMenus();
+            hideAllPages();
+            if (activeBrandName) {
+                openModels(activeBrandName);
+            } else {
+                goToMain();
+            }
+        }
+
+        function goToCompatibility() {
+            closeAllMenus();
+            hideAllPages();
+            document.getElementById('compatibility-page').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openCameraSearch() {
+            document.getElementById('aiCameraModal').style.display = 'flex';
+        }
+
+        function closeCameraModal() {
+            document.getElementById('aiCameraModal').style.display = 'none';
+        }
+
+        function getBase64SizeKB(base64String) {
+            const stringLength = base64String.length - (base64String.indexOf(',') + 1);
+            const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.562489;
+            return (sizeInBytes / 1024).toFixed(1);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        const originalWidth = img.width;
+                        const originalHeight = img.height;
+                        const originalSizeKB = (file.size / 1024).toFixed(1);
+
+                        const previewImg = document.getElementById('aiPreview');
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+
+                        compressImage(file, 500, 0.8).then(result => {
+                            processedBase64 = result.base64;
+                            
+                            const infoDiv = document.getElementById('aiImageInfo');
+                            infoDiv.style.display = 'block';
+                            infoDiv.innerHTML = `
+                                📊 <b>معلومات حجم الأبعاد:</b><br>
+                                - <b>قبل الضغط:</b> ${originalWidth} × ${originalHeight} بكسل (${originalSizeKB} كيلوبايت)<br>
+                                - <b>بعد الضغط:</b> ${result.width} × ${result.height} بكسل (~${result.sizeKB} كيلوبايت)
+                            `;
+                        });
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('aiCameraInput').addEventListener('change', handleFileSelect);
+        document.getElementById('aiGalleryInput').addEventListener('change', handleFileSelect);
+
+        function compressImage(file, maxWidth = 500, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                        const base64Data = compressedDataUrl.split(',')[1];
+                        const sizeKB = getBase64SizeKB(compressedDataUrl);
+
+                        resolve({
+                            base64: base64Data,
+                            width: width,
+                            height: height,
+                            sizeKB: sizeKB
+                        });
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function analyzePhone() {
+            const apiKey = document.getElementById('aiApiKey').value.trim();
+            const resultDiv = document.getElementById('aiResult');
+
+            if (!apiKey) {
+                alert('يرجى إدخال مفتاح الـ API الصحيح.');
+                return;
+            }
+
+            if (!selectedFile || !processedBase64) {
+                alert('يرجى التقاط صورة أو اختيار صورة من المعرض أولاً.');
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = 'جاري المعالجة...';
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+                const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
+المطلوب إرجاع النتيجة بالتنسيق التالي حرفياً وتحت بعضها تماماً بدون أي تفاصيل أخرى:
+الموديل الأساسي: [اسم الموديل الأساسي]
+الموديلات المشابهة:
+[الموديل الأول]
+[الموديل الثاني]
+[الموديل الثالث]`;
+
+                const payload = {
+                    contents: [
+                        {
+                            parts: [
+                                { text: promptText },
+                                {
+                                    inline_data: {
+                                        mime_type: 'image/jpeg',
+                                        data: processedBase64
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        temperature: 0.1
+                    }
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    let text = data.candidates[0].content.parts[0].text;
+                    text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
+                    text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
+                    text = text.replace(/،/g, '\n');
+                    resultDiv.innerText = text;
+                } else if (data.error) {
+                    resultDiv.innerText = 'حدث خطأ من الخادم:\n' + JSON.stringify(data.error.message || data.error, null, 2);
+                } else {
+                    resultDiv.innerText = 'تعذر التعرف على الهاتف، يرجى المحاولة مرة أخرى.';
+                }
+
+            } catch (error) {
+                console.error(error);
+                resultDiv.innerText = 'حدث خطأ أثناء الاتصال بالخادم:\n' + error.message;
+            }
+        }
+
+        function convertNumbers(inputStr) {
+            if (!inputStr) return "";
+            const arabicNumbers = /[\u0660-\u0669]/g;
+            return inputStr.replace(arabicNumbers, function(d) {
+                return String.fromCharCode(d.charCodeAt(0) - 1632);
+            });
+        }
+
+        function normalizeText(text) {
+            if (!text) return "";
+            let cleaned = convertNumbers(text);
+            return cleaned.toLowerCase()
+                          .replace(/\s+/g, '') 
+                          .replace(/أ|إ|آ/g, 'ا')
+                          .replace(/ة/g, 'ه')
+                          .replace(/ى/g, 'ي');
+        }
+
+        function handleGlobalSearch(query) {
+            let cleanRawQuery = query.trim();
+            let resultsContainer = document.getElementById('global-search-results');
+            let listEl = document.getElementById('searchResultsList');
+            let brandsGrid = document.getElementById('brandsGrid');
+            let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
+
+            let textInput = document.getElementById('textSearchInput');
+            if (textInput.value !== query) textInput.value = query;
+
+            if (cleanRawQuery === "") {
+                resultsContainer.style.display = 'none';
+                brandsGrid.style.display = 'grid';
+                brandsHeaderTitle.style.display = 'block';
+                return;
+            }
+
+            brandsGrid.style.display = 'none';
+            brandsHeaderTitle.style.display = 'none';
+            resultsContainer.style.display = 'flex';
+            listEl.innerHTML = '';
+
+            let convertedQuery = convertNumbers(cleanRawQuery);
+            let normalizedQuery = normalizeText(cleanRawQuery);
+            let detectedBrand = null;
+            let detectedCategory = null;
+
+            for (let key in translationDictionary) {
+                let normKey = normalizeText(key);
+                if (normalizedQuery.includes(normKey) || normKey.includes(normalizedQuery)) {
+                    let translated = translationDictionary[key];
+                    if (allBrands.includes(translated)) {
+                        detectedBrand = translated;
+                    } else if (subCategoriesList.includes(translated)) {
+                        detectedCategory = translated;
+                    }
+                }
+            }
+
+            if (!detectedBrand) {
+                allBrands.forEach(brand => {
+                    let normBrand = normalizeText(brand);
+                    if (normalizedQuery.includes(normBrand) || normBrand.includes(normalizedQuery)) {
+                        detectedBrand = brand;
+                    }
+                });
+            }
+
+            let numberMatch = convertedQuery.match(/\d+/);
+            let detectedModelNum = numberMatch ? numberMatch[0] : null;
+            let foundCount = 0;
+
+            allBrands.forEach(brand => {
+                if (detectedBrand && brand !== detectedBrand) return;
+
+                let limit = 100;
+                for (let i = 1; i <= limit; i++) {
+                    let modelNumStr = i.toString();
+                    if (detectedModelNum && !modelNumStr.includes(detectedModelNum)) continue;
+
+                    let modelName = `${brand} (${i})`;
+
+                    if (detectedCategory) {
+                        let item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${detectedCategory} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
+                        let targetModel = modelName;
+                        let targetCat = detectedCategory;
+                        item.onclick = function() {
+                            document.getElementById('textSearchInput').value = '';
+                            resultsContainer.style.display = 'none';
+                            brandsGrid.style.display = 'grid';
+                            brandsHeaderTitle.style.display = 'block';
+                            openSparePartsAndFocus(targetModel, targetCat);
+                        };
+                        listEl.appendChild(item);
+                        foundCount++;
+                    } else {
+                        let item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `<span><i class="fa-solid fa-layer-group"></i> ${modelName}</span> <span class="search-result-type">موديل</span>`;
+                        let targetModel = modelName;
+                        item.onclick = function() {
+                            document.getElementById('textSearchInput').value = '';
+                            resultsContainer.style.display = 'none';
+                            brandsGrid.style.display = 'grid';
+                            brandsHeaderTitle.style.display = 'block';
+                            openSpareParts(targetModel);
+                        };
+                        listEl.appendChild(item);
+                        foundCount++;
+                    }
+
+                    if (foundCount >= 30) break;
+                }
+            });
+
+            if (foundCount === 0 && !detectedBrand && !detectedModelNum) {
+                subCategoriesList.forEach(catName => {
+                    let normCat = normalizeText(catName);
+                    if (normCat.includes(normalizedQuery) || normalizedQuery.split('').every(char => normCat.includes(char))) {
+                        allBrands.slice(0, 3).forEach(brand => {
+                            for (let i = 1; i <= 3; i++) {
+                                let modelName = `${brand} (${i})`;
+                                let item = document.createElement('div');
+                                item.className = 'search-result-item';
+                                item.innerHTML = `<span><i class="fa-solid fa-gears"></i> ${catName} - ${modelName}</span> <span class="search-result-type">قطع الغيار</span>`;
+                                let targetModel = modelName;
+                                let targetCat = catName;
+                                item.onclick = function() {
+                                    document.getElementById('textSearchInput').value = '';
+                                    resultsContainer.style.display = 'none';
+                                    brandsGrid.style.display = 'grid';
+                                    brandsHeaderTitle.style.display = 'block';
+                                    openSparePartsAndFocus(targetModel, targetCat);
+                                };
+                                listEl.appendChild(item);
+                                foundCount++;
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (foundCount === 0) {
+                listEl.innerHTML = `<div style="padding: 10px; text-align: center; color: #666; font-size: 13px;">لم يتم العثور على نتائج مطابقة لـ "${query}"</div>`;
+            }
+        }
+
+        function startVoiceSearch() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("متصفحك لا يدعم خاصية البحث الصوتي المباشر.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA'; 
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            let micBtn = document.getElementById('micBtn');
+            let micBtnText = document.getElementById('micBtnText');
+
+            micBtn.classList.add('listening-active');
+            micBtnText.innerText = "جاري الاستماع...";
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                let speechResult = event.results[0][0].transcript;
+                document.getElementById('textSearchInput').value = speechResult;
+                handleGlobalSearch(speechResult);
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
+            };
+
+            recognition.onerror = function() {
+                alert("لم يتم التعرف على الصوت بشكل واضح، حاول مرة أخرى.");
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('listening-active');
+                micBtnText.innerText = "بحث صوتي";
+            };
+        }
+
+        function openModels(brandName) {
+            activeBrandName = brandName;
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '';
+            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
+
+            for (let i = 1; i <= 100; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.className = 'model-item-wrapper';
+
+                let box = document.createElement('div');
+                box.className = 'horizontal-box';
+                
+                let textSpan = document.createElement('span');
+                textSpan.className = 'editable-model-text';
+                textSpan.contentEditable = "true";
+                textSpan.innerText = `${brandName} (${i})`;
+                
+                let chevronIcon = document.createElement('i');
+                chevronIcon.className = "fa-solid fa-chevron-left";
+                chevronIcon.style.fontSize = "13px";
+                chevronIcon.style.color = "#0052D4";
+
+                box.onclick = function() {
+                    openSpareParts(textSpan.innerText);
+                };
+
+                box.appendChild(textSpan);
+                box.appendChild(chevronIcon);
+                wrapper.appendChild(box);
+                container.appendChild(wrapper);
+            }
+
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openSpareParts(modelName) {
+            allBrands.forEach(brand => {
+                if (modelName.startsWith(brand)) {
+                    activeBrandName = brand;
+                }
+            });
+            activeModelName = modelName;
+            buildSparePartsList(modelName, null);
+        }
+
+        function openSparePartsAndFocus(modelName, targetCategory) {
+            allBrands.forEach(brand => {
+                if (modelName.startsWith(brand)) {
+                    activeBrandName = brand;
+                }
+            });
+            activeModelName = modelName;
+            buildSparePartsList(modelName, targetCategory);
+        }
+
+        function buildSparePartsList(modelName, targetCategory) {
+            let container = document.getElementById('sparePartsListContainer');
+            container.innerHTML = '';
+
+            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
+
+            subCategoriesList.forEach((catName) => {
+                let subWrapper = document.createElement('div');
+                subWrapper.className = 'sub-wrapper';
+
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px; transition: transform 0.2s;"></i>`;
+
+                let merchantsContainer = document.createElement('div');
+                merchantsContainer.className = 'merchants-container';
+
+                merchantsList.forEach((merchant) => {
+                    let merchantRow = document.createElement('div');
+                    merchantRow.className = 'merchant-row-box';
+
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'merchant-info';
+                    infoDiv.innerHTML = `
+                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
+                        <span class="merchant-price">${merchant.price}</span>
+                    `;
+
+                    let orderBtn = document.createElement('button');
+                    orderBtn.className = 'merchant-order-btn';
+                    orderBtn.innerText = 'طلب';
+                    
+                    orderBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
+                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
+                        
+                        let hiddenIframe = document.createElement('iframe');
+                        hiddenIframe.style.display = 'none';
+                        hiddenIframe.src = whatsappUrl;
+                        document.body.appendChild(hiddenIframe);
+                        
+                        setTimeout(() => {
+                            if (document.body.contains(hiddenIframe)) {
+                                document.body.removeChild(hiddenIframe);
+                            }
+                            window.location.href = whatsappUrl;
+                        }, 200);
+                    };
+
+                    merchantRow.appendChild(infoDiv);
+                    merchantRow.appendChild(orderBtn);
+                    merchantsContainer.appendChild(merchantRow);
+                });
+
+                subBox.onclick = function(e) {
+                    e.stopPropagation();
+                    let isVisible = merchantsContainer.style.display === 'flex';
+                    
+                    let allMerchants = container.querySelectorAll('.merchants-container');
+                    let allSubArrows = container.querySelectorAll('.sub-arrow-icon');
+                    allMerchants.forEach(m => m.style.display = 'none');
+                    allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
+
+                    if (!isVisible) {
+                        merchantsContainer.style.display = 'flex';
+                        subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
+                    }
+                };
+
+                subWrapper.appendChild(subBox);
+                subWrapper.appendChild(merchantsContainer);
+                container.appendChild(subWrapper);
+
+                if (targetCategory && catName === targetCategory) {
+                    merchantsContainer.style.display = 'flex';
+                    subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
+                }
+            });
+
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function logout() {
+            closeAllMenus();
+            document.getElementById('app-wrapper').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+        }
+
+        function closeAllMenus() {
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
+                closeAllMenus();
+            }
         }
     </script>
 </body>
