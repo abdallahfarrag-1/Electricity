@@ -981,205 +981,142 @@
             document.getElementById('aiCameraModal').style.display = 'none';
         }
 
-        function getBase64SizeKB(base64String) {
-            const stringLength = base64String.length - (base64String.indexOf(',') + 1);
-            const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.562489;
-            return (sizeInBytes / 1024).toFixed(1);
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    processedBase64 = e.target.result;
-                    const preview = document.getElementById('aiPreview');
-                    preview.src = processedBase64;
-                    preview.style.display = 'block';
-                    
-                    const sizeKB = getBase64SizeKB(processedBase64);
-                    const infoDiv = document.getElementById('aiImageInfo');
-                    infoDiv.innerText = `اسم الملف: ${file.name} | الحجم: ${sizeKB} KB`;
-                    infoDiv.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('aiCameraInput').addEventListener('change', handleFileSelect);
-        document.getElementById('aiGalleryInput').addEventListener('change', handleFileSelect);
-
-        async function analyzePhone() {
-            if (!processedBase64) {
-                alert('يرجى التقاط أو اختيار صورة أولاً.');
-                return;
-            }
-            const apiKey = document.getElementById('aiApiKey').value.trim();
-            const resultDiv = document.getElementById('aiResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف...';
-
-            // محاكاة الاتصال بنموذج الذكاء الاصطناعي
-            setTimeout(() => {
-                resultDiv.innerText = 'تم التعرف على الجهاز بنجاح: Samsung Galaxy A52';
-            }, 1500);
-        }
-
-        function startVoiceSearch() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('متصفحك لا يدعم البحث الصوتي.');
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-EG';
-            
-            const micBtn = document.getElementById('micBtn');
-            const micIcon = document.getElementById('micIcon');
-            const micBtnText = document.getElementById('micBtnText');
-
-            recognition.onstart = function() {
-                micBtn.classList.add('listening-active');
-                micIcon.className = "fa-solid fa-microphone-lines";
-                micBtnText.innerText = "جاري الاستماع...";
-            };
-
-            recognition.onresult = function(event) {
-                const speechResult = event.results[0][0].transcript;
-                document.getElementById('textSearchInput').value = speechResult;
-                handleGlobalSearch(speechResult);
-            };
-
-            recognition.onerror = function() {
-                resetMicButton();
-            };
-
-            recognition.onend = function() {
-                resetMicButton();
-            };
-
-            recognition.start();
-        }
-
-        function resetMicButton() {
-            const micBtn = document.getElementById('micBtn');
-            const micIcon = document.getElementById('micIcon');
-            const micBtnText = document.getElementById('micBtnText');
-            if (micBtn) {
-                micBtn.classList.remove('listening-active');
-                micIcon.className = "fa-solid fa-microphone";
-                micBtnText.innerText = "بحث صوتي";
-            }
-        }
-
-        function handleGlobalSearch(query) {
-            const resultsContainer = document.getElementById('global-search-results');
-            const listElement = document.getElementById('searchResultsList');
-            listElement.innerHTML = '';
-
-            if (!query.trim()) {
-                resultsContainer.style.display = 'none';
-                document.getElementById('brandsGrid').style.display = 'grid';
-                document.getElementById('brandsHeaderTitle').style.display = 'block';
-                return;
-            }
-
-            resultsContainer.style.display = 'flex';
-            document.getElementById('brandsGrid').style.display = 'none';
-            document.getElementById('brandsHeaderTitle').style.display = 'none';
-
-            let mockResults = [
-                { title: "شاشة Samsung A52", type: "قطعة غيار" },
-                { title: "بطارية iPhone 11", type: "قطعة غيار" }
-            ].filter(item => item.title.includes(query));
-
-            if (mockResults.length === 0) {
-                listElement.innerHTML = '<div style="font-size: 13px; color: #666; padding: 6px;">لا توجد نتائج مطابقة</div>';
-            } else {
-                mockResults.forEach(res => {
-                    let div = document.createElement('div');
-                    div.className = 'search-result-item';
-                    div.innerHTML = `<span>${res.title}</span><span class="search-result-type">${res.type}</span>`;
-                    listElement.appendChild(div);
-                });
-            }
-        }
-
         function openModels(brandName) {
             activeBrandName = brandName;
+            closeAllMenus();
             hideAllPages();
             document.getElementById('models-page').style.display = 'block';
             document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
             
-            const container = document.getElementById('modelsListContainer');
-            container.innerHTML = '';
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = `<div style="text-align: center; color: #555; padding: 20px;">جاري تحميل الموديلات...</div>`;
 
-            // عينة افتراضية للموديلات
-            let sampleModels = ["الموديل الأول", "الموديل الثاني", "الموديل الثالث"];
-            sampleModels.forEach(model => {
-                let wrap = document.createElement('div');
-                wrap.className = 'model-item-wrapper';
-                
-                let box = document.createElement('div');
-                box.className = 'horizontal-box';
-                box.innerHTML = `<span class="editable-model-text">${model}</span><i class="fa-solid fa-chevron-left" style="color: #0052D4; font-size: 12px;"></i>`;
-                box.onclick = (e) => {
-                    if (!e.target.classList.contains('editable-model-text')) {
-                        openSpareParts(model);
-                    }
-                };
-                
-                wrap.appendChild(box);
-                container.appendChild(wrap);
-            });
+            // محاكاة أو ربط جلب الموديلات
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="model-item-wrapper">
+                        <div class="horizontal-box" onclick="openSpareParts('${brandName}', 'موديل تجريبي 1')">
+                            <span>موديل تجريبي 1</span>
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </div>
+                    </div>
+                `;
+            }, 300);
             window.scrollTo(0, 0);
         }
 
-        function openSpareParts(modelName) {
+        function openSpareParts(brandName, modelName) {
             activeModelName = modelName;
             hideAllPages();
             document.getElementById('spare-parts-page').style.display = 'block';
             document.getElementById('sparePartsPageTitle').innerText = `قطع غيار ${modelName}`;
             
-            const container = document.getElementById('sparePartsListContainer');
+            let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
-            subCategoriesList.forEach(part => {
-                let subWrapper = document.createElement('div');
-                subWrapper.className = 'sub-wrapper';
-
-                let subBox = document.createElement('div');
-                subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${part}</span><i class="fa-solid fa-chevron-down" style="font-size: 12px;"></i>`;
-
-                let merchantContainer = document.createElement('div');
-                merchantContainer.className = 'merchants-container';
-
-                merchantsList.forEach(m => {
-                    let mRow = document.createElement('div');
-                    mRow.className = 'merchant-row-box';
-                    mRow.innerHTML = `
-                        <div class="merchant-info">
-                            <span class="merchant-name">${m.name}</span>
-                            <span class="merchant-price">${m.price}</span>
+            subCategoriesList.forEach((part, index) => {
+                let partId = `part_${index}`;
+                let html = `
+                    <div class="sub-wrapper">
+                        <div class="sub-horizontal-box" onclick="toggleMerchants('${partId}')">
+                            <span>${part}</span>
+                            <i class="fa-solid fa-chevron-down" id="icon_${partId}"></i>
                         </div>
-                        <button class="merchant-order-btn" onclick="alert('تم طلب القطعة بنجاح')">طلب</button>
+                        <div class="merchants-container" id="${partId}">
+                `;
+                
+                merchantsList.forEach(merchant => {
+                    html += `
+                        <div class="merchant-row-box">
+                            <div class="merchant-info">
+                                <span class="merchant-name">${merchant.name}</span>
+                                <span class="merchant-price">${merchant.price}</span>
+                            </div>
+                            <button class="merchant-order-btn" onclick="alert('تم الطلب بنجاح')">طلب</button>
+                        </div>
                     `;
-                    merchantContainer.appendChild(mRow);
                 });
 
-                subBox.onclick = () => {
-                    let isVisible = merchantContainer.style.display === 'flex';
-                    merchantContainer.style.display = isVisible ? 'none' : 'flex';
-                };
-
-                subWrapper.appendChild(subBox);
-                subWrapper.appendChild(merchantContainer);
-                container.appendChild(subWrapper);
+                html += `</div></div>`;
+                container.innerHTML += html;
             });
             window.scrollTo(0, 0);
         }
+
+        function toggleMerchants(partId) {
+            let container = document.getElementById(partId);
+            if (container) {
+                container.style.display = (container.style.display === 'flex') ? 'none' : 'flex';
+            }
+        }
+
+        function handleGlobalSearch(query) {
+            let resultsDiv = document.getElementById('global-search-results');
+            let list = document.getElementById('searchResultsList');
+            if (!query.trim()) {
+                resultsDiv.style.display = 'none';
+                document.getElementById('brandsGrid').style.display = 'grid';
+                document.getElementById('brandsHeaderTitle').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('brandsGrid').style.display = 'none';
+            document.getElementById('brandsHeaderTitle').style.display = 'none';
+            resultsDiv.style.display = 'flex';
+            list.innerHTML = `<div class="search-result-item"><span>نتيجة بحث مطابقة لـ: ${query}</span><span class="search-result-type">بحث</span></div>`;
+        }
+
+        function startVoiceSearch() {
+            alert('خاصية البحث الصوتي تعمل عبر المتصفح.');
+        }
+
+        function analyzePhone() {
+            let apiKey = document.getElementById('aiApiKey').value.trim();
+            if (!apiKey) {
+                alert('يرجى إدخال مفتاح الـ API الخاص بـ Gemini أولاً.');
+                return;
+            }
+
+            if (!selectedFile && !processedBase64) {
+                alert('يرجى التقاط صورة أو اختيار صورة من المعرض أولاً.');
+                return;
+            }
+
+            let resultDiv = document.getElementById('aiResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = 'جاري تحليل الصورة والتعرف على الهاتف...';
+        }
+
+        document.getElementById('aiCameraInput').addEventListener('change', function(e) {
+            handleImageSelection(e.target.files[0]);
+        });
+
+        document.getElementById('aiGalleryInput').addEventListener('change', function(e) {
+            handleImageSelection(e.target.files[0]);
+        });
+
+        function handleImageSelection(file) {
+            if (!file) return;
+            selectedFile = file;
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                processedBase64 = event.target.result;
+                let preview = document.getElementById('aiPreview');
+                preview.src = processedBase64;
+                preview.style.display = 'block';
+                
+                let infoDiv = document.getElementById('aiImageInfo');
+                infoDiv.style.display = 'block';
+                infoDiv.innerText = `تم اختيار الصورة بنجاح: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.navbar') && !event.target.closest('.dropdown-menu')) {
+                closeAllMenus();
+            }
+        };
     </script>
 </body>
 </html>
