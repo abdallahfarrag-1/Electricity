@@ -342,17 +342,6 @@
             display: block;
         }
 
-        .listening-active {
-            background: linear-gradient(135deg, #d32f2f, #e53935) !important;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(0.99); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
         .brands-title {
             font-size: 16px;
             font-weight: 700;
@@ -395,34 +384,6 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 15px;
-        }
-
-        .search-result-item {
-            background: #ffffff;
-            border: 1px solid #0052D4;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #0052D4;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,82,212,0.05);
-            transition: background 0.2s;
-        }
-
-        .search-result-item:hover {
-            background-color: #f0f4ff;
-        }
-
-        .search-result-type {
-            font-size: 11px;
-            background: #e2e8f0;
-            color: #475569;
-            padding: 2px 6px;
-            border-radius: 4px;
         }
 
         .page-body-content {
@@ -595,110 +556,6 @@
             border-radius: 6px;
             background: #fafafa;
         }
-
-        /* --- نافذة الكاميرا --- */
-        #aiCameraModal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 15px;
-        }
-        .ai-modal-content {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .ai-modal-content h3 {
-            color: #0052D4;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        .ai-buttons-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .ai-btn-action {
-            flex: 1;
-            background-color: #34a853;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .ai-btn-action.gallery {
-            background-color: #fbbc05;
-            color: #202124;
-        }
-        #aiPreview {
-            max-width: 100%;
-            max-height: 160px;
-            margin-top: 12px;
-            border-radius: 6px;
-            display: none;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #aiImageInfo {
-            margin-top: 8px;
-            padding: 6px;
-            background: #f1f3f4;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #3c4043;
-            text-align: right;
-            display: none;
-        }
-        #aiResult {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 6px;
-            background: #e8f0fe;
-            color: #1967d2;
-            font-weight: bold;
-            display: none;
-            text-align: right;
-            white-space: pre-line;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .close-modal-btn {
-            background-color: #d32f2f;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .analyze-ai-btn {
-            background-color: #0052D4;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 13px;
-        }
     </style>
 </head>
 <body>
@@ -732,7 +589,6 @@
         </div>
     </div>
 
-
     <!-- ================= التطبيق الرئيسي ================= -->
     <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
         
@@ -755,11 +611,11 @@
             <div class="content-container">
                 <div class="search-section">
                     <div class="search-actions-row">
-                        <button class="action-compact-btn" onclick="openCameraSearch()">
+                        <button class="action-compact-btn">
                             <i class="fa-solid fa-camera"></i>
                             <span>بحث كاميرا</span>
                         </button>
-                        <button class="action-compact-btn" id="micBtn" onclick="startVoiceSearch()">
+                        <button class="action-compact-btn" id="micBtn">
                             <i class="fa-solid fa-microphone" id="micIcon"></i>
                             <span id="micBtnText">بحث صوتي</span>
                         </button>
@@ -767,7 +623,7 @@
 
                     <div class="search-bar">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleGlobalSearch(this.value)">
+                        <input type="text" id="textSearchInput" placeholder="ابحث...">
                     </div>
 
                     <div class="quick-nav-grid">
@@ -859,35 +715,6 @@
 
     </div>
 
-    <!-- ================= نافذة بحث الكاميرا ================= -->
-    <div id="aiCameraModal">
-        <div class="ai-modal-content">
-            <h3>📱 التعرف على نوع الهاتف</h3>
-            
-            <div style="text-align: right; margin-bottom: 8px;">
-                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
-            </div>
-
-            <div style="text-align: right; margin-bottom: 4px; font-size: 12px; font-weight: bold;">اختر الصورة:</div>
-            <div class="ai-buttons-group">
-                <button class="ai-btn-action" onclick="document.getElementById('aiCameraInput').click()">📸 التقاط صورة</button>
-                <button class="ai-btn-action gallery" onclick="document.getElementById('aiGalleryInput').click()">📁 المعرض</button>
-            </div>
-
-            <input type="file" id="aiCameraInput" accept="image/*" capture="environment" style="display: none;">
-            <input type="file" id="aiGalleryInput" accept="image/*" style="display: none;">
-            
-            <img id="aiPreview" alt="معاينة الصورة">
-            <div id="aiImageInfo"></div>
-
-            <button class="analyze-ai-btn" onclick="analyzePhone()">التعرف على الهاتف</button>
-            <div id="aiResult"></div>
-
-            <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
-        </div>
-    </div>
-
-
     <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
     <script>
         const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -900,11 +727,6 @@
         let activeBrandName = "";
         let activeModelName = "";
 
-        let selectedFile = null;
-        let processedBase64 = null;
-
-        const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
-
         const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
         const merchantsList = [
@@ -913,7 +735,7 @@
             { name: "تاجر رقم 3", price: "240ج" }
         ];
 
-        // --- إصلاح دالة فتح الموديلات لضمان التحويل التلقائي للصفحة والجلب من السوبابيز ---
+        // --- جلب الموديلات باستخدام اسم العمود الصحيح: brand_name ---
         async function openModels(brandName) {
             activeBrandName = brandName;
             
@@ -927,11 +749,11 @@
             window.scrollTo(0, 0);
 
             try {
-                // 2. طلب الموديلات الخاصة بهذه الماركة من الجدول
+                // 2. الاستعلام عن الجدول باستخدام brand_name
                 let { data: models, error } = await supabaseClient
                     .from('phone_models')
                     .select('*')
-                    .eq('brand', brandName);
+                    .eq('brand_name', brandName);
 
                 container.innerHTML = '';
 
@@ -946,7 +768,7 @@
                     return;
                 }
 
-                // 3. بناء قائمة الموديلات
+                // 3. عرض الموديلات
                 models.forEach((item) => {
                     let wrapper = document.createElement('div');
                     wrapper.className = 'model-item-wrapper';
@@ -956,7 +778,7 @@
                     
                     let textSpan = document.createElement('span');
                     textSpan.className = 'editable-model-text';
-                    textSpan.innerText = item.model_name || item.name || 'موديل بدون اسم';
+                    textSpan.innerText = item.model_name || 'موديل بدون اسم';
                     
                     let chevronIcon = document.createElement('i');
                     chevronIcon.className = "fa-solid fa-chevron-left";
@@ -1093,14 +915,6 @@
             hideAllPages();
             document.getElementById('compatibility-page').style.display = 'block';
             window.scrollTo(0, 0);
-        }
-
-        function openCameraSearch() {
-            document.getElementById('aiCameraModal').style.display = 'flex';
-        }
-
-        function closeCameraModal() {
-            document.getElementById('aiCameraModal').style.display = 'none';
         }
 
         function openSpareParts(modelName) {
