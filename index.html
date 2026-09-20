@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
+    <title>Electricity - Smart Search</title>
     <!-- خط كاييرو وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -229,7 +229,7 @@
             background-color: #ffebee;
         }
 
-        /* --- نظام الثبات العلوي --- */
+        /* --- نظام الثبات العلوي والبحث الذكي --- */
         .sticky-header-container {
             position: sticky;
             top: 0;
@@ -278,6 +278,17 @@
 
         .action-compact-btn:hover {
             background: linear-gradient(135deg, #003fa7, #2c4ec9);
+        }
+
+        .action-compact-btn.recording {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         .search-bar {
@@ -384,6 +395,10 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 15px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #0052D4;
         }
 
         .page-body-content {
@@ -617,15 +632,15 @@
                             <i class="fa-solid fa-camera"></i>
                             <span>بحث كاميرا</span>
                         </button>
-                        <button class="action-compact-btn" id="micBtn">
+                        <button class="action-compact-btn" id="micBtn" onclick="toggleVoiceSearch()">
                             <i class="fa-solid fa-microphone" id="micIcon"></i>
                             <span id="micBtnText">بحث صوتي</span>
                         </button>
                     </div>
 
                     <div class="search-bar">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث...">
+                        <i class="fa-solid fa-magnifying-glass" onclick="triggerSearchFromInput()"></i>
+                        <input type="text" id="textSearchInput" placeholder="ابحث باسم الموديل أو الطراز (مثال: A013 أو سامسونج)..." oninput="handleSearchInput(this.value)">
                     </div>
 
                     <div class="quick-nav-grid">
@@ -641,8 +656,11 @@
                 </div>
 
                 <div id="global-search-results">
-                    <div class="brands-title" style="margin-bottom: 4px; font-size: 14px;">نتائج البحث المتقدم</div>
-                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                    <div class="brands-title" style="margin-bottom: 6px; font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>نتائج البحث الذكي</span>
+                        <i class="fa-solid fa-xmark" style="cursor: pointer; color: #888;" onclick="closeSearchResults()"></i>
+                    </div>
+                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
@@ -728,6 +746,8 @@
         let isGuestUser = false;
         let activeBrandName = "";
         let activeModelName = "";
+        let recognitionInstance = null;
+        let isRecording = false;
 
         const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
@@ -737,7 +757,190 @@
             { name: "تاجر رقم 3", price: "240ج" }
         ];
 
-        // --- جلب الموديلات ودمج اسم الموديل مع رقم الطراز من model_code ---
+        // --- محرك تحسين البحث الصوتي واللفظي (Normalizer) ---
+        function normalizeSearchQuery(text) {
+            if (!text) return '';
+            let q = text.toLowerCase().trim();
+
+            // تحويل مرادفات الماركات باللغة العربية
+            q = q.replace(/سامسونج|سامسونغ/g, 'Samsung')
+                 .replace(/ايفون|أيفون|تفاحة|ابل|أبل/g, 'Apple')
+                 .replace(/شاومي|شومي/g, 'Xiaomi')
+                 .replace(/انفينكس|أنفينكس/g, 'Infinix')
+                 .replace(/اوبو|أوبو/g, 'Oppo')
+                 .replace(/هواوي/g, 'Huawei')
+                 .replace(/فيفو/g, 'Vivo')
+                 .replace(/هونر|اونر/g, 'Honor')
+                 .replace(/نوكيا/g, 'Nokia');
+
+            // تحويل الكلمات المنطوقة للأرقام والحروف الشائعة في الطرازات
+            q = q.replace(/ايه|أي|إيه/g, 'A')
+                 .replace(/اس|إس/g, 'S')
+                 .replace(/ام|إم/g, 'M')
+                 .replace(/كور/g, 'Core')
+                 .replace(/برو/g, 'Pro')
+                 .replace(/ماكس/g, 'Max')
+                 .replace(/بلس/g, 'Plus');
+
+            // قاموس الأرقام العربية المنطوقة
+            const numMap = {
+                'واحد': '1', 'اثنان': '2', 'اثنين': '2', 'ثلاثة': '3', 'ثلاثه': '3',
+                'اربعة': '4', 'أربعة': '4', 'خمسة': '5', 'خمسه': '5', 'ستة': '6',
+                'سبعة': '7', 'ثمانية': '8', 'تسعة': '9', 'عشرة': '10', 'صفر': '0'
+            };
+
+            for (let key in numMap) {
+                q = q.replace(new RegExp(key, 'g'), numMap[key]);
+            }
+
+            return q;
+        }
+
+        // --- جلب لغة وإعدادات الصوت من قاعدة البيانات ---
+        async function getVoiceLanguageFromDB() {
+            try {
+                let { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'voice_language')
+                    .single();
+
+                if (data && data.setting_value) {
+                    return data.setting_value;
+                }
+            } catch (e) {
+                console.log("استخدام اللغة الافتراضية للبحث الصوتي (ar-EG)");
+            }
+            return 'ar-EG';
+        }
+
+        // --- تشغيل / إيقاف البحث الصوتي الذكي ---
+        async function toggleVoiceSearch() {
+            const micBtn = document.getElementById('micBtn');
+            const micBtnText = document.getElementById('micBtnText');
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("متصفحك الحالي لا يدعم ميزة التعرف الصوتي.");
+                return;
+            }
+
+            if (isRecording && recognitionInstance) {
+                recognitionInstance.stop();
+                return;
+            }
+
+            recognitionInstance = new SpeechRecognition();
+            const voiceLang = await getVoiceLanguageFromDB();
+            recognitionInstance.lang = voiceLang;
+            recognitionInstance.interimResults = false;
+
+            recognitionInstance.onstart = function() {
+                isRecording = true;
+                micBtn.classList.add('recording');
+                micBtnText.innerText = "جاري الاستماع...";
+            };
+
+            recognitionInstance.onresult = function(event) {
+                let rawText = event.results[0][0].transcript;
+                document.getElementById('textSearchInput').value = rawText;
+                executeGlobalSearch(rawText);
+            };
+
+            recognitionInstance.onerror = function(event) {
+                console.error("خطأ في التعرف الصوتي:", event.error);
+                stopVoiceSearchUI();
+            };
+
+            recognitionInstance.onend = function() {
+                stopVoiceSearchUI();
+            };
+
+            recognitionInstance.start();
+        }
+
+        function stopVoiceSearchUI() {
+            isRecording = false;
+            const micBtn = document.getElementById('micBtn');
+            const micBtnText = document.getElementById('micBtnText');
+            if (micBtn) micBtn.classList.remove('recording');
+            if (micBtnText) micBtnText.innerText = "بحث صوتي";
+        }
+
+        // --- محرك الاستعلام الذكي المربوط بـ Supabase ---
+        let searchDebounceTimeout = null;
+        function handleSearchInput(val) {
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => {
+                executeGlobalSearch(val);
+            }, 300);
+        }
+
+        function triggerSearchFromInput() {
+            let val = document.getElementById('textSearchInput').value;
+            executeGlobalSearch(val);
+        }
+
+        async function executeGlobalSearch(query) {
+            let resultsContainer = document.getElementById('searchResultsList');
+            let searchWrapper = document.getElementById('global-search-results');
+
+            if (!query || query.trim() === '') {
+                searchWrapper.style.display = 'none';
+                return;
+            }
+
+            searchWrapper.style.display = 'flex';
+            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#0052D4; padding:10px;">جاري البحث الذكي...</div>';
+
+            let cleanedQuery = normalizeSearchQuery(query);
+
+            try {
+                // استعلام مرن يبحث في model_name و model_code و brand_name
+                let { data: models, error } = await supabaseClient
+                    .from('phone_models')
+                    .select('*')
+                    .or(`model_name.ilike.%${cleanedQuery}%,model_code.ilike.%${cleanedQuery}%,brand_name.ilike.%${cleanedQuery}%`)
+                    .limit(15);
+
+                resultsContainer.innerHTML = '';
+
+                if (error || !models || models.length === 0) {
+                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">لم نجد نتائج متطابقة للبحث</div>';
+                    return;
+                }
+
+                models.forEach(item => {
+                    let itemDiv = document.createElement('div');
+                    itemDiv.className = 'horizontal-box';
+                    itemDiv.style.padding = '8px 12px';
+                    itemDiv.style.fontSize = '13px';
+                    
+                    let modelName = item.model_name || '';
+                    let modelCode = item.model_code ? ` (${item.model_code})` : '';
+                    let fullTitle = `${modelName}${modelCode}`;
+
+                    itemDiv.innerHTML = `<span><i class="fa-solid fa-mobile-screen-button" style="color:#0052D4; margin-left:6px;"></i>${fullTitle}</span> <i class="fa-solid fa-chevron-left" style="font-size:11px; color:#0052D4;"></i>`;
+
+                    itemDiv.onclick = function() {
+                        closeSearchResults();
+                        openSpareParts(fullTitle);
+                    };
+
+                    resultsContainer.appendChild(itemDiv);
+                });
+
+            } catch (err) {
+                console.error("Search Error:", err);
+                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:red; padding:10px;">حدث خطأ أثناء إجراء البحث</div>';
+            }
+        }
+
+        function closeSearchResults() {
+            document.getElementById('global-search-results').style.display = 'none';
+        }
+
+        // --- جلب الموديلات مع رقم الطراز من model_code ---
         async function openModels(brandName) {
             activeBrandName = brandName;
             
@@ -778,7 +981,6 @@
                     let textSpan = document.createElement('span');
                     textSpan.className = 'editable-model-text';
 
-                    // الدمج بين الموديل ورقم الطراز model_code
                     let modelName = item.model_name || '';
                     let modelCode = item.model_code || '';
 
@@ -890,10 +1092,10 @@
 
         function goToMain() {
             closeAllMenus();
+            closeSearchResults();
             hideAllPages();
             document.getElementById('main-page').style.display = 'block';
             document.getElementById('textSearchInput').value = '';
-            document.getElementById('global-search-results').style.display = 'none';
             document.getElementById('brandsGrid').style.display = 'grid';
             document.getElementById('brandsHeaderTitle').style.display = 'block';
             window.scrollTo(0, 0);
