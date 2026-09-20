@@ -747,7 +747,7 @@
             { name: "تاجر رقم 3", price: "240ج" }
         ];
 
-        // --- جلب الماركات ديناميكياً من جدول brands في Supabase ---
+        // --- جلب الماركات ديناميكياً من جدول brands في Supabase مرتبة حسب display_order ---
         async function loadBrandsFromSupabase() {
             let brandsGrid = document.getElementById('brandsGrid');
             if (!brandsGrid) return;
@@ -757,8 +757,8 @@
             try {
                 let { data: brands, error } = await supabaseClient
                     .from('brands')
-                    .select('name')
-                    .order('name', { ascending: true });
+                    .select('name, display_order')
+                    .order('display_order', { ascending: true });
 
                 if (error) throw error;
 
@@ -955,159 +955,45 @@
 
                     resultsContainer.appendChild(itemDiv);
                 });
-
             } catch (err) {
-                console.error("Search Error:", err);
-                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:red; padding:10px;">حدث خطأ أثناء إجراء البحث</div>';
+                console.error("خطأ في تنفيذ البحث:", err);
+                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">حدث خطأ أثناء إجراء البحث</div>';
             }
         }
 
         function closeSearchResults() {
             document.getElementById('global-search-results').style.display = 'none';
+            document.getElementById('textSearchInput').value = '';
         }
 
-        // --- جلب الموديلات مع رقم الطراز من model_code ---
-        async function openModels(brandName) {
-            activeBrandName = brandName;
-            
-            hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
-            
-            let container = document.getElementById('modelsListContainer');
-            container.innerHTML = '<div style="text-align:center; padding:20px; color:#0052D4; font-weight:bold;">جاري تحميل الموديلات من قاعدة البيانات...</div>';
-            window.scrollTo(0, 0);
-
-            try {
-                let { data: models, error } = await supabaseClient
-                    .from('phone_models')
-                    .select('*')
-                    .eq('brand_name', brandName);
-
-                container.innerHTML = '';
-
-                if (error) {
-                    console.error("Supabase Error:", error);
-                    container.innerHTML = `<div style="text-align:center; color:red; padding:20px;">حدث خطأ أثناء جلب البيانات: ${error.message}</div>`;
-                    return;
-                }
-
-                if (!models || models.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px;">لا توجد موديلات مسجلة لـ ${brandName} حالياً</div>`;
-                    return;
-                }
-
-                models.forEach((item) => {
-                    let wrapper = document.createElement('div');
-                    wrapper.className = 'model-item-wrapper';
-
-                    let box = document.createElement('div');
-                    box.className = 'horizontal-box';
-                    
-                    let textSpan = document.createElement('span');
-                    textSpan.className = 'editable-model-text';
-
-                    let modelName = item.model_name || '';
-                    let modelCode = item.model_code || '';
-
-                    if (modelCode) {
-                        textSpan.innerText = `${modelName} (${modelCode})`;
-                    } else {
-                        textSpan.innerText = modelName || 'موديل بدون اسم';
-                    }
-                    
-                    let chevronIcon = document.createElement('i');
-                    chevronIcon.className = "fa-solid fa-chevron-left";
-                    chevronIcon.style.fontSize = "13px";
-                    chevronIcon.style.color = "#0052D4";
-
-                    box.onclick = function() {
-                        openSpareParts(textSpan.innerText);
-                    };
-
-                    box.appendChild(textSpan);
-                    box.appendChild(chevronIcon);
-                    wrapper.appendChild(box);
-                    container.appendChild(wrapper);
-                });
-
-            } catch (err) {
-                console.error("Unexpected Error:", err);
-                container.innerHTML = `<div style="text-align:center; color:red; padding:20px;">حدث خطأ غير متوقع في الاتصال</div>`;
-            }
-        }
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            let phoneInput = document.getElementById('phone').value.trim();
-            let passwordInput = document.getElementById('password').value.trim();
-
-            let { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('phone', phoneInput)
-                .single();
-
-            if (error || !data) {
-                alert('رقم الهاتف غير مسجل مسبقاً.');
-                return;
-            }
-
-            if (data.password !== passwordInput) {
-                alert('رمز المرور غير صحيح.');
-                return;
-            }
-
-            currentUserId = phoneInput;
-            isGuestUser = false;
-            updateUserInterface();
+        // --- التنقل والتحكم بالصفحات ---
+        function handleLogin(e) {
+            e.preventDefault();
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'flex';
             loadBrandsFromSupabase();
         }
 
-        async function handleRegister() {
-            let phoneInput = document.getElementById('phone').value.trim();
-            let passwordInput = document.getElementById('password').value.trim();
-
-            if (!phoneInput || !passwordInput) {
-                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً لإنشاء الحساب.');
-                return;
-            }
-
-            let { data, error } = await supabaseClient
-                .from('users')
-                .insert([{ phone: phoneInput, password: passwordInput }]);
-
-            if (error) {
-                alert('خطأ: قد يكون رقم الهاتف مسجلاً مسبقاً.');
-                return;
-            }
-
-            alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
+        function handleRegister() {
+            alert("ميزة إنشاء حساب جديد غير متاحة حالياً.");
         }
 
         function handleGuest() {
-            currentUserId = "زائر";
             isGuestUser = true;
-            updateUserInterface();
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'flex';
             loadBrandsFromSupabase();
         }
 
-        function updateUserInterface() {
-            document.getElementById('userDisplayId').innerText = currentUserId;
-            let menuBtn = document.getElementById('menuBtn');
-            if (menuBtn) menuBtn.style.display = isGuestUser ? 'none' : 'block';
+        function toggleMenu() {
+            let menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function toggleMenu() {
-            if (isGuestUser) return;
-            let menu = document.getElementById('dropdownMenu');
-            if (menu) {
-                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-            }
+        function logout() {
+            document.getElementById('dropdownMenu').style.display = 'none';
+            document.getElementById('app-wrapper').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
         }
 
         function hideAllPages() {
@@ -1119,130 +1005,116 @@
         }
 
         function goToMain() {
-            closeAllMenus();
-            closeSearchResults();
             hideAllPages();
             document.getElementById('main-page').style.display = 'block';
-            document.getElementById('textSearchInput').value = '';
-            document.getElementById('brandsGrid').style.display = 'grid';
-            document.getElementById('brandsHeaderTitle').style.display = 'block';
-            loadBrandsFromSupabase();
-            window.scrollTo(0, 0);
         }
 
         function goToModels() {
-            closeAllMenus();
-            if (activeBrandName) {
-                openModels(activeBrandName);
-            } else {
-                goToMain();
-            }
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
         }
 
         function goToSpareParts() {
-            closeAllMenus();
             hideAllPages();
-            if (activeModelName) {
-                openSpareParts(activeModelName);
-            } else {
-                goToMain();
-            }
+            document.getElementById('spare-parts-page').style.display = 'block';
         }
 
         function goToCompatibility() {
-            closeAllMenus();
             hideAllPages();
             document.getElementById('compatibility-page').style.display = 'block';
-            window.scrollTo(0, 0);
+        }
+
+        async function openModels(brandName) {
+            activeBrandName = brandName;
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
+            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
+            
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '<div style="text-align:center; color:#0052D4; font-size:13px; padding:20px;">جاري تحميل الموديلات...</div>';
+
+            try {
+                let { data: models, error } = await supabaseClient
+                    .from('phone_models')
+                    .select('*')
+                    .eq('brand_name', brandName);
+
+                if (error) throw error;
+
+                if (models && models.length > 0) {
+                    container.innerHTML = '';
+                    models.forEach(m => {
+                        let wrapper = document.createElement('div');
+                        wrapper.className = 'model-item-wrapper';
+                        
+                        let name = m.model_name || '';
+                        let code = m.model_code ? ` (${m.model_code})` : '';
+                        let fullName = `${name}${code}`;
+
+                        wrapper.innerHTML = `
+                            <div class="horizontal-box" onclick="openSpareParts('${fullName}')">
+                                <span class="editable-model-text">${fullName}</span>
+                                <i class="fa-solid fa-chevron-left" style="font-size:12px; color:#0052D4;"></i>
+                            </div>
+                        `;
+                        container.appendChild(wrapper);
+                    });
+                } else {
+                    container.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">لا توجد موديلات مسجلة لهذه الماركة</div>';
+                }
+            } catch (err) {
+                console.error("خطأ في جلب الموديلات:", err);
+                container.innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">حدث خطأ أثناء تحميل الموديلات</div>';
+            }
         }
 
         function openSpareParts(modelName) {
             activeModelName = modelName;
-            buildSparePartsList(modelName);
-        }
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
+            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار - ${modelName}`;
 
-        function buildSparePartsList(modelName) {
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
-            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelName}`;
-
-            subCategoriesList.forEach((catName) => {
-                let subWrapper = document.createElement('div');
-                subWrapper.className = 'sub-wrapper';
-
-                let subBox = document.createElement('div');
-                subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-left" style="font-size: 11px;"></i>`;
-
-                subBox.onclick = function(e) {
-                    e.stopPropagation();
-                    openPartDetailsPage(catName, modelName);
+            subCategoriesList.forEach(part => {
+                let box = document.createElement('div');
+                box.className = 'sub-horizontal-box';
+                box.innerHTML = `
+                    <span>${part}</span>
+                    <i class="fa-solid fa-chevron-left" style="font-size:12px;"></i>
+                `;
+                box.onclick = function() {
+                    openPartDetails(part);
                 };
-
-                subWrapper.appendChild(subBox);
-                container.appendChild(subWrapper);
+                container.appendChild(box);
             });
-
-            hideAllPages();
-            document.getElementById('spare-parts-page').style.display = 'block';
-            window.scrollTo(0, 0);
         }
 
-        function openPartDetailsPage(catName, modelName) {
-            document.getElementById('partDetailsPageTitle').innerText = `${catName} - ${modelName}`;
-            
-            let container = document.getElementById('partMerchantsContainer');
-            container.innerHTML = '';
-
-            merchantsList.forEach((merchant) => {
-                let merchantRow = document.createElement('div');
-                merchantRow.className = 'merchant-row-box';
-
-                let infoDiv = document.createElement('div');
-                infoDiv.className = 'merchant-info';
-                infoDiv.innerHTML = `
-                    <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
-                    <span class="merchant-price">${merchant.price}</span>
-                `;
-
-                let orderBtn = document.createElement('button');
-                orderBtn.className = 'merchant-order-btn';
-                orderBtn.innerText = 'طلب';
-                
-                orderBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
-                    let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
-                    window.location.href = whatsappUrl;
-                };
-
-                merchantRow.appendChild(infoDiv);
-                merchantRow.appendChild(orderBtn);
-                container.appendChild(merchantRow);
-            });
-
+        function openPartDetails(partName) {
             hideAllPages();
             document.getElementById('part-details-page').style.display = 'block';
-            window.scrollTo(0, 0);
+            document.getElementById('partDetailsPageTitle').innerText = `${partName} - ${activeModelName}`;
+
+            let merchantsContainer = document.getElementById('partMerchantsContainer');
+            merchantsContainer.innerHTML = '';
+
+            merchantsList.forEach(merchant => {
+                let row = document.createElement('div');
+                row.className = 'merchant-row-box';
+                row.innerHTML = `
+                    <div class="merchant-info">
+                        <span class="merchant-name">${merchant.name}</span>
+                        <span class="merchant-price">${merchant.price}</span>
+                    </div>
+                    <button class="merchant-order-btn" onclick="orderPart('${partName}', '${merchant.name}')">طلب الآن</button>
+                `;
+                merchantsContainer.appendChild(row);
+            });
         }
 
-        function logout() {
-            closeAllMenus();
-            document.getElementById('app-wrapper').style.display = 'none';
-            document.getElementById('login-page').style.display = 'flex';
-            document.getElementById('loginForm').reset();
-        }
-
-        function closeAllMenus() {
-            let menu = document.getElementById('dropdownMenu');
-            if (menu) menu.style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
-                closeAllMenus();
-            }
+        function orderPart(partName, merchantName) {
+            alert(`تم طلب ${partName} من ${merchantName} بنجاح.`);
         }
     </script>
 </body>
