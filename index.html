@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
+    <title>Electricity - Smart Search</title>
     <!-- خط كاييرو وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,15 +84,6 @@
             box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
         }
 
-        .options-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 13px;
-            color: #555;
-        }
-
         .btn-login {
             background-color: #0052D4;
             color: white;
@@ -164,7 +155,6 @@
         .btn-guest:hover {
             background-color: #ebf5ff;
         }
-
 
         /* --- الشريط العلوي المشترك (Navbar) --- */
         .navbar {
@@ -239,8 +229,7 @@
             background-color: #ffebee;
         }
 
-
-        /* --- نظام الثبات العلوي المُصغر (Sticky Header Wrapper) --- */
+        /* --- نظام الثبات العلوي والبحث الذكي --- */
         .sticky-header-container {
             position: sticky;
             top: 0;
@@ -289,6 +278,17 @@
 
         .action-compact-btn:hover {
             background: linear-gradient(135deg, #003fa7, #2c4ec9);
+        }
+
+        .action-compact-btn.recording {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         .search-bar {
@@ -353,17 +353,6 @@
             display: block;
         }
 
-        .listening-active {
-            background: linear-gradient(135deg, #d32f2f, #e53935) !important;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(0.99); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
         .brands-title {
             font-size: 16px;
             font-weight: 700;
@@ -406,34 +395,10 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 15px;
-        }
-
-        .search-result-item {
-            background: #ffffff;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
             border: 1px solid #0052D4;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #0052D4;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,82,212,0.05);
-            transition: background 0.2s;
-        }
-
-        .search-result-item:hover {
-            background-color: #f0f4ff;
-        }
-
-        .search-result-type {
-            font-size: 11px;
-            background: #e2e8f0;
-            color: #475569;
-            padding: 2px 6px;
-            border-radius: 4px;
         }
 
         .page-body-content {
@@ -495,11 +460,9 @@
             flex: 1;
             padding: 2px 4px;
             border-radius: 4px;
-            cursor: text;
-        }
-        .editable-model-text:focus {
-            background-color: #f0f4ff;
-            border: 1px dashed #0052D4;
+            cursor: pointer;
+            direction: ltr;
+            text-align: right;
         }
 
         .sub-wrapper {
@@ -580,7 +543,6 @@
             background-color: #003fa7;
         }
 
-        /* --- تنسيقات الصفحة الجديدة لقطع الغيار المقسمة لـ 3 أقسام --- */
         .part-section-card {
             background: #ffffff;
             border: 1px solid #d1d5db;
@@ -610,110 +572,6 @@
             border: 1px dashed #cbd5e1;
             border-radius: 6px;
             background: #fafafa;
-        }
-
-        /* --- نافذة بحث الكاميرا الذكية (Modal) --- */
-        #aiCameraModal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 15px;
-        }
-        .ai-modal-content {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .ai-modal-content h3 {
-            color: #0052D4;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        .ai-buttons-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .ai-btn-action {
-            flex: 1;
-            background-color: #34a853;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .ai-btn-action.gallery {
-            background-color: #fbbc05;
-            color: #202124;
-        }
-        #aiPreview {
-            max-width: 100%;
-            max-height: 160px;
-            margin-top: 12px;
-            border-radius: 6px;
-            display: none;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #aiImageInfo {
-            margin-top: 8px;
-            padding: 6px;
-            background: #f1f3f4;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #3c4043;
-            text-align: right;
-            display: none;
-        }
-        #aiResult {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 6px;
-            background: #e8f0fe;
-            color: #1967d2;
-            font-weight: bold;
-            display: none;
-            text-align: right;
-            white-space: pre-line;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .close-modal-btn {
-            background-color: #d32f2f;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .analyze-ai-btn {
-            background-color: #0052D4;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 13px;
         }
     </style>
 </head>
@@ -748,8 +606,7 @@
         </div>
     </div>
 
-
-    <!-- ================= الجزء العلوي الثابت المُصغر العام ================= -->
+    <!-- ================= التطبيق الرئيسي ================= -->
     <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
         
         <div class="sticky-header-container">
@@ -771,19 +628,19 @@
             <div class="content-container">
                 <div class="search-section">
                     <div class="search-actions-row">
-                        <button class="action-compact-btn" onclick="openCameraSearch()">
+                        <button class="action-compact-btn">
                             <i class="fa-solid fa-camera"></i>
                             <span>بحث كاميرا</span>
                         </button>
-                        <button class="action-compact-btn" id="micBtn" onclick="startVoiceSearch()">
+                        <button class="action-compact-btn" id="micBtn" onclick="toggleVoiceSearch()">
                             <i class="fa-solid fa-microphone" id="micIcon"></i>
                             <span id="micBtnText">بحث صوتي</span>
                         </button>
                     </div>
 
                     <div class="search-bar">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث..." oninput="handleSearchInput(this.value)">
+                        <i class="fa-solid fa-magnifying-glass" onclick="triggerSearchFromInput()"></i>
+                        <input type="text" id="textSearchInput" placeholder="ابحث باسم الموديل أو الطراز (مثال: A013 أو سامسونج)..." oninput="handleSearchInput(this.value)">
                     </div>
 
                     <div class="quick-nav-grid">
@@ -799,26 +656,29 @@
                 </div>
 
                 <div id="global-search-results">
-                    <div class="brands-title" style="margin-bottom: 4px; font-size: 14px;">نتائج البحث المتقدم</div>
-                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                    <div class="brands-title" style="margin-bottom: 6px; font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>نتائج البحث الذكي</span>
+                        <i class="fa-solid fa-xmark" style="cursor: pointer; color: #888;" onclick="closeSearchResults()"></i>
+                    </div>
+                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= محتوى الصفحات المتغيرة ================= -->
+        <!-- ================= محتوى الصفحات ================= -->
         <div id="main-page" class="page-body-content">
             <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
             <div class="brands-grid" id="brandsGrid">
-                <div class="brand-card" data-name="Apple" onclick="openModels('Apple')">Apple</div>
-                <div class="brand-card" data-name="Samsung" onclick="openModels('Samsung')">Samsung</div>
-                <div class="brand-card" data-name="Xiaomi" onclick="openModels('Xiaomi')">Xiaomi</div>
-                <div class="brand-card" data-name="Infinix" onclick="openModels('Infinix')">Infinix</div>
-                <div class="brand-card" data-name="Oppo" onclick="openModels('Oppo')">Oppo</div>
-                <div class="brand-card" data-name="Huawei" onclick="openModels('Huawei')">Huawei</div>
-                <div class="brand-card" data-name="Vivo" onclick="openModels('Vivo')">Vivo</div>
-                <div class="brand-card" data-name="Honor" onclick="openModels('Honor')">Honor</div>
-                <div class="brand-card" data-name="htc" onclick="openModels('htc')">htc</div>
-                <div class="brand-card" data-name="Nokia" onclick="openModels('Nokia')">Nokia</div>
+                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
 
@@ -834,12 +694,10 @@
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
 
-        <!-- ================= الصفحة الجديدة: تفاصيل قطعة الغيار (المقسمة إلى 3 أقسام) ================= -->
         <div id="part-details-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToSpareParts()"><i class="fa-solid fa-arrow-right"></i> العودة لقطع الغيار</button>
             <div class="brands-title" id="partDetailsPageTitle">تفاصيل القطعة</div>
             
-            <!-- القسم الأول: طلب القطعة -->
             <div class="part-section-card">
                 <div class="part-section-header">
                     <i class="fa-solid fa-cart-shopping"></i>
@@ -848,7 +706,6 @@
                 <div id="partMerchantsContainer" class="merchants-container"></div>
             </div>
 
-            <!-- القسم الثاني: التوافقات (فارغ) -->
             <div class="part-section-card">
                 <div class="part-section-header">
                     <i class="fa-solid fa-shuffle"></i>
@@ -857,7 +714,6 @@
                 <div class="empty-section-placeholder">لا توجد توافقات مسجلة حالياً لهذه القطعة.</div>
             </div>
 
-            <!-- القسم الثالث: ملاحظات فنية (فارغ) -->
             <div class="part-section-card">
                 <div class="part-section-header">
                     <i class="fa-solid fa-clipboard-list"></i>
@@ -879,38 +735,8 @@
 
     </div>
 
-    <!-- ================= نافذة بحث الكاميرا ================= -->
-    <div id="aiCameraModal">
-        <div class="ai-modal-content">
-            <h3>📱 التعرف على نوع الهاتف</h3>
-            
-            <div style="text-align: right; margin-bottom: 8px;">
-                <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AQ)" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px;">
-            </div>
-
-            <div style="text-align: right; margin-bottom: 4px; font-size: 12px; font-weight: bold;">اختر الصورة:</div>
-            <div class="ai-buttons-group">
-                <button class="ai-btn-action" onclick="document.getElementById('aiCameraInput').click()">📸 التقاط صورة</button>
-                <button class="ai-btn-action gallery" onclick="document.getElementById('aiGalleryInput').click()">📁 المعرض</button>
-            </div>
-
-            <input type="file" id="aiCameraInput" accept="image/*" capture="environment" style="display: none;">
-            <input type="file" id="aiGalleryInput" accept="image/*" style="display: none;">
-            
-            <img id="aiPreview" alt="معاينة الصورة">
-            <div id="aiImageInfo"></div>
-
-            <button class="analyze-ai-btn" onclick="analyzePhone()">التعرف على الهاتف</button>
-            <div id="aiResult"></div>
-
-            <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
-        </div>
-    </div>
-
-
     <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
     <script>
-        // إعدادات اتصال Supabase بالمفتاح الجديد
         const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const supabaseKey = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
         
@@ -920,11 +746,8 @@
         let isGuestUser = false;
         let activeBrandName = "";
         let activeModelName = "";
-
-        let selectedFile = null;
-        let processedBase64 = null;
-
-        const allBrands = ["Apple", "Samsung", "Xiaomi", "Infinix", "Oppo", "Huawei", "Vivo", "Honor", "htc", "Nokia"];
+        let recognitionInstance = null;
+        let isRecording = false;
 
         const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
         
@@ -934,7 +757,260 @@
             { name: "تاجر رقم 3", price: "240ج" }
         ];
 
-        // 1. دالة تسجيل الدخول متصلة بجدول users في سوبابيز
+        // --- محرك تحسين البحث الصوتي واللفظي (Normalizer) ---
+        function normalizeSearchQuery(text) {
+            if (!text) return '';
+            let q = text.toLowerCase().trim();
+
+            // تحويل مرادفات الماركات باللغة العربية
+            q = q.replace(/سامسونج|سامسونغ/g, 'Samsung')
+                 .replace(/ايفون|أيفون|تفاحة|ابل|أبل/g, 'Apple')
+                 .replace(/شاومي|شومي/g, 'Xiaomi')
+                 .replace(/انفينكس|أنفينكس/g, 'Infinix')
+                 .replace(/اوبو|أوبو/g, 'Oppo')
+                 .replace(/هواوي/g, 'Huawei')
+                 .replace(/فيفو/g, 'Vivo')
+                 .replace(/هونر|اونر/g, 'Honor')
+                 .replace(/نوكيا/g, 'Nokia');
+
+            // تحويل الكلمات المنطوقة للأرقام والحروف الشائعة في الطرازات
+            q = q.replace(/ايه|أي|إيه/g, 'A')
+                 .replace(/اس|إس/g, 'S')
+                 .replace(/ام|إم/g, 'M')
+                 .replace(/كور/g, 'Core')
+                 .replace(/برو/g, 'Pro')
+                 .replace(/ماكس/g, 'Max')
+                 .replace(/بلس/g, 'Plus');
+
+            // قاموس الأرقام العربية المنطوقة
+            const numMap = {
+                'واحد': '1', 'اثنان': '2', 'اثنين': '2', 'ثلاثة': '3', 'ثلاثه': '3',
+                'اربعة': '4', 'أربعة': '4', 'خمسة': '5', 'خمسه': '5', 'ستة': '6',
+                'سبعة': '7', 'ثمانية': '8', 'تسعة': '9', 'عشرة': '10', 'صفر': '0'
+            };
+
+            for (let key in numMap) {
+                q = q.replace(new RegExp(key, 'g'), numMap[key]);
+            }
+
+            return q;
+        }
+
+        // --- جلب لغة وإعدادات الصوت من قاعدة البيانات ---
+        async function getVoiceLanguageFromDB() {
+            try {
+                let { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'voice_language')
+                    .single();
+
+                if (data && data.setting_value) {
+                    return data.setting_value;
+                }
+            } catch (e) {
+                console.log("استخدام اللغة الافتراضية للبحث الصوتي (ar-EG)");
+            }
+            return 'ar-EG';
+        }
+
+        // --- تشغيل / إيقاف البحث الصوتي الذكي ---
+        async function toggleVoiceSearch() {
+            const micBtn = document.getElementById('micBtn');
+            const micBtnText = document.getElementById('micBtnText');
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("متصفحك الحالي لا يدعم ميزة التعرف الصوتي.");
+                return;
+            }
+
+            if (isRecording && recognitionInstance) {
+                recognitionInstance.stop();
+                return;
+            }
+
+            recognitionInstance = new SpeechRecognition();
+            const voiceLang = await getVoiceLanguageFromDB();
+            recognitionInstance.lang = voiceLang;
+            recognitionInstance.interimResults = false;
+
+            recognitionInstance.onstart = function() {
+                isRecording = true;
+                micBtn.classList.add('recording');
+                micBtnText.innerText = "جاري الاستماع...";
+            };
+
+            recognitionInstance.onresult = function(event) {
+                let rawText = event.results[0][0].transcript;
+                document.getElementById('textSearchInput').value = rawText;
+                executeGlobalSearch(rawText);
+            };
+
+            recognitionInstance.onerror = function(event) {
+                console.error("خطأ في التعرف الصوتي:", event.error);
+                stopVoiceSearchUI();
+            };
+
+            recognitionInstance.onend = function() {
+                stopVoiceSearchUI();
+            };
+
+            recognitionInstance.start();
+        }
+
+        function stopVoiceSearchUI() {
+            isRecording = false;
+            const micBtn = document.getElementById('micBtn');
+            const micBtnText = document.getElementById('micBtnText');
+            if (micBtn) micBtn.classList.remove('recording');
+            if (micBtnText) micBtnText.innerText = "بحث صوتي";
+        }
+
+        // --- محرك الاستعلام الذكي المربوط بـ Supabase ---
+        let searchDebounceTimeout = null;
+        function handleSearchInput(val) {
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => {
+                executeGlobalSearch(val);
+            }, 300);
+        }
+
+        function triggerSearchFromInput() {
+            let val = document.getElementById('textSearchInput').value;
+            executeGlobalSearch(val);
+        }
+
+        async function executeGlobalSearch(query) {
+            let resultsContainer = document.getElementById('searchResultsList');
+            let searchWrapper = document.getElementById('global-search-results');
+
+            if (!query || query.trim() === '') {
+                searchWrapper.style.display = 'none';
+                return;
+            }
+
+            searchWrapper.style.display = 'flex';
+            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#0052D4; padding:10px;">جاري البحث الذكي...</div>';
+
+            let cleanedQuery = normalizeSearchQuery(query);
+
+            try {
+                // استعلام مرن يبحث في model_name و model_code و brand_name
+                let { data: models, error } = await supabaseClient
+                    .from('phone_models')
+                    .select('*')
+                    .or(`model_name.ilike.%${cleanedQuery}%,model_code.ilike.%${cleanedQuery}%,brand_name.ilike.%${cleanedQuery}%`)
+                    .limit(15);
+
+                resultsContainer.innerHTML = '';
+
+                if (error || !models || models.length === 0) {
+                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">لم نجد نتائج متطابقة للبحث</div>';
+                    return;
+                }
+
+                models.forEach(item => {
+                    let itemDiv = document.createElement('div');
+                    itemDiv.className = 'horizontal-box';
+                    itemDiv.style.padding = '8px 12px';
+                    itemDiv.style.fontSize = '13px';
+                    
+                    let modelName = item.model_name || '';
+                    let modelCode = item.model_code ? ` (${item.model_code})` : '';
+                    let fullTitle = `${modelName}${modelCode}`;
+
+                    itemDiv.innerHTML = `<span><i class="fa-solid fa-mobile-screen-button" style="color:#0052D4; margin-left:6px;"></i>${fullTitle}</span> <i class="fa-solid fa-chevron-left" style="font-size:11px; color:#0052D4;"></i>`;
+
+                    itemDiv.onclick = function() {
+                        closeSearchResults();
+                        openSpareParts(fullTitle);
+                    };
+
+                    resultsContainer.appendChild(itemDiv);
+                });
+
+            } catch (err) {
+                console.error("Search Error:", err);
+                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:red; padding:10px;">حدث خطأ أثناء إجراء البحث</div>';
+            }
+        }
+
+        function closeSearchResults() {
+            document.getElementById('global-search-results').style.display = 'none';
+        }
+
+        // --- جلب الموديلات مع رقم الطراز من model_code ---
+        async function openModels(brandName) {
+            activeBrandName = brandName;
+            
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
+            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
+            
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#0052D4; font-weight:bold;">جاري تحميل الموديلات من قاعدة البيانات...</div>';
+            window.scrollTo(0, 0);
+
+            try {
+                let { data: models, error } = await supabaseClient
+                    .from('phone_models')
+                    .select('*')
+                    .eq('brand_name', brandName);
+
+                container.innerHTML = '';
+
+                if (error) {
+                    console.error("Supabase Error:", error);
+                    container.innerHTML = `<div style="text-align:center; color:red; padding:20px;">حدث خطأ أثناء جلب البيانات: ${error.message}</div>`;
+                    return;
+                }
+
+                if (!models || models.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px;">لا توجد موديلات مسجلة لـ ${brandName} حالياً</div>`;
+                    return;
+                }
+
+                models.forEach((item) => {
+                    let wrapper = document.createElement('div');
+                    wrapper.className = 'model-item-wrapper';
+
+                    let box = document.createElement('div');
+                    box.className = 'horizontal-box';
+                    
+                    let textSpan = document.createElement('span');
+                    textSpan.className = 'editable-model-text';
+
+                    let modelName = item.model_name || '';
+                    let modelCode = item.model_code || '';
+
+                    if (modelCode) {
+                        textSpan.innerText = `${modelName} (${modelCode})`;
+                    } else {
+                        textSpan.innerText = modelName || 'موديل بدون اسم';
+                    }
+                    
+                    let chevronIcon = document.createElement('i');
+                    chevronIcon.className = "fa-solid fa-chevron-left";
+                    chevronIcon.style.fontSize = "13px";
+                    chevronIcon.style.color = "#0052D4";
+
+                    box.onclick = function() {
+                        openSpareParts(textSpan.innerText);
+                    };
+
+                    box.appendChild(textSpan);
+                    box.appendChild(chevronIcon);
+                    wrapper.appendChild(box);
+                    container.appendChild(wrapper);
+                });
+
+            } catch (err) {
+                console.error("Unexpected Error:", err);
+                container.innerHTML = `<div style="text-align:center; color:red; padding:20px;">حدث خطأ غير متوقع في الاتصال</div>`;
+            }
+        }
+
         async function handleLogin(event) {
             event.preventDefault();
             let phoneInput = document.getElementById('phone').value.trim();
@@ -963,7 +1039,6 @@
             document.getElementById('app-wrapper').style.display = 'flex';
         }
 
-        // 2. دالة إنشاء حساب جديد وحفظه في جدول users
         async function handleRegister() {
             let phoneInput = document.getElementById('phone').value.trim();
             let passwordInput = document.getElementById('password').value.trim();
@@ -1017,16 +1092,17 @@
 
         function goToMain() {
             closeAllMenus();
+            closeSearchResults();
             hideAllPages();
             document.getElementById('main-page').style.display = 'block';
             document.getElementById('textSearchInput').value = '';
-            closeSearchResults();
+            document.getElementById('brandsGrid').style.display = 'grid';
+            document.getElementById('brandsHeaderTitle').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
         function goToModels() {
             closeAllMenus();
-            hideAllPages();
             if (activeBrandName) {
                 openModels(activeBrandName);
             } else {
@@ -1051,359 +1127,7 @@
             window.scrollTo(0, 0);
         }
 
-        function openCameraSearch() {
-            document.getElementById('aiCameraModal').style.display = 'flex';
-        }
-
-        function closeCameraModal() {
-            document.getElementById('aiCameraModal').style.display = 'none';
-        }
-
-        function getBase64SizeKB(base64String) {
-            const stringLength = base64String.length - (base64String.indexOf(',') + 1);
-            const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.562489;
-            return (sizeInBytes / 1024).toFixed(1);
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        const originalWidth = img.width;
-                        const originalHeight = img.height;
-                        const originalSizeKB = (file.size / 1024).toFixed(1);
-
-                        const previewImg = document.getElementById('aiPreview');
-                        previewImg.src = e.target.result;
-                        previewImg.style.display = 'block';
-
-                        compressImage(file, 500, 0.8).then(result => {
-                            processedBase64 = result.base64;
-                            
-                            const infoDiv = document.getElementById('aiImageInfo');
-                            infoDiv.style.display = 'block';
-                            infoDiv.innerHTML = `
-                                📊 <b>معلومات حجم الأبعاد:</b><br>
-                                - <b>قبل الضغط:</b> ${originalWidth} × ${originalHeight} بكسل (${originalSizeKB} كيلوبايت)<br>
-                                - <b>بعد الضغط:</b> ${result.width} × ${result.height} بكسل (~${result.sizeKB} كيلوبايت)
-                            `;
-                        });
-                    }
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('aiCameraInput').addEventListener('change', handleFileSelect);
-        document.getElementById('aiGalleryInput').addEventListener('change', handleFileSelect);
-
-        function compressImage(file, maxWidth = 500, quality = 0.8) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                        const base64Data = compressedDataUrl.split(',')[1];
-                        const sizeKB = getBase64SizeKB(compressedDataUrl);
-
-                        resolve({
-                            base64: base64Data,
-                            width: width,
-                            height: height,
-                            sizeKB: sizeKB
-                        });
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function analyzePhone() {
-            const apiKey = document.getElementById('aiApiKey').value.trim();
-            const resultDiv = document.getElementById('aiResult');
-
-            if (!apiKey) {
-                alert('يرجى إدخال مفتاح الـ API الصحيح.');
-                return;
-            }
-
-            if (!apiKey.startsWith('AQ')) {
-                alert('تنبيه: مفاتيح الـ API الجديدة يجب أن تبدأ بالبادئة AQ.');
-                return;
-            }
-
-            if (!selectedFile || !processedBase64) {
-                alert('يرجى التقاط صورة أو اختيار صورة من المعرض أولاً.');
-                return;
-            }
-
-            resultDiv.style.display = 'block';
-            resultDiv.innerText = 'جاري المعالجة...';
-
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-
-                const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
-المطلوب إرجاع النتيجة بالتنسيق التالي حرفياً وتحت بعضها تماماً بدون أي تفاصيل أخرى:
-الموديل الأساسي: [اسم الموديل الأساسي]
-الموديلات المشابهة:
-[الموديل الأول]
-[الموديل الثاني]
-[الموديل الثالث]`;
-
-                const payload = {
-                    contents: [
-                        {
-                            parts: [
-                                { text: promptText },
-                                {
-                                    inline_data: {
-                                        mime_type: 'image/jpeg',
-                                        data: processedBase64
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                    generationConfig: {
-                        temperature: 0.1
-                    }
-                };
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    let text = data.candidates[0].content.parts[0].text;
-                    text = text.replace(/الموديل الأساسي\s*[:|-]\s*/g, 'الموديل الأساسي:\n');
-                    text = text.replace(/الموديلات المشابهة\s*[:|-]\s*/g, '\nالموديلات المشابهة:\n');
-                    text = text.replace(/،/g, '\n');
-                    resultDiv.innerText = text;
-                } else if (data.error) {
-                    resultDiv.innerText = 'حدث خطأ من الخادم:\n' + JSON.stringify(data.error.message || data.error, null, 2);
-                } else {
-                    resultDiv.innerText = 'تعذر التعرف على الهاتف، يرجى المحاولة مرة أخرى.';
-                }
-
-            } catch (error) {
-                console.error(error);
-                resultDiv.innerText = 'حدث خطأ أثناء الاتصال بالخادم:\n' + error.message;
-            }
-        }
-
-        // ================= نظام البحث اللحظي المباشر عبر قاعدة البيانات Supabase =================
-        let searchDebounceTimeout = null;
-
-        function normalizeSearchQuery(query) {
-            if (!query) return "";
-            let cleaned = query.trim().toLowerCase();
-            cleaned = cleaned.replace(/[\u0660-\u0669]/g, d => String.fromCharCode(d.charCodeAt(0) - 1632));
-            
-            const replacements = {
-                "سامسونج": "samsung", "سامصونج": "samsung", "سامصونك": "samsung",
-                "آبل": "apple", "ابل": "apple", "ايفون": "iphone",
-                "شاومي": "xiaomi", "شومي": "xiaomi",
-                "انفينكس": "infinix", "انفنكس": "infinix",
-                "اوبو": "oppo", "أوبو": "oppo",
-                "هواوي": "huawei", "هواى": "huawei",
-                "فيفو": "vivo", "هونر": "honor",
-                "اتش تي سي": "htc", "نوكيا": "nokia",
-                "ايه": "a", "أيه": "a", "إيه": "a",
-                "اس": "s", "أس": "s", "إس": "s",
-                "نوت": "note", "برو": "pro", "ماكس": "max", "بلس": "plus"
-            };
-
-            for (let ar in replacements) {
-                cleaned = cleaned.replace(new RegExp(ar, 'g'), replacements[ar]);
-            }
-            return cleaned.trim();
-        }
-
-        function handleSearchInput(val) {
-            clearTimeout(searchDebounceTimeout);
-            searchDebounceTimeout = setTimeout(() => {
-                executeGlobalSearch(val);
-            }, 300);
-        }
-
-        function closeSearchResults() {
-            let searchWrapper = document.getElementById('global-search-results');
-            let brandsGrid = document.getElementById('brandsGrid');
-            let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
-            if (searchWrapper) searchWrapper.style.display = 'none';
-            if (brandsGrid) brandsGrid.style.display = 'grid';
-            if (brandsHeaderTitle) brandsHeaderTitle.style.display = 'block';
-        }
-
-        async function executeGlobalSearch(query) {
-            let resultsContainer = document.getElementById('searchResultsList');
-            let searchWrapper = document.getElementById('global-search-results');
-            let brandsGrid = document.getElementById('brandsGrid');
-            let brandsHeaderTitle = document.getElementById('brandsHeaderTitle');
-
-            if (!query || query.trim() === '') {
-                closeSearchResults();
-                return;
-            }
-
-            if (brandsGrid) brandsGrid.style.display = 'none';
-            if (brandsHeaderTitle) brandsHeaderTitle.style.display = 'none';
-            searchWrapper.style.display = 'flex';
-            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#0052D4; padding:10px;">جاري البحث الذكي...</div>';
-
-            let cleanedQuery = normalizeSearchQuery(query);
-
-            try {
-                let { data: models, error } = await supabaseClient
-                    .from('phone_models')
-                    .select('*')
-                    .or(`model_name.ilike.%${cleanedQuery}%,model_code.ilike.%${cleanedQuery}%,brand_name.ilike.%${cleanedQuery}%`)
-                    .limit(15);
-
-                resultsContainer.innerHTML = '';
-
-                if (error || !models || models.length === 0) {
-                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">لم نجد نتائج متطابقة للبحث</div>';
-                    return;
-                }
-
-                models.forEach(item => {
-                    let itemDiv = document.createElement('div');
-                    itemDiv.className = 'horizontal-box';
-                    
-                    let modelName = item.model_name || '';
-                    let modelCode = item.model_code ? ` (${item.model_code})` : '';
-                    let fullTitle = `${modelName}${modelCode}`;
-
-                    itemDiv.innerHTML = `<span><i class="fa-solid fa-mobile-screen-button" style="color:#0052D4; margin-left:6px;"></i>${fullTitle}</span> <i class="fa-solid fa-chevron-left" style="font-size:11px; color:#0052D4;"></i>`;
-
-                    itemDiv.onclick = function() {
-                        closeSearchResults();
-                        document.getElementById('textSearchInput').value = '';
-                        openSpareParts(fullTitle);
-                    };
-
-                    resultsContainer.appendChild(itemDiv);
-                });
-
-            } catch (err) {
-                console.error("Search Error:", err);
-                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">حدث خطأ أثناء جلب النتائج</div>';
-            }
-        }
-
-        function startVoiceSearch() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("متصفحك لا يدعم خاصية البحث الصوتي المباشر.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA'; 
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            let micBtn = document.getElementById('micBtn');
-            let micBtnText = document.getElementById('micBtnText');
-
-            micBtn.classList.add('listening-active');
-            micBtnText.innerText = "جاري الاستماع...";
-            recognition.start();
-
-            recognition.onresult = function(event) {
-                let speechResult = event.results[0][0].transcript;
-                document.getElementById('textSearchInput').value = speechResult;
-                handleSearchInput(speechResult);
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
-            };
-
-            recognition.onerror = function() {
-                alert("لم يتم التعرف على الصوت بشكل واضح، حاول مرة أخرى.");
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
-            };
-
-            recognition.onend = function() {
-                micBtn.classList.remove('listening-active');
-                micBtnText.innerText = "بحث صوتي";
-            };
-        }
-
-        function openModels(brandName) {
-            activeBrandName = brandName;
-            let container = document.getElementById('modelsListContainer');
-            container.innerHTML = '';
-            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
-
-            for (let i = 1; i <= 100; i++) {
-                let wrapper = document.createElement('div');
-                wrapper.className = 'model-item-wrapper';
-
-                let box = document.createElement('div');
-                box.className = 'horizontal-box';
-                
-                let textSpan = document.createElement('span');
-                textSpan.className = 'editable-model-text';
-                textSpan.contentEditable = "true";
-                textSpan.innerText = `${brandName} (${i})`;
-                
-                let chevronIcon = document.createElement('i');
-                chevronIcon.className = "fa-solid fa-chevron-left";
-                chevronIcon.style.fontSize = "13px";
-                chevronIcon.style.color = "#0052D4";
-
-                box.onclick = function() {
-                    openSpareParts(textSpan.innerText);
-                };
-
-                box.appendChild(textSpan);
-                box.appendChild(chevronIcon);
-                wrapper.appendChild(box);
-                container.appendChild(wrapper);
-            }
-
-            hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
         function openSpareParts(modelName) {
-            allBrands.forEach(brand => {
-                if (modelName.startsWith(brand)) {
-                    activeBrandName = brand;
-                }
-            });
             activeModelName = modelName;
             buildSparePartsList(modelName);
         }
@@ -1422,7 +1146,6 @@
                 subBox.className = 'sub-horizontal-box';
                 subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-left" style="font-size: 11px;"></i>`;
 
-                // عند الضغط على قطعة الغيار تفتح الصفحة الجديدة المقسمة
                 subBox.onclick = function(e) {
                     e.stopPropagation();
                     openPartDetailsPage(catName, modelName);
@@ -1437,14 +1160,12 @@
             window.scrollTo(0, 0);
         }
 
-        // --- دالة فتح الصفحة الجديدة لقطعة الغيار (المقسمة إلى 3 أقسام) ---
         function openPartDetailsPage(catName, modelName) {
             document.getElementById('partDetailsPageTitle').innerText = `${catName} - ${modelName}`;
             
             let container = document.getElementById('partMerchantsContainer');
             container.innerHTML = '';
 
-            // تعبئة التجار وأزرار الواتساب في القسم الأول
             merchantsList.forEach((merchant) => {
                 let merchantRow = document.createElement('div');
                 merchantRow.className = 'merchant-row-box';
@@ -1464,18 +1185,7 @@
                     e.stopPropagation();
                     let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
                     let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
-                    
-                    let hiddenIframe = document.createElement('iframe');
-                    hiddenIframe.style.display = 'none';
-                    hiddenIframe.src = whatsappUrl;
-                    document.body.appendChild(hiddenIframe);
-                    
-                    setTimeout(() => {
-                        if (document.body.contains(hiddenIframe)) {
-                            document.body.removeChild(hiddenIframe);
-                        }
-                        window.location.href = whatsappUrl;
-                    }, 200);
+                    window.location.href = whatsappUrl;
                 };
 
                 merchantRow.appendChild(infoDiv);
