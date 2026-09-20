@@ -497,10 +497,6 @@
             border-radius: 4px;
             cursor: text;
         }
-        .editable-model-text:focus {
-            background-color: #f0f4ff;
-            border: 1px dashed #0052D4;
-        }
 
         .sub-wrapper {
             display: flex;
@@ -834,7 +830,7 @@
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
 
-        <!-- ================= الصفحة الجديدة: تفاصيل قطعة الغيار (المقسمة إلى 3 أقسام) ================= -->
+        <!-- ================= الصفحة الجديدة: تفاصيل قطعة الغيار ================= -->
         <div id="part-details-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToSpareParts()"><i class="fa-solid fa-arrow-right"></i> العودة لقطع الغيار</button>
             <div class="brands-title" id="partDetailsPageTitle">تفاصيل القطعة</div>
@@ -848,7 +844,7 @@
                 <div id="partMerchantsContainer" class="merchants-container"></div>
             </div>
 
-            <!-- القسم الثاني: التوافقات (فارغ) -->
+            <!-- القسم الثاني: التوافقات -->
             <div class="part-section-card">
                 <div class="part-section-header">
                     <i class="fa-solid fa-shuffle"></i>
@@ -857,7 +853,7 @@
                 <div class="empty-section-placeholder">لا توجد توافقات مسجلة حالياً لهذه القطعة.</div>
             </div>
 
-            <!-- القسم الثالث: ملاحظات فنية (فارغ) -->
+            <!-- القسم الثالث: ملاحظات فنية -->
             <div class="part-section-card">
                 <div class="part-section-header">
                     <i class="fa-solid fa-clipboard-list"></i>
@@ -910,7 +906,7 @@
 
     <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
     <script>
-        // إعدادات اتصال Supabase بالمفتاح الجديد
+        // إعدادات اتصال Supabase
         const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const supabaseKey = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
         
@@ -1431,13 +1427,34 @@
             };
         }
 
-        function openModels(brandName) {
+        // --- دالة فتح الموديلات المربوطة بـ Supabase ---
+        async function openModels(brandName) {
             activeBrandName = brandName;
             let container = document.getElementById('modelsListContainer');
-            container.innerHTML = '';
+            container.innerHTML = '<div style="text-align:center; padding:20px;">جاري تحميل الموديلات...</div>';
             document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
 
-            for (let i = 1; i <= 100; i++) {
+            // جلب البيانات من جدول phone_models
+            let { data: models, error } = await supabaseClient
+                .from('phone_models')
+                .select('*')
+                .eq('brand', brandName);
+
+            container.innerHTML = '';
+
+            if (error) {
+                container.innerHTML = '<div style="text-align:center; color:red; padding:20px;">حدث خطأ أثناء جلب البيانات</div>';
+                console.error(error);
+                return;
+            }
+
+            if (!models || models.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:20px;">لا توجد موديلات مسجلة لـ ${brandName} حالياً</div>`;
+                return;
+            }
+
+            // عرض البيانات المرجعة من قاعدة البيانات
+            models.forEach((item) => {
                 let wrapper = document.createElement('div');
                 wrapper.className = 'model-item-wrapper';
 
@@ -1446,8 +1463,7 @@
                 
                 let textSpan = document.createElement('span');
                 textSpan.className = 'editable-model-text';
-                textSpan.contentEditable = "true";
-                textSpan.innerText = `${brandName} (${i})`;
+                textSpan.innerText = item.model_name;
                 
                 let chevronIcon = document.createElement('i');
                 chevronIcon.className = "fa-solid fa-chevron-left";
@@ -1455,14 +1471,14 @@
                 chevronIcon.style.color = "#0052D4";
 
                 box.onclick = function() {
-                    openSpareParts(textSpan.innerText);
+                    openSpareParts(item.model_name);
                 };
 
                 box.appendChild(textSpan);
                 box.appendChild(chevronIcon);
                 wrapper.appendChild(box);
                 container.appendChild(wrapper);
-            }
+            });
 
             hideAllPages();
             document.getElementById('models-page').style.display = 'block';
@@ -1493,7 +1509,6 @@
                 subBox.className = 'sub-horizontal-box';
                 subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-left" style="font-size: 11px;"></i>`;
 
-                // عند الضغط على قطعة الغيار تفتح الصفحة الجديدة المقسمة
                 subBox.onclick = function(e) {
                     e.stopPropagation();
                     openPartDetailsPage(catName, modelName);
@@ -1508,14 +1523,12 @@
             window.scrollTo(0, 0);
         }
 
-        // --- دالة فتح الصفحة الجديدة لقطعة الغيار (المقسمة إلى 3 أقسام) ---
         function openPartDetailsPage(catName, modelName) {
             document.getElementById('partDetailsPageTitle').innerText = `${catName} - ${modelName}`;
             
             let container = document.getElementById('partMerchantsContainer');
             container.innerHTML = '';
 
-            // تعبئة التجار وأزرار الواتساب في القسم الأول
             merchantsList.forEach((merchant) => {
                 let merchantRow = document.createElement('div');
                 merchantRow.className = 'merchant-row-box';
