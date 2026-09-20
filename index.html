@@ -530,11 +530,10 @@
         }
 
         .merchants-container {
-            display: none;
+            display: flex;
             flex-direction: column;
             gap: 6px;
-            padding-right: 12px;
-            margin-top: 2px;
+            margin-top: 5px;
         }
 
         .merchant-row-box {
@@ -579,6 +578,38 @@
 
         .merchant-order-btn:hover {
             background-color: #003fa7;
+        }
+
+        /* --- تنسيقات الصفحة الجديدة لقطع الغيار المقسمة لـ 3 أقسام --- */
+        .part-section-card {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .part-section-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0052D4;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-section-placeholder {
+            color: #888;
+            font-size: 13px;
+            text-align: center;
+            padding: 15px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            background: #fafafa;
         }
 
         /* --- نافذة بحث الكاميرا الذكية (Modal) --- */
@@ -803,6 +834,39 @@
             <div class="list-container" id="sparePartsListContainer"></div>
         </div>
 
+        <!-- ================= الصفحة الجديدة: تفاصيل قطعة الغيار (المقسمة إلى 3 أقسام) ================= -->
+        <div id="part-details-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToSpareParts()"><i class="fa-solid fa-arrow-right"></i> العودة لقطع الغيار</button>
+            <div class="brands-title" id="partDetailsPageTitle">تفاصيل القطعة</div>
+            
+            <!-- القسم الأول: طلب القطعة -->
+            <div class="part-section-card">
+                <div class="part-section-header">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>القسم الأول: طلب القطعة</span>
+                </div>
+                <div id="partMerchantsContainer" class="merchants-container"></div>
+            </div>
+
+            <!-- القسم الثاني: التوافقات (فارغ) -->
+            <div class="part-section-card">
+                <div class="part-section-header">
+                    <i class="fa-solid fa-shuffle"></i>
+                    <span>القسم الثاني: التوافقات</span>
+                </div>
+                <div class="empty-section-placeholder">لا توجد توافقات مسجلة حالياً لهذه القطعة.</div>
+            </div>
+
+            <!-- القسم الثالث: ملاحظات فنية (فارغ) -->
+            <div class="part-section-card">
+                <div class="part-section-header">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>القسم الثالث: ملاحظات فنية</span>
+                </div>
+                <div class="empty-section-placeholder">لا توجد ملاحظات فنية مسجلة.</div>
+            </div>
+        </div>
+
         <div id="compatibility-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
             <div class="brands-title">التوافقات</div>
@@ -864,7 +928,7 @@
         
         const translationDictionary = {
             "apple": "Apple", "آبل": "Apple", "ابل": "Apple", "ايفون": "Apple", "iphone": "Apple",
-            "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung", "سامسونك": "Samsung",
+            "samsung": "Samsung", "سامسونج": "Samsung", "سامصونج": "Samsung", "سامصونك": "Samsung",
             "xiaomi": "Xiaomi", "شاومي": "Xiaomi", "شومي": "Xiaomi",
             "infinix": "Infinix", "انفينكس": "Infinix", "انفنكس": "Infinix",
             "oppo": "Oppo", "اوبو": "Oppo", "أوبو": "Oppo",
@@ -970,6 +1034,7 @@
             document.getElementById('main-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('part-details-page').style.display = 'none';
             document.getElementById('compatibility-page').style.display = 'none';
         }
 
@@ -989,6 +1054,16 @@
             hideAllPages();
             if (activeBrandName) {
                 openModels(activeBrandName);
+            } else {
+                goToMain();
+            }
+        }
+
+        function goToSpareParts() {
+            closeAllMenus();
+            hideAllPages();
+            if (activeModelName) {
+                openSpareParts(activeModelName);
             } else {
                 goToMain();
             }
@@ -1101,7 +1176,6 @@
                 return;
             }
 
-            // التحقق من أن المفتاح يبدأ بالبادئة الصحيحة AQ
             if (!apiKey.startsWith('AQ')) {
                 alert('تنبيه: مفاتيح الـ API الجديدة يجب أن تبدأ بالبادئة AQ.');
                 return;
@@ -1116,7 +1190,6 @@
             resultDiv.innerText = 'جاري المعالجة...';
 
             try {
-                // تحديث النموذج إلى gemini-3.6-flash بناءً على طلبك
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
                 const promptText = `أنت خبير صيانة هواتف ذكية. قم بتحليل صورة الهاتف بدقة عالية جداً.
@@ -1263,7 +1336,7 @@
                             resultsContainer.style.display = 'none';
                             brandsGrid.style.display = 'grid';
                             brandsHeaderTitle.style.display = 'block';
-                            openSparePartsAndFocus(targetModel, targetCat);
+                            openPartDetailsPage(targetCat, targetModel);
                         };
                         listEl.appendChild(item);
                         foundCount++;
@@ -1304,7 +1377,7 @@
                                     resultsContainer.style.display = 'none';
                                     brandsGrid.style.display = 'grid';
                                     brandsHeaderTitle.style.display = 'block';
-                                    openSparePartsAndFocus(targetModel, targetCat);
+                                    openPartDetailsPage(targetCat, targetModel);
                                 };
                                 listEl.appendChild(item);
                                 foundCount++;
@@ -1403,20 +1476,10 @@
                 }
             });
             activeModelName = modelName;
-            buildSparePartsList(modelName, null);
+            buildSparePartsList(modelName);
         }
 
-        function openSparePartsAndFocus(modelName, targetCategory) {
-            allBrands.forEach(brand => {
-                if (modelName.startsWith(brand)) {
-                    activeBrandName = brand;
-                }
-            });
-            activeModelName = modelName;
-            buildSparePartsList(modelName, targetCategory);
-        }
-
-        function buildSparePartsList(modelName, targetCategory) {
+        function buildSparePartsList(modelName) {
             let container = document.getElementById('sparePartsListContainer');
             container.innerHTML = '';
 
@@ -1428,76 +1491,71 @@
 
                 let subBox = document.createElement('div');
                 subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-down sub-arrow-icon" style="font-size: 11px; transition: transform 0.2s;"></i>`;
+                subBox.innerHTML = `<span>${catName}</span> <i class="fa-solid fa-chevron-left" style="font-size: 11px;"></i>`;
 
-                let merchantsContainer = document.createElement('div');
-                merchantsContainer.className = 'merchants-container';
-
-                merchantsList.forEach((merchant) => {
-                    let merchantRow = document.createElement('div');
-                    merchantRow.className = 'merchant-row-box';
-
-                    let infoDiv = document.createElement('div');
-                    infoDiv.className = 'merchant-info';
-                    infoDiv.innerHTML = `
-                        <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
-                        <span class="merchant-price">${merchant.price}</span>
-                    `;
-
-                    let orderBtn = document.createElement('button');
-                    orderBtn.className = 'merchant-order-btn';
-                    orderBtn.innerText = 'طلب';
-                    
-                    orderBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
-                        let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
-                        
-                        let hiddenIframe = document.createElement('iframe');
-                        hiddenIframe.style.display = 'none';
-                        hiddenIframe.src = whatsappUrl;
-                        document.body.appendChild(hiddenIframe);
-                        
-                        setTimeout(() => {
-                            if (document.body.contains(hiddenIframe)) {
-                                document.body.removeChild(hiddenIframe);
-                            }
-                            window.location.href = whatsappUrl;
-                        }, 200);
-                    };
-
-                    merchantRow.appendChild(infoDiv);
-                    merchantRow.appendChild(orderBtn);
-                    merchantsContainer.appendChild(merchantRow);
-                });
-
+                // عند الضغط على قطعة الغيار تفتح الصفحة الجديدة المقسمة
                 subBox.onclick = function(e) {
                     e.stopPropagation();
-                    let isVisible = merchantsContainer.style.display === 'flex';
-                    
-                    let allMerchants = container.querySelectorAll('.merchants-container');
-                    let allSubArrows = container.querySelectorAll('.sub-arrow-icon');
-                    allMerchants.forEach(m => m.style.display = 'none');
-                    allSubArrows.forEach(a => a.style.transform = 'rotate(0deg)');
-
-                    if (!isVisible) {
-                        merchantsContainer.style.display = 'flex';
-                        subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
-                    }
+                    openPartDetailsPage(catName, modelName);
                 };
 
                 subWrapper.appendChild(subBox);
-                subWrapper.appendChild(merchantsContainer);
                 container.appendChild(subWrapper);
-
-                if (targetCategory && catName === targetCategory) {
-                    merchantsContainer.style.display = 'flex';
-                    subBox.querySelector('.sub-arrow-icon').style.transform = 'rotate(180deg)';
-                }
             });
 
             hideAllPages();
             document.getElementById('spare-parts-page').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // --- دالة فتح الصفحة الجديدة لقطعة الغيار (المقسمة إلى 3 أقسام) ---
+        function openPartDetailsPage(catName, modelName) {
+            document.getElementById('partDetailsPageTitle').innerText = `${catName} - ${modelName}`;
+            
+            let container = document.getElementById('partMerchantsContainer');
+            container.innerHTML = '';
+
+            // تعبئة التجار وأزرار الواتساب في القسم الأول
+            merchantsList.forEach((merchant) => {
+                let merchantRow = document.createElement('div');
+                merchantRow.className = 'merchant-row-box';
+
+                let infoDiv = document.createElement('div');
+                infoDiv.className = 'merchant-info';
+                infoDiv.innerHTML = `
+                    <span class="merchant-name"><i class="fa-solid fa-store"></i> ${merchant.name}</span>
+                    <span class="merchant-price">${merchant.price}</span>
+                `;
+
+                let orderBtn = document.createElement('button');
+                orderBtn.className = 'merchant-order-btn';
+                orderBtn.innerText = 'طلب';
+                
+                orderBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    let message = `${catName} - ${modelName} - ${merchant.name} (${merchant.price})`;
+                    let whatsappUrl = `https://wa.me/201068713472?text=${encodeURIComponent(message)}`;
+                    
+                    let hiddenIframe = document.createElement('iframe');
+                    hiddenIframe.style.display = 'none';
+                    hiddenIframe.src = whatsappUrl;
+                    document.body.appendChild(hiddenIframe);
+                    
+                    setTimeout(() => {
+                        if (document.body.contains(hiddenIframe)) {
+                            document.body.removeChild(hiddenIframe);
+                        }
+                        window.location.href = whatsappUrl;
+                    }, 200);
+                };
+
+                merchantRow.appendChild(infoDiv);
+                merchantRow.appendChild(orderBtn);
+                container.appendChild(merchantRow);
+            });
+
+            hideAllPages();
+            document.getElementById('part-details-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
