@@ -445,7 +445,9 @@
             flex: 1;
             padding: 2px 4px;
             border-radius: 4px;
-            cursor: text;
+            cursor: pointer;
+            direction: ltr;
+            text-align: right;
         }
 
         .sub-wrapper {
@@ -735,11 +737,10 @@
             { name: "تاجر رقم 3", price: "240ج" }
         ];
 
-        // --- جلب الموديلات باستخدام اسم العمود الصحيح: brand_name ---
+        // --- جلب الموديلات ودمج اسم الموديل مع رقم الطراز من model_code ---
         async function openModels(brandName) {
             activeBrandName = brandName;
             
-            // 1. تحويل الشاشة فوراً لصفحة الموديلات وإظهار كلمة جاري التحميل
             hideAllPages();
             document.getElementById('models-page').style.display = 'block';
             document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
@@ -749,7 +750,6 @@
             window.scrollTo(0, 0);
 
             try {
-                // 2. الاستعلام عن الجدول باستخدام brand_name
                 let { data: models, error } = await supabaseClient
                     .from('phone_models')
                     .select('*')
@@ -768,7 +768,6 @@
                     return;
                 }
 
-                // 3. عرض الموديلات
                 models.forEach((item) => {
                     let wrapper = document.createElement('div');
                     wrapper.className = 'model-item-wrapper';
@@ -778,7 +777,16 @@
                     
                     let textSpan = document.createElement('span');
                     textSpan.className = 'editable-model-text';
-                    textSpan.innerText = item.model_name || 'موديل بدون اسم';
+
+                    // الدمج بين الموديل ورقم الطراز model_code
+                    let modelName = item.model_name || '';
+                    let modelCode = item.model_code || '';
+
+                    if (modelCode) {
+                        textSpan.innerText = `${modelName} (${modelCode})`;
+                    } else {
+                        textSpan.innerText = modelName || 'موديل بدون اسم';
+                    }
                     
                     let chevronIcon = document.createElement('i');
                     chevronIcon.className = "fa-solid fa-chevron-left";
