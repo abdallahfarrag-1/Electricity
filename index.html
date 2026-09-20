@@ -668,18 +668,8 @@
         <!-- ================= محتوى الصفحات ================= -->
         <div id="main-page" class="page-body-content">
             <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
-            <div class="brands-grid" id="brandsGrid">
-                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
-                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
-                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
-                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
-                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
-                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
-                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
-                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
-                <div class="brand-card" onclick="openModels('htc')">htc</div>
-                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
-            </div>
+            <!-- تم تفريغ عناصر الماركات ليتم جلبها ديناميكياً من قاعدة البيانات -->
+            <div class="brands-grid" id="brandsGrid"></div>
         </div>
 
         <div id="models-page" class="page-body-content" style="display: none;">
@@ -756,6 +746,42 @@
             { name: "تاجر رقم 2", price: "270ج" },
             { name: "تاجر رقم 3", price: "240ج" }
         ];
+
+        // --- جلب الماركات ديناميكياً من جدول brands في Supabase ---
+        async function loadBrandsFromSupabase() {
+            let brandsGrid = document.getElementById('brandsGrid');
+            if (!brandsGrid) return;
+
+            brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #0052D4; font-size: 13px; padding: 20px;">جاري تحميل الماركات...</div>';
+
+            try {
+                let { data: brands, error } = await supabaseClient
+                    .from('brands')
+                    .select('name')
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+
+                if (brands && brands.length > 0) {
+                    brandsGrid.innerHTML = '';
+                    brands.forEach(b => {
+                        let brandName = b.name;
+                        let card = document.createElement('div');
+                        card.className = 'brand-card';
+                        card.innerText = brandName;
+                        card.onclick = function() {
+                            openModels(brandName);
+                        };
+                        brandsGrid.appendChild(card);
+                    });
+                } else {
+                    brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #888; padding: 20px;">لا توجد ماركات مسجلة حالياً</div>';
+                }
+            } catch (err) {
+                console.error("خطأ في جلب الماركات:", err);
+                brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #ef4444; padding: 20px;">حدث خطأ أثناء تحميل الماركات</div>';
+            }
+        }
 
         // --- محرك تحسين البحث الصوتي واللفظي (Normalizer) ---
         function normalizeSearchQuery(text) {
@@ -1037,6 +1063,7 @@
             updateUserInterface();
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'flex';
+            loadBrandsFromSupabase();
         }
 
         async function handleRegister() {
@@ -1066,6 +1093,7 @@
             updateUserInterface();
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'flex';
+            loadBrandsFromSupabase();
         }
 
         function updateUserInterface() {
@@ -1098,6 +1126,7 @@
             document.getElementById('textSearchInput').value = '';
             document.getElementById('brandsGrid').style.display = 'grid';
             document.getElementById('brandsHeaderTitle').style.display = 'block';
+            loadBrandsFromSupabase();
             window.scrollTo(0, 0);
         }
 
