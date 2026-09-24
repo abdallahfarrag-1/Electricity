@@ -3,1083 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity - Smart Search</title>
-    <!-- خط كاييرو وأيقونات FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- مكتبة Supabase JS SDK -->
+    <title>Electricity Aswan</title>
+    <!-- تضمين Tailwind CSS للتنسيق -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين مكتبة Supabase للاتصال بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
         body {
-            background-color: #f4f7fc;
-            color: #333;
-        }
-
-        /* --- 1. واجهة تسجيل الدخول --- */
-        #login-page {
-            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-container {
-            background-color: #ffffff;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .logo-area h1 {
-            color: #0052D4;
-            font-size: 32px;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-
-        .logo-area p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            text-align: right;
-            direction: rtl;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #0052D4;
-            box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
-        }
-
-        .btn-login {
-            background-color: #0052D4;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 10px;
-        }
-
-        .btn-login:hover {
-            background-color: #003fa7;
-        }
-
-        .btn-register {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 15px;
-        }
-
-        .btn-register:hover {
-            background-color: #059669;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 15px 0;
-            color: #888;
-            font-size: 13px;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .divider::before { margin-left: 10px; }
-        .divider::after { margin-right: 10px; }
-
-        .btn-guest {
-            background-color: #f3f4f6;
-            color: #0052D4;
-            border: 1px solid #0052D4;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-        }
-
-        .btn-guest:hover {
-            background-color: #ebf5ff;
-        }
-
-        /* --- الشريط العلوي المشترك (Navbar) --- */
-        .navbar {
-            background-color: #0052D4;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .nav-right, .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .user-id {
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 50px;
-            right: 15px;
-            background-color: white;
-            color: #333;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: none;
-            width: 160px;
-            z-index: 1000;
-        }
-
-        .dropdown-menu button {
-            width: 100%;
-            padding: 10px 12px;
-            background: none;
-            border: none;
-            text-align: right;
-            font-size: 13px;
-            color: #d32f2f;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .dropdown-menu button:hover {
-            background-color: #ffebee;
-        }
-
-        /* --- نظام الثبات العلوي والبحث الذكي --- */
-        .sticky-header-container {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background-color: #f4f7fc;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-        }
-
-        .content-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 8px 12px;
-            width: 100%;
-        }
-
-        .search-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        .search-actions-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-compact-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #0052D4, #4364F7);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            box-shadow: 0 2px 6px rgba(0, 82, 212, 0.2);
-            transition: all 0.3s;
-        }
-
-        .action-compact-btn:hover {
-            background: linear-gradient(135deg, #003fa7, #2c4ec9);
-        }
-
-        .action-compact-btn.recording {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 6px 12px;
-            gap: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-
-        .search-bar input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            background: transparent;
-            text-align: right;
-            direction: rtl;
-        }
-
-        .search-bar i {
-            color: #0052D4;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .quick-nav-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-        }
-
-        .quick-nav-card {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 6px 4px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-nav-card:hover {
-            border-color: #0052D4;
-            background-color: #f0f4ff;
-        }
-
-        .quick-nav-card i {
-            font-size: 14px;
-            color: #0052D4;
-            margin-bottom: 2px;
-            display: block;
-        }
-
-        .quick-nav-card span {
-            font-size: 11px;
-            font-weight: 600;
-            color: #333;
-            display: block;
-        }
-
-        .brands-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0052D4;
-            margin-bottom: 12px;
-            text-align: right;
-        }
-
-        .brands-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding-bottom: 30px;
-            direction: ltr;
-        }
-
-        .brand-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 600;
-            color: #0052D4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .brand-card:hover {
-            background-color: #0052D4;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 82, 212, 0.2);
-        }
-
-        #global-search-results {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #0052D4;
-        }
-
-        .page-body-content {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 15px;
-            width: 100%;
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: #0052D4;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-bottom: 30px;
-        }
-
-        .model-item-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .horizontal-box {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .horizontal-box:hover {
-            border-color: #0052D4;
-            background-color: #f8fafc;
-        }
-
-        .editable-model-text {
-            outline: none;
-            flex: 1;
-            padding: 2px 4px;
-            border-radius: 4px;
-            cursor: pointer;
-            direction: ltr;
-            text-align: right;
-        }
-
-        .sub-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .sub-horizontal-box {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #0052D4;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .sub-horizontal-box:hover {
-            background-color: #f8fafc;
-            border-color: #0052D4;
-        }
-
-        .merchants-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 5px;
-        }
-
-        .merchant-row-box {
-            background: #ffffff;
-            border: 1px solid #94a3b8;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
-
-        .merchant-info {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .merchant-name {
-            color: #0052D4;
-        }
-
-        .merchant-price {
-            color: #16a34a;
-        }
-
-        .merchant-order-btn {
-            background-color: #0052D4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .merchant-order-btn:hover {
-            background-color: #003fa7;
-        }
-
-        .part-section-card {
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .part-section-header {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0052D4;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .empty-section-placeholder {
-            color: #888;
-            font-size: 13px;
-            text-align: center;
-            padding: 15px;
-            border: 1px dashed #cbd5e1;
-            border-radius: 6px;
-            background: #fafafa;
+            font-family: 'Cairo', sans-serif;
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center">
 
-    <!-- ================= واجهة تسجيل الدخول ================= -->
-    <div id="login-page">
-        <div class="login-container">
-            <div class="logo-area">
-                <h1>Electricity</h1>
-                <p>مرحباً بك، يرجى تسجيل الدخول أو إنشاء حساب</p>
-            </div>
-
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <label for="phone">رقم الهاتف</label>
-                    <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="password">رمز المرور</label>
-                    <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
-                </div>
-
-                <button type="submit" class="btn-login">تسجيل الدخول</button>
-                <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
-            </form>
-
-            <div class="divider">أو</div>
-
-            <button type="button" class="btn-guest" onclick="handleGuest()">الدخول كزائر</button>
-        </div>
-    </div>
-
-    <!-- ================= التطبيق الرئيسي ================= -->
-    <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
+    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
+    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-8 flex flex-col justify-between transition-all duration-300 overflow-hidden">
         
-        <div class="sticky-header-container">
-            <header class="navbar">
-                <div class="nav-right">
-                    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <span class="brand-title" onclick="goToMain()">Electricity</span>
-                </div>
-                <div class="nav-left">
-                    <span class="user-id" id="userDisplayId">102938</span>
-                </div>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-                </div>
-            </header>
-
-            <div class="content-container">
-                <div class="search-section">
-                    <div class="search-actions-row">
-                        <button class="action-compact-btn">
-                            <i class="fa-solid fa-camera"></i>
-                            <span>بحث كاميرا</span>
-                        </button>
-                        <button class="action-compact-btn" id="micBtn" onclick="toggleVoiceSearch()">
-                            <i class="fa-solid fa-microphone" id="micIcon"></i>
-                            <span id="micBtnText">بحث صوتي</span>
-                        </button>
-                    </div>
-
-                    <div class="search-bar">
-                        <i class="fa-solid fa-magnifying-glass" onclick="triggerSearchFromInput()"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث باسم الموديل أو الطراز (مثال: A013 أو سامسونج)..." oninput="handleSearchInput(this.value)">
-                    </div>
-
-                    <div class="quick-nav-grid">
-                        <div class="quick-nav-card" onclick="goToMain()">
-                            <i class="fa-solid fa-mobile-screen"></i>
-                            <span>الماركات</span>
-                        </div>
-                        <div class="quick-nav-card" onclick="goToCompatibility()">
-                            <i class="fa-solid fa-shuffle"></i>
-                            <span>التوافقات</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="global-search-results">
-                    <div class="brands-title" style="margin-bottom: 6px; font-size: 13px; display: flex; justify-content: space-between;">
-                        <span>نتائج البحث الذكي</span>
-                        <i class="fa-solid fa-xmark" style="cursor: pointer; color: #888;" onclick="closeSearchResults()"></i>
-                    </div>
-                    <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= محتوى الصفحات ================= -->
-        <div id="main-page" class="page-body-content">
-            <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
-            <div class="brands-grid" id="brandsGrid"></div>
-        </div>
-
-        <div id="models-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title" id="modelsPageTitle">الموديلات</div>
-            <div class="list-container" id="modelsListContainer"></div>
-        </div>
-
-        <div id="spare-parts-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
-            <div class="list-container" id="sparePartsListContainer"></div>
-        </div>
-
-        <div id="part-details-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToSpareParts()"><i class="fa-solid fa-arrow-right"></i> العودة لقطع الغيار</button>
-            <div class="brands-title" id="partDetailsPageTitle">تفاصيل القطعة</div>
-            
-            <div class="part-section-card">
-                <div class="part-section-header">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <span>القسم الأول: طلب القطعة</span>
-                </div>
-                <div id="partMerchantsContainer" class="merchants-container"></div>
-            </div>
-
-            <div class="part-section-card">
-                <div class="part-section-header">
-                    <i class="fa-solid fa-shuffle"></i>
-                    <span>القسم الثاني: التوافقات</span>
-                </div>
-                <div class="empty-section-placeholder">لا توجد توافقات مسجلة حالياً لهذه القطعة.</div>
-            </div>
-
-            <div class="part-section-card">
-                <div class="part-section-header">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>القسم الثالث: ملاحظات فنية</span>
-                </div>
-                <div class="empty-section-placeholder">لا توجد ملاحظات فنية مسجلة.</div>
-            </div>
-        </div>
-
-        <div id="compatibility-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
-            <div class="brands-title">التوافقات</div>
-            <div class="list-container">
-                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #d1d5db; color: #555; font-size: 14px;">
-                    قسم التوافقات قيد التجهيز لعرض قطع الغيار المتوافقة بين الموديلات المختلفة.
-                </div>
-            </div>
-        </div>
+        <!-- حاوية الشاشات الديناميكية -->
+        <div id="appContainer" class="flex-1 flex flex-col overflow-hidden"></div>
 
     </div>
 
-    <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
     <script>
-        const supabaseUrl = 'https://byiayomtcwqlgrknvgcz.supabase.co';
-        const supabaseKey = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
-        
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        // إعدادات اتصال Supabase
+        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentUserId = "102938";
-        let isGuestUser = false;
-        let activeBrandName = "";
-        let activeModelName = "";
-        let recognitionInstance = null;
-        let isRecording = false;
+        let currentUserRole = "زائر";
+        let selectedBrand = "";
+        let selectedModel = "";
+        let selectedPart = "";
 
-        const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "مدل", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
-        
-        const merchantsList = [
-            { name: "تاجر رقم 1", price: "250ج" },
-            { name: "تاجر رقم 2", price: "270ج" },
-            { name: "تاجر رقم 3", price: "240ج" }
+        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        const brandsData = [
+            "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
+            "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
         ];
 
-        // --- دوال تسجيل الدخول الوهمية للاختبار ---
-        function handleLogin(event) {
-            event.preventDefault();
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('app-wrapper').style.display = 'flex';
-            loadBrandsFromSupabase();
-        }
+        // قطع الغيار المطلوبة
+        const sparePartsList = [
+            "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
+            "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
+            "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
+        ];
 
-        function handleRegister() {
-            alert("تم الانتقال لصفحة التسجيل (يمكنك ربطها بقاعدة البيانات لاحقاً)");
-        }
+        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
+        function renderLoginScreen() {
+            const html = `
+                <div class="flex-1 overflow-y-auto px-2">
+                    <div class="max-w-xl mx-auto w-full py-4">
+                        <div class="text-center mb-6">
+                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                        </div>
 
-        function handleGuest() {
-            isGuestUser = true;
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('app-wrapper').style.display = 'flex';
-            loadBrandsFromSupabase();
-        }
+                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
+                        <div class="mb-6">
+                            <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
+                        </div>
 
-        // --- جلب الماركات ديناميكياً من جدول brands في Supabase ---
-        async function loadBrandsFromSupabase() {
-            let brandsGrid = document.getElementById('brandsGrid');
-            if (!brandsGrid) return;
+                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
+                        <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
+                            <button onclick="switchTab('login')" id="loginTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                                تسجيل الدخول
+                            </button>
+                            <button onclick="switchTab('register')" id="registerTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">
+                                إنشاء حساب
+                            </button>
+                        </div>
 
-            brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #0052D4; font-size: 13px; padding: 20px;">جاري تحميل الماركات...</div>';
+                        <!-- خانة تسجيل الدخول -->
+                        <div id="loginFormContainer">
+                            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                                    <input type="text" id="loginPhone" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                                    <input type="password" id="loginPassword" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="text-gray-600 text-xs">تذكرني</span>
+                                    </label>
+                                </div>
 
-            try {
-                let { data: brands, error } = await supabaseClient
-                    .from('brands')
-                    .select('name, display_order')
-                    .order('display_order', { ascending: true });
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
+                                    تسجيل الدخول
+                                </button>
+                            </form>
+                        </div>
 
-                if (error) throw error;
+                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
+                        <div id="registerFormContainer" class="hidden">
+                            <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
+                                    <input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
+                                    <input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
+                                    <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
 
-                if (brands && brands.length > 0) {
-                    brandsGrid.innerHTML = '';
-                    brands.forEach(b => {
-                        let brandName = b.name;
-                        let card = document.createElement('div');
-                        card.className = 'brand-card';
-                        card.innerText = brandName;
-                        card.onclick = function() {
-                            openModels(brandName);
-                        };
-                        brandsGrid.appendChild(card);
-                    });
-                } else {
-                    brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #888; padding: 20px;">لا توجد ماركات مسجلة حالياً</div>';
-                }
-            } catch (err) {
-                console.error("خطأ في جلب الماركات:", err);
-                brandsGrid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #ef4444; padding: 20px;">حدث خطأ أثناء تحميل الماركات</div>';
-            }
-        }
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
+                                    إنشاء الحساب
+                                </button>
+                            </form>
+                        </div>
 
-        // --- محرك تحسين البحث الصوتي واللفظي (Normalizer) ---
-        function normalizeSearchQuery(text) {
-            if (!text) return '';
-            let q = text.toLowerCase().trim();
+                        <div class="relative my-6">
+                            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+                            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
+                        </div>
 
-            q = q.replace(/سامسونج|سامسونغ/g, 'Samsung')
-                 .replace(/ايفون|أيفون|تفاحة|ابل|أبل/g, 'Apple')
-                 .replace(/شاومي|شومي/g, 'Xiaomi')
-                 .replace(/انفينكس|أنفينكس/g, 'Infinix')
-                 .replace(/اوبو|أوبو/g, 'Oppo')
-                 .replace(/هواوي/g, 'Huawei')
-                 .replace(/فيفو/g, 'Vivo')
-                 .replace(/هونر|اونر/g, 'Honor')
-                 .replace(/نوكيا/g, 'Nokia');
-
-            q = q.replace(/ايه|أي|إيه/g, 'A')
-                 .replace(/اس|إس/g, 'S')
-                 .replace(/ام|إم/g, 'M')
-                 .replace(/كور/g, 'Core')
-                 .replace(/برو/g, 'Pro')
-                 .replace(/ماكس/g, 'Max')
-                 .replace(/بلس/g, 'Plus');
-
-            const numMap = {
-                'واحد': '1', 'اثنان': '2', 'اثنين': '2', 'ثلاثة': '3', 'ثلاثه': '3',
-                'اربعة': '4', 'أربعة': '4', 'خمسة': '5', 'خمسه': '5', 'ستة': '6',
-                'سبعة': '7', 'ثمانية': '8', 'تسعة': '9', 'عشرة': '10', 'صفر': '0'
-            };
-
-            for (let key in numMap) {
-                q = q.replace(new RegExp(key, 'g'), numMap[key]);
-            }
-
-            return q;
-        }
-
-        // --- جلب لغة وإعدادات الصوت من قاعدة البيانات ---
-        async function getVoiceLanguageFromDB() {
-            try {
-                let { data } = await supabaseClient
-                    .from('app_settings')
-                    .select('setting_value')
-                    .eq('setting_key', 'voice_language')
-                    .single();
-
-                if (data && data.setting_value) {
-                    return data.setting_value;
-                }
-            } catch (e) {
-                console.log("استخدام اللغة الافتراضية للبحث الصوتي (ar-EG)");
-            }
-            return 'ar-EG';
-        }
-
-        // --- تشغيل / إيقاف البحث الصوتي الذكي ---
-        async function toggleVoiceSearch() {
-            const micBtn = document.getElementById('micBtn');
-            const micBtnText = document.getElementById('micBtnText');
-            
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("متصفحك الحالي لا يدعم ميزة التعرف الصوتي.");
-                return;
-            }
-
-            if (isRecording && recognitionInstance) {
-                recognitionInstance.stop();
-                return;
-            }
-
-            recognitionInstance = new SpeechRecognition();
-            const voiceLang = await getVoiceLanguageFromDB();
-            recognitionInstance.lang = voiceLang;
-            recognitionInstance.interimResults = false;
-
-            recognitionInstance.onstart = function() {
-                isRecording = true;
-                micBtn.classList.add('recording');
-                micBtnText.innerText = "جاري الاستماع...";
-            };
-
-            recognitionInstance.onresult = function(event) {
-                let rawText = event.results[0][0].transcript;
-                document.getElementById('textSearchInput').value = rawText;
-                executeGlobalSearch(rawText);
-            };
-
-            recognitionInstance.onerror = function(event) {
-                console.error("خطأ في التعرف الصوتي:", event.error);
-                stopVoiceSearchUI();
-            };
-
-            recognitionInstance.onend = function() {
-                stopVoiceSearchUI();
-            };
-
-            recognitionInstance.start();
-        }
-
-        function stopVoiceSearchUI() {
-            isRecording = false;
-            const micBtn = document.getElementById('micBtn');
-            const micBtnText = document.getElementById('micBtnText');
-            if (micBtn) micBtn.classList.remove('recording');
-            if (micBtnText) micBtnText.innerText = "بحث صوتي";
-        }
-
-        // --- محرك الاستعلام الذكي المربوط بـ Supabase ---
-        let searchDebounceTimeout = null;
-        function handleSearchInput(val) {
-            clearTimeout(searchDebounceTimeout);
-            searchDebounceTimeout = setTimeout(() => {
-                executeGlobalSearch(val);
-            }, 300);
-        }
-
-        function triggerSearchFromInput() {
-            let val = document.getElementById('textSearchInput').value;
-            executeGlobalSearch(val);
-        }
-
-        async function executeGlobalSearch(query) {
-            let resultsContainer = document.getElementById('searchResultsList');
-            let searchWrapper = document.getElementById('global-search-results');
-
-            if (!query || query.trim() === '') {
-                searchWrapper.style.display = 'none';
-                return;
-            }
-
-            searchWrapper.style.display = 'flex';
-            resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#0052D4; padding:10px;">جاري البحث الذكي...</div>';
-
-            let cleanedQuery = normalizeSearchQuery(query);
-
-            try {
-                let { data: models, error } = await supabaseClient
-                    .from('phone_models')
-                    .select('*')
-                    .or(`model_name.ilike.%${cleanedQuery}%,model_code.ilike.%${cleanedQuery}%,brand_name.ilike.%${cleanedQuery}%`)
-                    .limit(15);
-
-                resultsContainer.innerHTML = '';
-
-                if (error || !models || models.length === 0) {
-                    resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">لم نجد نتائج متطابقة للبحث</div>';
-                    return;
-                }
-
-                models.forEach(item => {
-                    let itemDiv = document.createElement('div');
-                    itemDiv.className = 'horizontal-box';
-                    itemDiv.style.padding = '8px 12px';
-                    itemDiv.style.fontSize = '13px';
-                    
-                    let modelName = item.model_name || '';
-                    let modelCode = item.model_code ? ` (${item.model_code})` : '';
-                    let fullTitle = `${modelName}${modelCode}`;
-
-                    itemDiv.innerHTML = `<span><i class="fa-solid fa-mobile-screen-button" style="color:#0052D4; margin-left:6px;"></i>${fullTitle}</span> <i class="fa-solid fa-chevron-left" style="font-size:11px; color:#0052D4;"></i>`;
-
-                    itemDiv.onclick = function() {
-                        closeSearchResults();
-                        openSpareParts(fullTitle);
-                    };
-
-                    resultsContainer.appendChild(itemDiv);
-                });
-            } catch (err) {
-                console.error("خطأ في البحث الذكي:", err);
-                resultsContainer.innerHTML = '<div style="text-align:center; font-size:12px; color:#ef4444; padding:10px;">حدث خطأ أثناء تنفيذ البحث</div>';
-            }
-        }
-
-        function closeSearchResults() {
-            document.getElementById('global-search-results').style.display = 'none';
-        }
-
-        // --- دوال التنقل بين الصفحات ---
-        function goToMain() {
-            closeSearchResults();
-            document.getElementById('main-page').style.display = 'block';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('part-details-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            loadBrandsFromSupabase();
-        }
-
-        function openModels(brandName) {
-            activeBrandName = brandName;
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'block';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('part-details-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('modelsPageTitle').innerText = `موديلات ماركة: ${brandName}`;
-        }
-
-        function goToModels() {
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'block';
-        }
-
-        function openSpareParts(modelTitle) {
-            activeModelName = modelTitle;
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'block';
-            document.getElementById('part-details-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار: ${modelTitle}`;
-            
-            // تعبئة قائمة قطع الغيار بناء على التصنيفات الفرعية
-            let container = document.getElementById('sparePartsListContainer');
-            container.innerHTML = '';
-            subCategoriesList.forEach(sub => {
-                let box = document.createElement('div');
-                box.className = 'horizontal-box';
-                box.innerHTML = `<span>${sub}</span> <i class="fa-solid fa-chevron-left" style="font-size:11px; color:#0052D4;"></i>`;
-                box.onclick = function() {
-                    openPartDetails(sub);
-                };
-                container.appendChild(box);
-            });
-        }
-
-        function goToSpareParts() {
-            document.getElementById('part-details-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'block';
-        }
-
-        function openPartDetails(partName) {
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('part-details-page').style.display = 'block';
-            document.getElementById('partDetailsPageTitle').innerText = `تفاصيل قطعة: ${partName}`;
-
-            // تعبئة قسم التجار
-            let merchantsContainer = document.getElementById('partMerchantsContainer');
-            merchantsContainer.innerHTML = '';
-            merchantsList.forEach(m => {
-                let mRow = document.createElement('div');
-                mRow.className = 'merchant-row-box';
-                mRow.innerHTML = `
-                    <div class="merchant-info">
-                        <span class="merchant-name"><i class="fa-solid fa-store" style="margin-left:5px;"></i>${m.name}</span>
-                        <span class="merchant-price">${m.price}</span>
+                        <!-- زر الدخول كزائر -->
+                        <div>
+                            <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
+                                الدخول كزائر
+                            </button>
+                        </div>
                     </div>
-                    <button class="merchant-order-btn" onclick="alert('تم طلب القطعة من ${m.name}')">طلب</button>
-                `;
-                merchantsContainer.appendChild(mRow);
-            });
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
         }
 
-        function goToCompatibility() {
-            closeSearchResults();
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('part-details-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'block';
+        // التبديل بين نموذج تسجيل الدخول وإنشاء الحساب
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginFormContainer');
+            const registerForm = document.getElementById('registerFormContainer');
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const registerTabBtn = document.getElementById('registerTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm";
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            }
         }
 
-        function toggleMenu() {
-            let menu = document.getElementById('dropdownMenu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('*')
+                .eq('phone_number', phone)
+                .eq('password', password)
+                .single();
+
+            if (error || !data) {
+                alert('خطأ في رقم الهاتف أو رمز المرور!');
+                return;
+            }
+
+            currentUserRole = data.phone_number;
+            renderMainDashboard();
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const owner_name = document.getElementById('regOwnerName').value.trim();
+            const shop_name = document.getElementById('regShopName').value.trim();
+            const shop_address = document.getElementById('regShopAddress').value.trim();
+            const phone_number = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            const { data, error } = await supabaseClient
+                .from('users')
+                .insert([{ owner_name, shop_name, shop_address, phone_number, password }])
+                .select();
+
+            if (error) {
+                alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
+                return;
+            }
+
+            alert('تم إنشاء الحساب بنجاح!');
+            currentUserRole = phone_number;
+            renderMainDashboard();
         }
 
-        // تشغيل التحميل الأولي عند فتح الصفحة
+        function loginAsVisitor() {
+            currentUserRole = "زائر";
+            renderMainDashboard();
+        }
+
+
+        // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
+        function getHeaderTemplate() {
+            return `
+                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
+                    <!-- اسم الشركة في الأعلى بمفرده تماماً -->
+                    <div class="text-center mb-3">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <!-- بطاقة القائمة المنسدلة على اليمين -->
+                        <div class="relative">
+                            <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
+                                <option value="" disabled selected>القائمة</option>
+                                <option value="home">الرئيسية</option>
+                                <option value="logout">تسجيل الخروج</option>
+                            </select>
+                        </div>
+
+                        <!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
+                        <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
+                            ${currentUserRole}
+                        </div>
+                    </div>
+
+                    <!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 relative">
+                            <input type="text" placeholder="ابحث" 
+                                   class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                        </div>
+                        <button onclick="alert('جارِ الاستماع للصوت...فعل ميكروفون المتصفح')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                        </button>
+                        <button onclick="alert('جارِ فتح الكاميرا للمسح الضوئي...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleMenuChange(select) {
+            if (select.value === 'logout') {
+                renderLoginScreen();
+            } else if (select.value === 'home') {
+                renderMainDashboard();
+            }
+            select.value = "";
+        }
+
+
+        // ================= 2. الصفحة الرئيسية (بعد الدخول) وتحتوي على البطاقات الأربعة =================
+        function renderMainDashboard() {
+            const html = `
+                ${getHeaderTemplate()}
+
+                <div class="flex-1 overflow-y-auto space-y-4 px-1">
+                    <div class="mb-4">
+                        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
+                    </div>
+
+                    <!-- البطاقات الأربعة الرئيسية المكبرة بتصميم أفقي متسلسل -->
+                    <div class="space-y-3.5 pb-4">
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التوافقات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">تنبيهات بعد التركيب</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التواصل مع الشركة</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 3. شاشة الماركات (خلفية بلون أزرق خفيف معبأ) =================
+        function renderBrandsScreen() {
+            let brandsHtml = brandsData.map(brand => `
+                <div onclick="renderModelsScreen('${brand}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <span class="font-bold text-gray-800">${brand}</span>
+                    <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </div>
+            `).join('');
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all">
+                        ← عودة للرئيسية
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
+                </div>
+                <!-- بطاقات أفقية تحت بعضها البعض -->
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${brandsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 4. شاشة الموديلات (خلفية بلون أزرق خفيف معبأ) =================
+        async function renderModelsScreen(brand) {
+            selectedBrand = brand;
+            
+            // تحديد اسم جدول الموديلات بناءً على الماركة المختارة
+            let tableName = "";
+            const b = brand.toLowerCase();
+            if (b.includes('samsung')) tableName = 'samsung_models';
+            else if (b.includes('iphone') || b.includes('apple')) tableName = 'iphone_models';
+            else if (b.includes('honor')) tableName = 'honor_models';
+            else if (b.includes('huawei')) tableName = 'huawei_models';
+            else if (b.includes('itel')) tableName = 'itel_models';
+            else if (b.includes('nokia')) tableName = 'nokia_models';
+            else if (b.includes('vivo')) tableName = 'vivo_models';
+            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
+            else if (b.includes('oppo')) tableName = 'oppo_models';
+            else if (b.includes('realme')) tableName = 'realme_models';
+            else if (b.includes('redmi')) tableName = 'redmi_models';
+            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
+            else if (b.includes('infinix')) tableName = 'infinix_models';
+
+            let models = [];
+            if (tableName) {
+                const { data, error } = await supabaseClient.from(tableName).select('device_name, model_code');
+                if (!error && data) {
+                    models = data;
+                }
+            }
+
+            let modelsHtml = "";
+            if (models.length > 0) {
+                modelsHtml = models.map(m => `
+                    <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <span class="font-bold text-gray-800">
+                            ${m.device_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
+                        </span>
+                        <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
+                `).join('');
+            } else {
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
+            }
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للماركات (${brand})
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${modelsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 5. شاشة قطع الغيار (خلفية بلون أزرق خفيف معبأ) =================
+        function renderPartsScreen(model) {
+            selectedModel = model;
+
+            let partsHtml = sparePartsList.map(part => `
+                <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <span class="font-bold text-gray-800">${part}</span>
+                    <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </div>
+            `).join('');
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للموديلات
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${partsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام =================
+        function renderProductDetailScreen(part) {
+            selectedPart = part;
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة لقطع الغيار
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                    <!-- شراء المنتج -->
+                    <div class="bg-blue-50/70 border border-blue-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-blue-800 mb-2 text-sm sm:text-base">🛒 شراء المنتج</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
+                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all">
+                            شراء المنتج / اطلب الآن
+                        </button>
+                    </div>
+
+                    <!-- التوافقات -->
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
+                    </div>
+
+                    <!-- تنبيهات بعد التركيب -->
+                    <div class="bg-amber-50/70 border border-amber-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-amber-800 mb-2 text-sm sm:text-base">⚠️ تنبيهات بعد التركيب</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+        // التشغيل المبدئي
         window.onload = function() {
-            // ملاحظة: للتجربة المباشرة للتطبيق، يمكنك تجاوز صفحة الدخول مؤقتاً بإزالة التعليق عن السطر التالي:
-            // document.getElementById('login-page').style.display = 'none'; document.getElementById('app-wrapper').style.display = 'flex'; loadBrandsFromSupabase();
+            renderLoginScreen();
         };
     </script>
 </body>
 </html>
-
