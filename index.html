@@ -424,7 +424,7 @@
         }
 
 
-        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام =================
+        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (تم تكبير المساحات والأحجام) =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
 
@@ -437,26 +437,26 @@
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
 
-                <div class="flex-1 overflow-y-auto space-y-4 p-1">
-                    <!-- شراء المنتج -->
-                    <div class="bg-blue-50/70 border border-blue-100 p-4.5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-blue-800 mb-2 text-sm sm:text-base">🛒 شراء المنتج</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
-                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all">
+                <div class="flex-1 overflow-y-auto space-y-5 p-1">
+                    <!-- شراء المنتج (مكبر) -->
+                    <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
+                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm sm:text-base shadow-md transition-all">
                             شراء المنتج / اطلب الآن
                         </button>
                     </div>
 
-                    <!-- التوافقات -->
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
-                        <p class="text-xs sm:text-sm text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
+                    <!-- التوافقات (مكبر) -->
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
+                        <p class="text-sm sm:text-base text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
                     </div>
 
-                    <!-- تنبيهات بعد التركيب -->
-                    <div class="bg-amber-50/70 border border-amber-100 p-4.5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-amber-800 mb-2 text-sm sm:text-base">⚠️ تنبيهات بعد التركيب</h3>
-                        <p class="text-xs sm:text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
+                    <!-- تنبيهات بعد التركيب (مكبر) -->
+                    <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
+                        <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
                     </div>
                 </div>
             `;
