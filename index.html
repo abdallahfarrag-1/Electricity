@@ -731,7 +731,7 @@
             });
 
             if (error) {
-                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠️️ السبب: ${error.message}`);
+                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠ السبب: ${error.message}`);
                 return;
             }
 
@@ -741,7 +741,7 @@
             }
 
             if (!resObj || resObj.success === false) {
-                alert(`⚠️ بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة!\n📱 الهاتف: ${phone}\nملاحظة: ${resObj?.message || 'تأكد من صحة رقم الهاتف وكلمة المرور'}`);
+                alert(`⚠️️ بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة!\n📱 الهاتف: ${phone}\nملاحظة: ${resObj?.message || 'تأكد من صحة رقم الهاتف وكلمة المرور'}`);
                 return;
             }
 
@@ -1067,13 +1067,11 @@
                         </div>
                     `).join('');
                 } else if (error) {
-                    alert(`❌ خطأ في جلب جدول المنشورات (posts):\n⚠️️ السبب: ${error.message}`);
                     postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
                 } else {
                     postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
                 }
             } catch (err) {
-                alert(`❌ خطأ استثنائي في جدول المنشورات:\n⚠️ السبب: ${err.message}`);
                 postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
             }
 
