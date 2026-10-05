@@ -41,7 +41,7 @@
 
     </div>
 
-    <!-- كود الجافاسكريبت لإدارة النظام والصفحات -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والـ RPC -->
     <script>
         // ================= 1. المتغيرات وإعدادات الاتصال =================
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -274,7 +274,10 @@
                     }, 500);
                 }
 
-                const { data: users, error } = await supabaseClient.rpc('get_active_users');
+                // تم تعديلها لتمرير p_user_id للدالة التي تم اعتمادها
+                const { data: users, error } = await supabaseClient.rpc('get_active_users', {
+                    p_user_id: currentUserId
+                });
 
                 if (error) {
                     console.error("خطأ في جلب المستخدمين النشطين:", error.message);
@@ -825,7 +828,6 @@
                                     <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 
-                                <!-- خانة "تذكرني" الجديدة -->
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
                                     <label for="rememberMe" class="text-xs font-semibold text-gray-600 cursor-pointer">تذكرني</label>
@@ -880,7 +882,6 @@
             `;
             document.getElementById('appContainer').innerHTML = html;
             
-            // استرجاع البيانات المحفوظة إن وجدت بعد عرض شاشة تسجيل الدخول
             if (localStorage.getItem('saved_phone')) {
                 const phoneInput = document.getElementById('loginPhone');
                 const passInput = document.getElementById('loginPassword');
@@ -904,7 +905,6 @@
                 loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
                 registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
                 
-                // إعادة تعبئة الحقول إذا كان هناك بيانات محفوظة
                 if (localStorage.getItem('saved_phone')) {
                     const phoneInput = document.getElementById('loginPhone');
                     const passInput = document.getElementById('loginPassword');
@@ -928,7 +928,6 @@
             const password = document.getElementById('loginPassword').value.trim();
             const rememberMe = document.getElementById('rememberMe')?.checked;
 
-            // حفظ أو مسح بيانات الـ localStorage بناءً على حالة تفعيل "تذكرني"
             if (rememberMe) {
                 localStorage.setItem('saved_phone', phone);
                 localStorage.setItem('saved_password', password);
